@@ -420,28 +420,59 @@ const updateCategoryStatus = async (req, res) => {
   
   
 //Delete a User
-const logout = asyncHandler(async(req,res)=>{
+// const logout = asyncHandler(async(req,res)=>{
+//     const cookie = req.cookies;
+//     if(!cookie?.refreshToken) throw new Error ("No Refresh Token in Cookies");
+//     const refreshToken = cookie.refreshToken;
+//     const user = await User.findOne({refreshToken});
+//     if(!user){
+//         res.clearCookie("refreshToken",{
+//             httpOnly:true,
+//             secure:true,
+//         });
+//         return res.sendStatus(204);//forbidden
+//     }
+//     await User.findOne({refreshToken:refreshToken},{
+//         refreshToken:"",
+//     });
+//     res.clearCookie("refreshToken",{
+//         httpOnly:true,
+//         secure:true,
+//     });
+//     req.flash('message', ' Logout Successfully ');
+//     res.redirect('/admin/login')
+//      res.sendStatus(204);//forbidden
+//  });
+const logout = asyncHandler(async(req, res) => {
     const cookie = req.cookies;
-    if(!cookie?.refreshToken) throw new Error ("No Refresh Token in Cookies");
+    if (!cookie?.refreshToken) throw new Error("No Refresh Token in Cookies");
+    
     const refreshToken = cookie.refreshToken;
-    const user = await User.findOne({refreshToken});
-    if(!user){
-        res.clearCookie("refreshToken",{
-            httpOnly:true,
-            secure:true,
+    const user = await User.findOne({ refreshToken });
+
+    if (!user) {
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: true,
         });
-        return res.sendStatus(204);//forbidden
+        return res.sendStatus(204); // Forbidden
     }
-    await User.findOne({refreshToken:refreshToken},{
-        refreshToken:"",
+
+    await User.findOne({ refreshToken: refreshToken }, {
+        refreshToken: "",
     });
-    res.clearCookie("refreshToken",{
-        httpOnly:true,
-        secure:true,
+
+    res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: true,
     });
+
+    // Add cache control headers to prevent caching
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+
     req.flash('message', ' Logout Successfully ');
-    res.redirect('/admin/login')
-     res.sendStatus(204);//forbidden
- });
+    res.redirect('/admin/login');
+    res.sendStatus(204); // Forbidden
+});
 
 module.exports ={loginAdminCtrl,getallUser,deleteaUser,getaUser,loginAdmin,dashboard,userList,addCategory,addProduct,product,loadaUser,updateaUser,loadDelete,loadDeleteUser,accessOff,accessOn,updateCategoryStatus,logout}

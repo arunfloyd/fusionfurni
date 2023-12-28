@@ -60,6 +60,8 @@ const authMiddleware = asyncHandler(async(req,res,next)=>{
                 req.user=user;
                 next();
             }else{
+                res.redirect('/admin/login')
+                
               throw new Error("There is no token attached to header")
           }
         }catch(error){
@@ -68,6 +70,31 @@ const authMiddleware = asyncHandler(async(req,res,next)=>{
         }
     
 });
+const userMiddleware = asyncHandler(async(req,res,next)=>{
+    const token = req.cookies.refreshToken;
+      // let token;  
+      // const { authorization } = req.headers
+      // if (authorization && authorization.startsWith('Bearer')){
+      // if(req?.headers?.authorization?.startsWith("Bearer")){
+      //     token=req.headers.authorization.split(" ")[1];
+  
+          try{
+              if(token){
+                  const decoded = jwt.verify(token,process.env.JWT_SECRET);
+                  const user = await User.findById(decoded?.id);
+                  req.user=user;
+                  next();
+              }else{
+                  res.redirect('/user/login')
+                  
+                throw new Error("There is no token attached to header")
+            }
+          }catch(error){
+              throw new Error("No Authorized token expired, Please Login again");
+  
+          }
+      
+  });
 
 // const authMiddleware = asyncHandler(async (req, res, next) => {
 //     let token;

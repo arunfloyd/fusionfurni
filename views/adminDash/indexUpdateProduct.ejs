@@ -154,9 +154,8 @@
                                     <thead>
                                         <tr>
                                             <th>
-                                                <button type="button" >
-                                                    <a href="/admin/product/delete/<%= updateProduct._id %>">Delete</a>
-                                  
+                                                <button type="button" onclick="confirmDelete('<%= updateProduct._id %>')">
+                                                    Delete
                                                 </button>
                                             </th>
                                         </tr>
@@ -178,3 +177,16 @@
            
             <!-- content-main end// -->
             <%- include('footer.ejs') %>
+
+            <script>
+                function confirmDelete(productId) {
+                    var confirmation = confirm("Are you sure you want to delete?");
+                    
+                    if (confirmation) {
+                        // If the user confirms, redirect to the delete URL
+                        window.location.href = "/admin/product/delete/" + productId;
+                    }
+                    // If the user cancels, do nothing
+                }
+            </script>
+            

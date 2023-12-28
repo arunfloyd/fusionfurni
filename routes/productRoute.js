@@ -10,17 +10,17 @@ const storage = config.configureMulter();
 const upload = multer({ storage: storage });
 // router.get("/addproduct",authMiddleware,isAdmin,createProduct);
 // router.post("/addproduct",authMiddleware,isAdmin,createProduct);
-router.get("/add",addProduct);
-router.post("/add",upload.array('images'), createProduct);
+router.get("/add",authMiddleware,addProduct);
+router.post("/add",upload.array('images'),authMiddleware, createProduct);
 
 // router.get("/:id",getaProduct);
-router.get("/list",authMiddleware,getallProduct);
+router.get("/list",authMiddleware,authMiddleware,getallProduct);
 // router.put("/:id",authMiddleware,isAdmin,updateProduct);
-router.get("/:id",loadUpdateProduct);
+router.get("/:id",authMiddleware,loadUpdateProduct);
 router.post("/delete/images", asyncHandler(updateImages));
 
-router.post("/:id",updateProduct);
+router.post("/:id",authMiddleware,updateProduct);
 
 // router.delete("/:id",authMiddleware,isAdmin,deleteProduct);
-router.get("/delete/:id",deleteProduct)
+router.get("/delete/:id",authMiddleware,deleteProduct)
 module.exports = router;

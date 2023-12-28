@@ -69,11 +69,12 @@
 
                                                             <td >
                                                                 <div class="dropdown">
-                                                                    <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
+                                                                    <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm">
+                                                                        <i class="material-icons md-more_horiz"></i>
+                                                                    </a>
                                                                     <div class="dropdown-menu">
-                    
                                                                         <a class="dropdown-item" href="/admin/category/edit/<%= getallCategory[i]._id %>">Edit info</a>
-                                                                        <a class="dropdown-item text-danger" href="/admin/category/delete/<%= getallCategory[i]._id %>"">Delete</a>
+                                                                        <a class="dropdown-item text-danger" href="#" onclick="confirmDelete('<%= getallCategory[i]._id %>')">Delete</a>
                                                                     </div>
                                                                 </div>
                                                                 <!-- dropdown //end -->
@@ -106,3 +107,11 @@
             </section>
             <!-- content-main end// -->
             <%- include('footer.ejs') %>
+            <script>
+                function confirmDelete(categoryId) {
+                    var result = confirm("Are you sure you want to delete this category?");
+                    if (result) {
+                        window.location.href = "/admin/category/delete/" + categoryId;
+                    }
+                }
+            </script>
