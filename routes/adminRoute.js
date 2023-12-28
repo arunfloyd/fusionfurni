@@ -18,7 +18,12 @@ router.get('/category',authMiddleware,addCategory);
 router.get('/addproduct',authMiddleware,addProduct);
 router.get('/product',authMiddleware,product);
 router.get('/dash',authMiddleware,dashboard);
-router.get('/logout',logout);
+// router.get('/logout',logout);
+router.get('/logout', (req, res, next) => {
+  res.set('Cache-Control', 'no-store, no-cache');
+  next();
+}, logout);
+
 
 
 module.exports = router ; 

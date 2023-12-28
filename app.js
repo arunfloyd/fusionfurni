@@ -46,7 +46,7 @@ app.use(sessions({
 }));
 app.use((req, res, next) => {
   // Check if req.cookies is defined before accessing its properties
-  res.locals.user = req.cookies && req.cookies.token ? req.cookies.token : null;
+  res.locals.user = req.cookies.refreshToken;
   next();
 });
 

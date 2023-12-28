@@ -9,16 +9,30 @@ const Product = require("../models/productModel")
 const nodemailer = require('nodemailer')
 var otp
 
-const loadlogin = async(req, res) => {
+// const loadlogin = async(req, res) => {
+//     try {
+//         if(!req.cookies.refreshToken){
+//             res.render('user/loginAndSignUp',{ message: req.flash('message')})
 
-    try {
-        
-        res.render('user/loginAndSignUp',{ message: req.flash('message')})
+//             else{
+//             res.redirect('/user/home')}
 
-    } catch (error) {
-        console.log(error.message)
+//             }
+//     } catch (error) {
+//         console.log(error.message)
+//     }
+// }
+const loadlogin = asyncHandler(async (req,res)=>{
+    try{
+        if(req.cookies.refreshToken){
+            res.redirect('/user/home')
+        }else{
+         res.render('user/loginAndSignUp',{ message: req.flash('message')})
+        }
+    }catch(error){
+        throw new Error("Can't Load Admin ")
     }
-}
+})
 const loginUserCtrl = asyncHandler(async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -36,8 +50,6 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
                     new: true,
                 }
             );
-    
-
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
                 maxAge: 72 * 60 * 60 * 1000,
@@ -114,7 +126,7 @@ const createUser = asyncHandler(async (req,res)=>{
 const home = asyncHandler(async(req,res)=>{
     try{
             const getallProduct = await Product.find({list:true})
-            res.render('index',{getallProduct:getallProduct,user:logout})
+            res.render('index',{getallProduct:getallProduct})
    
     }catch(error){
         throw new Error("Home Can't Access")

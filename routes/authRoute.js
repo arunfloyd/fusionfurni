@@ -6,6 +6,19 @@ const router =express.Router();
 const multer = require('multer')
 const storage = config.configureMulter();
 
+// router.get('/login', (req, res, next) => {
+//     res.set('Cache-Control', 'no-store, no-cache');
+//     next();
+//   }, loginUserCtrl);
+router.get('/login', (req, res, next) => {
+    try {
+        res.set('Cache-Control', 'no-store, no-cache');
+        next();
+    } catch (error) {
+        console.log("Error in cache control middleware:", error);
+        throw new Error("Can't set cache control headers");
+    }
+}, loadlogin);
 router.post('/register',createUser);
 router.post('/login',loginUserCtrl);
 router.get('/shop',shop);
