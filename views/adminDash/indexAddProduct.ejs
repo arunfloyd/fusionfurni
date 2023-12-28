@@ -129,7 +129,7 @@
                                         <div class="mb-4">
                                             <label class="form-label">Quantity </label>
                                             <div class="row gx-2">
-                                            <input placeholder="" type="text" name="quanity" class="form-control" pattern="\d+(\.\d{1,2})?" title="Please enter a non-negative number" required />
+                                            <input placeholder="" type="text" name="quantity" class="form-control" pattern="\d+(\.\d{1,2})?" title="Please enter a non-negative number" required />
 
                 
                                             </div>
@@ -190,6 +190,12 @@
                                         </div>
                                        
                                     </div>
+                                    <div class="mb-4">
+                                        <% if(message && message.length > 0) { %>
+                                            <p style="color: green;"><%= message %></p>
+                                        <% } %>
+                                    </div>
+                                   
                                 <button type="submit">Submit</button>
 
                                     </div>

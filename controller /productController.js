@@ -6,7 +6,7 @@ const asyncHandler =require("express-async-handler")
 const addProduct = asyncHandler(async(req,res)=>{
     try{
         const category = await Category.find({list:true});
-        res.render('adminDash/indexAddProduct',{category:category})
+        res.render('adminDash/indexAddProduct',{category:category, message: req.flash('message') })
     }catch(error){
         throw new Error("Add Product Can not Access")
     }
@@ -61,7 +61,7 @@ const addProduct = asyncHandler(async(req,res)=>{
 
 const createProduct = asyncHandler(async (req, res) => {
     try {
-        const { title, description, price, category, productDetails, specification ,warranty} = req.body;
+        const { title, description, price, category, productDetails, specification ,quantity,warranty} = req.body;
 
         // Assuming 'mainImage' is the name attribute for the main image input
         // const image = req.file ? req.file.originalname : '';
@@ -78,6 +78,7 @@ const createProduct = asyncHandler(async (req, res) => {
             productDetails,
             specification,
             warranty,
+            quantity
             // Add other fields as needed
         });
 
@@ -85,8 +86,9 @@ const createProduct = asyncHandler(async (req, res) => {
 
         res.redirect('/admin/product/list');
     } catch (error) {
+        req.flash('message', 'Error creating product');
         console.error(error);
-        res.status(500).send('Error creating product');
+       
     }
 });
 // const updateImages =async function (req, res) {
@@ -152,6 +154,7 @@ const updateProduct = asyncHandler(async (req, res) => {
         productDetails,
         specification,
         warranty,
+        quantity
         // Add other fields as needed
       } = req.body;
   
@@ -165,6 +168,7 @@ const updateProduct = asyncHandler(async (req, res) => {
           productDetails,
           specification,
           warranty,
+          quantity
           // Add other fields as needed
         },
       };

@@ -516,6 +516,13 @@ const resendMail = asyncHandler(async(req,res)=>{
 
 })
 
+const errorPage = asyncHandler(async(req,res)=>{
+    try{
+        res.render('errorPage')
+    }
+    catch{
+        res.sendStatus(404)
+    }
+})
 
-
- module.exports = {createUser,loginUserCtrl,getallUser,getaUser,deleteaUser,updateaUser,blockUser,unBlockUser,handleRefreshToken,logout,loadlogin,shop,contact,blog,services,checkout,cart,about,home,product,loadVerify,sendMail,resendMail,verifyMail}
+ module.exports = {errorPage,createUser,loginUserCtrl,getallUser,getaUser,deleteaUser,updateaUser,blockUser,unBlockUser,handleRefreshToken,logout,loadlogin,shop,contact,blog,services,checkout,cart,about,home,product,loadVerify,sendMail,resendMail,verifyMail}

@@ -6,13 +6,16 @@ var productSchema = new mongoose.Schema({
         type:String,
         required:true,
         trim:true,
+        
     },
     description:{
         type:String,
         required:true,
+        sparse: true
     },
     price:{
         type:Number,
+        sparse: true
         // required:true,
     },
     image:{
@@ -20,6 +23,7 @@ var productSchema = new mongoose.Schema({
     },
     category:{
         type:String,
+        sparse: true
         // required:true,
     },
     productDetails:{
@@ -32,6 +36,7 @@ var productSchema = new mongoose.Schema({
     },
     list:{
         type:Boolean,
+        default:true
     },
     warranty:{
         type:String,
@@ -41,10 +46,14 @@ var productSchema = new mongoose.Schema({
         type:String,
         // required:true,
     },
-    quanity:Number,
+    
     sold:{
         type:Number,
         default:0,
+    },
+     
+    quantity:{
+        type:Number,
     },
     images:{
         type: [String]
@@ -56,7 +65,8 @@ var productSchema = new mongoose.Schema({
         postedby:{type:mongoose.Schema.Types.ObjectId,ref:"User"}
     }]
 },{
-    timestamps:true
+    timestamps:true,
+    autoIndex: false, 
 });
 
 //Export the model

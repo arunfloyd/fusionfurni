@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modal with Form</title>
+    <style>
+        /* Add your styles here */
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: #f4f4f4;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 0;
+        }
+
+        .open-modal-btn {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container sign-up-container">
+    <form action="" method="post">
+        <h1>Create Account</h1>
+        <div class="social-container">
+            <!-- ... Social container content ... -->
+        </div>
+        <input type="text" placeholder="Name" name="name"/>
+        <input type="email" placeholder="Email" name="email"/>
+        <input type="mobile" placeholder="Mobile Number" name="mobile"/>
+        <input type="password" placeholder="Password" name="password"/>
+        <a href="/user/send">Please Verify Your Email to Explore</a>
+        <button type="submit">Sign Up</button>
+    </form>
+
+    <!-- Button to open the modal -->
+    <div class="open-modal-btn" onclick="openModal()">Open Modal</div>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+        <form action="" method="post">
+            <!-- Form content for the additional form -->
+            <h1>Additional Form</h1>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <!-- Overlay -->
+    <div id="overlay" class="overlay" onclick="closeModal()"></div>
+</div>
+
+<script>
+    function openModal() {
+        document.getElementById('myModal').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('myModal').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>

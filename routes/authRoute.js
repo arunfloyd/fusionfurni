@@ -1,5 +1,5 @@
 const express =require('express')
-const {createUser,loginUserCtrl, getallUser,getaUser,deleteaUser,isAdmin,updateaUser,blockUser,unBlockUser, handleRefreshToken,logout, loadlogin,shop,contact,blog,services,checkout,cart,about,home,product,sendMail,resendMail,verifyMail} = require('../controller /userController')
+const {createUser,loginUserCtrl, getallUser,getaUser,deleteaUser,isAdmin,updateaUser,blockUser,unBlockUser, handleRefreshToken,logout, loadlogin,shop,contact,blog,services,checkout,cart,about,home,product,sendMail,resendMail,verifyMail,errorPage} = require('../controller /userController')
 const {authMiddleware} = require("../middlewares/authMiddleware");
 const config = require('../config/config')
 const router =express.Router();
@@ -37,6 +37,7 @@ router.get('/logout',logout);
 router.post('/send',sendMail)
 router.post('/verification',verifyMail)
 router.post('/resendMail',resendMail)
+router.get('/error',errorPage)
 
 
 

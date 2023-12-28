@@ -2,12 +2,13 @@ const express = require("express");
 const { createProduct,getaProduct,getallProduct,updateProduct,deleteProduct,addProduct,loadUpdate, loadUpdateProduct, updateImages } = require("../controller /productController");
 const { isAdmin,authMiddleware } = require("../middlewares/authMiddleware");
 const router = express.Router();
-
+const sharp = require('sharp');
 const asyncHandler = require('express-async-handler')
 const config = require('../config/config')
 const multer = require('multer');
 const storage = config.configureMulter();
 const upload = multer({ storage: storage });
+
 // router.get("/addproduct",authMiddleware,isAdmin,createProduct);
 // router.post("/addproduct",authMiddleware,isAdmin,createProduct);
 router.get("/add",authMiddleware,addProduct);
