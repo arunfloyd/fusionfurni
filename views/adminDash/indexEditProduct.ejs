@@ -1,0 +1,124 @@
+<%- include('header.ejs') %>
+
+    <body>
+        <div class="screen-overlay"></div>
+        <%- include('navbar-aside') %>
+        <main class="main-wrap">
+            
+            <section class="content-main">
+                <div class="row">
+                    <div class="col-9">
+                        <div class="content-header">
+                            <h2 class="content-title">Add New Product</h2>
+                            <!-- <div>
+                                <button class="btn btn-light rounded font-sm mr-5 text-body hover-up">Save to draft</button>
+                                <button class="btn btn-md rounded font-sm hover-up">Publich</button>
+                            </div> -->
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h4>Basic</h4>
+                            </div>
+                            <div class="card-body">
+                                <form action="" method="post">
+                                    <div class="mb-4">
+                                        <label for="product_name" class="form-label">Product title</label>
+                                        <input type="text" placeholder="Type here" name="title" class="form-control" id="product_name" required/>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="product_name" class="form-label">Slug</label>
+                                        <input type="text" placeholder="Type here" name="slug" class="form-control" id="product_slug" />
+                                    </div>
+                                  
+                                    <div class="mb-4">
+                                        <label class="form-label">Full description</label>
+                                        <input placeholder="Type here" name="description" class="form-control" rows="4" required>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="mb-4">
+                                                <label class="form-label">Regular price</label>
+                                                <div class="row gx-2">
+                                                    <input placeholder="₹" type="text" name="price" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- <div class="col-lg-4">
+                                            <div class="mb-4">
+                                                <label class="form-label">Promotional price</label>
+                                                <input placeholder="₹" type="text" name=class="form-control" />
+                                            </div>
+                                        </div> -->
+                                        <!-- <div class="col-lg-4">
+                                            <label class="form-label">Currency</label>
+                                            <select class="form-select">
+                                                <option>INR</option>
+                                                <option>USD</option>
+                                                <option>EUR</option>
+                                                
+                                            </select>
+                                        </div> -->
+                                    </div>
+                                    <!-- <div class="mb-4">
+                                        <label class="form-label">Shipping Fee</label>
+                                        <input type="text" placeholder="₹" class="form-control" id="product_name" />
+                                    </div> -->
+                                    <div class="col-elg-4">
+                                        <div class="card mb-4">
+                                            <div class="card-header">
+                                                <h4>Media</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="input-upload">
+                                                    <img src="assets/imgs/theme/upload.svg" alt="" />
+                                                    <input class="form-control" type="file" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                        <!-- card end// -->
+                                        <!-- <div class="card mb-4">
+                                            <div class="card-header">
+                                                <h4>Organization</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row gx-2">
+                                                    <div class="col-sm-6 mb-3">
+                                                        <label class="form-label">Category</label>
+                                                        <select class="form-select">
+                                                            <option>Chair</option>
+                                                            <option>Sofa</option>
+                                                            <option>Table</option>
+                                                            <option>Frame</option>
+                                                            <option>Bed</option>
+                                                           
+                                                        </select>
+                                                    </div>
+                                                    <div class="mb-4">
+                                                        <label for="product_name" class="form-label">Tags</label>
+                                                        <input type="text" placeholder="Eg.Chair under ₹1000 " class="form-control" />
+                                                    </div>
+                                                </div>
+                                                row.// -->
+                                            <!-- </div>
+                                        </div> -->
+                                        <!-- card end// -->
+                                    
+                                        <button type="submit">Submit</button>
+
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- card end// -->
+                       
+                        <!-- card end// -->
+                    </div>
+                    
+                </div>
+            </section>
+            <!-- content-main end// -->
+            <%- include('footer.ejs') %>

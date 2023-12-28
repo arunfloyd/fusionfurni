@@ -1,0 +1,134 @@
+    <%- include('header.ejs') %>
+  
+
+    <body>
+        <div class="screen-overlay"></div>
+        <%- include('navbar-aside.ejs') %>
+        <main class="main-wrap">
+           
+            <section class="content-main">
+                <div class="content-header">
+                    <div>
+                        <h2 class="content-title card-title">Users List</h2>
+                        <p>The list of registered Users</p>
+                    </div>
+                    <% if(message && message.length > 0) { %>
+                        <p style="color: darkgreen;"><%= message %></p>
+                    <% } %>
+                    <div>
+                        <a href="#" class="btn btn-light rounded font-md">Export</a>
+                        <a href="#" class="btn btn-light rounded font-md">Import</a>
+                        <a href="#" class="btn btn-primary btn-sm rounded">Create new</a>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <!-- <header class="card-header">
+                        <div class="row align-items-center">
+                            <div class="col col-check flex-grow-0">
+                                <div class="form-check ms-2">
+                                    <input class="form-check-input" type="checkbox" value="" />
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
+                                <select class="form-select">
+                                    <option selected>All category</option>
+                                    <option>Electronics</option>
+                                    <option>Clothes</option>
+                                    <option>Automobile</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 col-6">
+                                <input type="date" value="02.05.2021" class="form-control" />
+                            </div>
+                            <div class="col-md-2 col-6">
+                                <select class="form-select">
+                                    <option selected>Status</option>
+                                    <option>Active</option>
+                                    <option>Disabled</option>
+                                    <option>Show all</option>
+                                </select>
+                            </div>
+                        </div>
+                    </header> -->
+                    <!-- card-header end// -->
+                    <div class="card-body">
+                        <article class="itemlist">
+                            <div class="row align-items-center">
+                                <table>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Mobile Number</th>
+                                        <th>Verified</th>
+                                        
+                                        <th>Access Status</th>
+                                        <th>Actions</th>
+                                        
+                                    </tr>
+                        
+                                    <% if(users.length > 0) { 
+                                        for(let i = 0; i < users.length; i++) { %>
+                                            <tr>
+                                                <td><%= users[i].name %></td>
+                                                <td><%= users[i].email %></td>
+                                                <td><%= users[i].mobile %></td>
+                                                <td>
+                                                    <% if (users[i].isBlocked) { %>
+                                                        <%= "No" %>
+                                                    <% } else { %>
+                                                        <%= "YES" %>
+                                                    <% } %>
+                                                </td>
+                                            
+                                                <td>
+                                                    <% if (users[i].accessStatus) { %>
+                                                        <%= "Active" %>
+                                                    <% } else { %>
+                                                        <%= "Not Active" %>
+                                                    <% } %>
+                                                </td>
+                                        
+                                                  
+                                                                                                 
+                                               
+                                            <td>
+                                                <a href="/admin/edit-user/<%= users[i]._id %>"><button  type="button" class="btn btn-warning">Edit Status</button></a><br>
+                                                
+                                            </td>  
+
+                                            </tr>
+                                            
+                                        <% } 
+                                    } else { %>
+                                        <td colspan="5">Users Not Found</td>
+                                    <% } %>
+                                </table>
+                            </div>
+                            <!-- row .// -->
+                        </article>
+                        <!-- itemlist  .// -->
+                       
+                        <!-- itemlist  .// -->
+                    </div>
+                    <!-- card-body end// -->
+                </div>
+                <!-- card end// -->
+                <div class="pagination-area mt-30 mb-50">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-start">
+                            <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                            <li class="page-item"><a class="page-link" href="#">02</a></li>
+                            <li class="page-item"><a class="page-link" href="#">03</a></li>
+                            <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                            <li class="page-item"><a class="page-link" href="#">16</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </section>
+          
+
+            <!-- content-main end// -->
+            <%- include('footer.ejs') %>

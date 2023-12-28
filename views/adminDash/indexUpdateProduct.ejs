@@ -1,0 +1,180 @@
+<%- include('header.ejs') %>
+
+    <body>
+        <div class="screen-overlay"></div>
+        <%- include('navbar-aside') %>
+        <main class="main-wrap">
+            
+            <section class="content-main">
+                <div class="row">
+                    <div class="col-9">
+                        <div class="content-header">
+                            <h2 class="content-title">Update the  Product</h2>
+                            
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h4>Basic</h4>
+                            </div>
+                            <div class="card-body">
+                                <form action="" method="post">
+                                    <div class="mb-4">
+                                        <label for="product_name" class="form-label">Product title</label>
+                                        <input type="text" placeholder="Type here" name="title" class="form-control" id="product_name" value="<%= updateProduct.title %> "required/>
+                                    </div>
+                                  
+                                    <div class="mb-4">
+                                        <label class="form-label">Full description</label>
+                                        <input placeholder="Type here" name="description" class="form-control" rows="4" value="<%= updateProduct.description %>" required>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-4">
+                                            <label class="form-label">Quantity </label>
+                                            <div class="row gx-2">
+                                            <input placeholder="" type="text" name="quanity" class="form-control" pattern="\d+(\.\d{1,2})?" title="Please enter a non-negative number" required />
+
+                
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row gx-2">
+                                        <div class="col-sm-6 mb-3">
+                                            <label class="form-label">Category</label>
+                                            <select class="form-select"  name="category">
+                                                <% if(category.length > 0) { 
+                                                    for(let i = 0; i < category.length; i++) { %>
+                                                <option><%= category[i].title %></option>
+                                                
+                                                <% } 
+                                            } else { %>
+                                                <td colspan="5">Category Not Found</td>
+                                            <% } %>
+                                            
+                                               
+                                            </select>
+                                        </div>
+                                       
+                                    </div>
+                                    <!-- <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="mb-4">
+                                                <label class="form-label">Regular price</label>
+                                                <div class="row gx-2">
+                                                    <input placeholder="₹" type="text" name="price" class="form-control" value="<%= updateProduct.price%>" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                      
+                                        <div class="mb-4">
+                                            <label class="form-label">Product Details</label>
+                                            <textarea placeholder="" name="productDetails" class="form-control" rows="4" value="<%= updateProduct.price%>" required></textarea>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="form-label">Specification</label>
+                                            <textarea placeholder="Type here" name="specification" class="form-control" rows="4" value="<%= updateProduct.specification%>" required></textarea>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="form-label">Warranty</label>
+                                            <textarea placeholder="Type here" name="warranty" class="form-control" rows="4" value="<%= updateProduct.warranty%>" required></textarea>
+                                        </div>
+                                        </div> 
+                                    </div> -->
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="mb-4">
+                                                <label class="form-label">Regular price</label>
+                                                <div class="row gx-2">
+                                            <input placeholder="₹" type="text" name="price" class="form-control" pattern="\d+(\.\d{1,2})?" title="Please enter a non-negative number" required />
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="form-label">Product Details</label>
+                                            <textarea placeholder="" name="productDetails" class="form-control" rows="4" required><%= updateProduct.productDetails %></textarea>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="form-label">Specification</label>
+                                            <textarea placeholder="Type here" name="specification" class="form-control" rows="4" required><%= updateProduct.specification %></textarea>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="form-label">Warranty</label>
+                                            <textarea placeholder="Type here" name="warranty" class="form-control" rows="4" required><%= updateProduct.warranty %></textarea>
+                                        </div>
+                                    </div>
+                                    
+                                   
+                                    <!-- <div class="col-elg-4">
+                                        <div class="card mb-4">
+                                            <div class="card-header">
+                                                <h4>Sub Images</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="input-upload">
+                                                    <img src="/productImage/<%= updateProduct.images%>" alt="Image"  />
+                                                    <input class="form-control" type="file" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div> -->
+                                    <div class="col-lg-4">
+                                        <div class="card mb-4">
+                                            <div class="card-header">
+                                                <h4>Images</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="input-upload">
+                                                    <% if (updateProduct.images && updateProduct.images.length > 0) { %>
+                                                        <% for (let i = 0; i < updateProduct.images.length; i++) { %>
+                                                            <div class="image-container">
+                                                                <img src="/productImage/<%= updateProduct.images[i] %>" alt="Image" />
+                                                                <input type="checkbox" name="selectedImages" value="<%= updateProduct.images[i] %>">
+                                                                <!-- <button class="delete-button" data-image="<%= updateProduct.images[i] %>">Delete</button> -->
+                                                            </div>
+                                                        <% } %>
+                                                    <% } %>
+                                                    <input class="form-control" type="file" name="images" multiple />
+                                                    <button type="button" onclick="deleteSelectedImages()">Delete Selected Images</button>
+                                                </div>
+                                            </div>
+                                            <div class="radio-group">
+                                                <label>
+                                                    <input type="radio" name="list" value="true" <%= updateProduct.list ? 'checked' : '' %> />
+                                                    Enabled
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="list" value="false" <%= !updateProduct.list ? 'checked' : '' %> />
+                                                    Disabled
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <button type="button" >
+                                                    <a href="/admin/product/delete/<%= updateProduct._id %>">Delete</a>
+                                  
+                                                </button>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    
+                                        <button type="submit">Submit</button>
+
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- card end// -->
+                       
+                        <!-- card end// -->
+                    </div>
+                    
+                </div>
+            </section>
+           
+            <!-- content-main end// -->
+            <%- include('footer.ejs') %>

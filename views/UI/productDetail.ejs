@@ -1,0 +1,136 @@
+
+    <%- include('../layout/header.ejs') %>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    
+</head>
+<body>
+    <% if (getallProduct) { %>
+    <div class="container-fluid">
+        <div class="cart">
+            <div class="row row1">
+                <div class="col-md-4">
+                    <img src="/productImage/<%= getallProduct.image %>" width="100%" id="ProductImg">
+                    <div class="small-imgs">
+                        <img src="/productImage/<%= getallProduct.image %>" width="100%" class="small-img">
+                        <img src="/productImage/<%= getallProduct.image %>" width="100%" class="small-img">
+                        <img src="/productImage/<%= getallProduct.image %>" width="100%" class="small-img">
+                        <img src="/productImage/<%= getallProduct.image %>" width="100%" class="small-img">
+                    </div>                
+                </div>
+               
+                <div class="col-md-6">        
+                    <h1 class="product-title"><%= getallProduct.title %></h1>
+                    <h5><%= getallProduct.description %> </h5>
+
+                    <div class="reviews">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <i class="far fa-star"></i>
+                        <p>240 reviews</p>
+                    </div>
+                    <div class="price">
+                        <span><%= getallProduct.price %></span>
+                        <span><%= getallProduct.price %></span>
+                    </div>
+                    <% } else { %>
+                        <p>Product not found</p>
+                    <% } %>
+                    <div class="row">
+                       
+                        <div class="col-md-4 qty">
+                            <h5>Quantity</h5>
+                            <select class="quantity custom-select">
+                                <option>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                                <option>5</option>
+                                <option>6</option>
+                                <option>7</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="buttons">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <a href="#" class="custom-btn">Add To Cart <i class="fas fa-angle-right"></i></a>
+                            </div>
+                            <div class="col-md-6"> 
+                                <a href="#" class="custom-btn">Buy Now <i class="fas fa-angle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="product" class="product-inf">
+                       
+                    
+                   
+                </div>
+            </div>
+            
+        </div>
+        
+    </div>
+    <br>
+    
+            
+            <p class="d-inline-flex gap-1">
+                <a class="btn btn-primary" data-bs-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">  <---  Get More Information Of Your Product ---></a>
+              </p>
+              <div class="row">
+                <div class="col">
+                  <div class="collapse multi-collapse" id="multiCollapseExample1">
+                    <div class="card card-body">
+                      <%= getallProduct.productDetails %>
+
+                    </div>
+                  </div>
+                </div><br>
+                <p class="d-inline-flex gap-1">
+                    <a class="btn btn-primary" data-bs-toggle="collapse" href="#multiCollapseExample" role="button" aria-expanded="false" aria-controls="multiCollapseExample1"><---Wanna Know More Specification---></a>
+                  </p>
+                  <div class="row">
+                    <div class="col">
+                      <div class="collapse multi-collapse" id="multiCollapseExample">
+                        <div class="card card-body">
+                          <%= getallProduct.specification %>
+                        </div>
+                      </div>
+                    </div><br>
+                    <p class="d-inline-flex gap-1">
+                        <a class="btn btn-primary" data-bs-toggle="collapse" href="#multiCollapseExample2" role="button" aria-expanded="false" aria-controls="multiCollapseExample2"><---Check For the Warranty Details---></a>
+                      </p>
+                      <div class="row">
+                        <div class="col">
+                          <div class="collapse multi-collapse" id="multiCollapseExample2">
+                            <div class="card card-body">
+                              <%= getallProduct.warranty %>
+                            </div>
+                          </div>
+                          <br>
+                          <p class="d-inline-flex gap-1">
+                            <a class="btn btn-primary" data-bs-toggle="collapse" href="#multiCollapseExample3" role="button" aria-expanded="false" aria-controls="multiCollapseExample2"><--More Details Other than this --></a>
+                          </p>
+                          <div class="row">
+                            <div class="col">
+                              <div class="collapse multi-collapse" id="multiCollapseExample3">
+                                <p>Contact US for More Details  fusionfurni@gmail.com</p>
+                                </div>
+                                </div>
+                              </div>
+                            </div>  
+                        </div>
+                        
+
+    <!-- BOOTSTRAP JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+    <!-- FONT AWESOME -->
+    <script src="https://kit.fontawesome.com/4077c6ef6a.js" crossorigin="anonymous"></script>
+    <script src="/js/ja.js"></script>
+
+    <%- include('../layout/footer.ejs') %>
+</body>

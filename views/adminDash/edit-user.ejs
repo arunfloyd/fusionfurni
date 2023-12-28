@@ -1,0 +1,101 @@
+<!-- 
+
+
+<link rel="stylesheet" href="/css/userStyle.css">
+<div class="container" id="container">
+	
+		<form action="" method="post">
+			<h1>Update User Details</h1>
+			<div class="social-container">
+				<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+				<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+				<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+			</div>
+
+			<input type="text" placeholder="Name" name="name" value="<%= user.name %>"
+			<input type="email" placeholder="Email" name="email" value="<%= user.email%>"/>
+			<input type="email" placeholder="Email" name="email" value="<%= user.email%>"/>
+			<input type="mobile" placeholder="Mobile Number" name="mobile" value="<%= user.mobile%>"/>
+			<table>
+				<thead>
+					<tr>
+						<th>
+							<button type="button" class="btn btn-danger">
+								<a href="/admin/delete-user/<%= user._id %>" data-method="DELETE" data-confirm="Are you sure?">Delete</href=>
+									
+							</button>
+						</th>
+					</tr>
+				</thead>
+			</table>
+			
+            <input type="hidden" name="id" value="<%= user._id %>">
+            <button type="submit">Update</button>
+		</form>
+		
+	</div>
+
+
+
+
+
+
+
+ -->
+
+ <!-- <link rel="stylesheet" href="/css/userStyle.css">
+<div class="container" id="container">
+    <form action="" method="post">
+        <h1>Update User Status</h1>
+        <div class="social-container">
+            <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+            <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+
+        <input type="text" placeholder="Name" name="name" value="<%= user.name %>" readonly/>
+        <input type="email" placeholder="Email" name="email" value="<%= user.email%>"readonly/>
+        <input type="mobile" placeholder="Mobile Number" name="mobile" value="<%= user.mobile%>"readonly/>
+        
+		<label>
+            <input type="radio" name="accessStatus" value="true" <%= user.accessStatus ? 'checked' : '' %> />
+            Enabled
+        </label>
+        <label>
+            <input type="radio" name="accessStatus" value="false" <%= !user.accessStatus ? 'checked' : '' %> />
+            Disabled
+        </label>
+        <input type="hidden" name="id" value="<%= user._id %>">
+        <button type="submit">Update</button>
+    </form>
+   
+</div> -->
+<link rel="stylesheet" href="/css/userStyle.css">
+<div class="container" id="container">
+    <form action="" method="post">
+        <h1>Update User Status</h1>
+        <div class="social-container">
+            <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+            <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+
+        <input type="text" placeholder="Name" name="name" value="<%= user.name %>" readonly/>
+        <input type="email" placeholder="Email" name="email" value="<%= user.email%>" readonly/>
+        <!-- Radio buttons side by side with labels -->
+        <div class="radio-group">
+            <label>
+                <input type="radio" name="accessStatus" value="true" <%= user.accessStatus ? 'checked' : '' %> />
+                Enable Active Status
+            </label>
+            <label>
+                <input type="radio" name="accessStatus" value="false" <%= !user.accessStatus ? 'checked' : '' %> />
+                Disable Active Status
+            </label>
+        </div>
+
+        <input type="hidden" name="id" value="<%= user._id %>">
+        <button type="submit">Update</button>
+    </form>
+</div>
+

@@ -1,0 +1,31 @@
+<link rel="stylesheet" href="/css/userStyle.css">
+<div class="container" id="container">
+    <form action="/user/verification" method="post">
+
+        <h1>Verify OTP</h1>
+
+        <h3>Please verify the OTP to Explore the Excellence in Craft</h3>
+
+        <div class="social-container">
+            <!-- Social icons go here -->
+        </div>
+
+        <input type="text" placeholder="Verify OTP" name="otp" required/>
+
+        <% if(message && message.length > 0) { %>
+            <p style="color: green;"><%= message %></p>
+        <% } %>
+
+        <button type="submit">Verify</button>
+<br>
+<button type="button" id="reloadButton">Resend OTP</button>
+    </form>        
+</div>
+
+<script>
+    // Add an event listener to the button
+    document.getElementById('reloadButton').addEventListener('click', function () {
+        // Reload the current page when the button is clicked
+        location.reload();
+    });
+</script>

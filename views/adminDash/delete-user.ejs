@@ -1,0 +1,29 @@
+<link rel="stylesheet" href="/css/userStyle.css">
+<div class="container" id="container">
+	<!-- <div class="form-container sign-up-container"> -->
+		 <!-- <form action="" method="post">
+			 /admin/delete-user/<%= user._id %> -->
+            <!-- Use a hidden input to send the DELETE method -->
+            <!-- <input type="hidden" name="_method" value="DELETE">
+		
+			<h1>Delete User Conformation</h1>
+			<div class="social-container">
+				<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+				<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+				<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+			</div>
+			<h3><%= user.name %></h3> -->
+            <!-- <input type="hidden" name="id" value="<%= user._id %>"> -->
+            <!-- <button type="submit">Delete this User</button>
+            <a href="/admin/users">
+                <button >Cancel</button>
+              </a>
+		</form>  --> 
+		<table>
+			<tr>
+				<!-- <td> <a href="/admin/delete-user/<%= user._id %>" > Delete </a></td> -->
+				<td><a href="/admin/delete-user/<%= userData._id %>" data-method="DELETE" data-confirm="Are you sure?">Delete</a></td>
+
+			</tr>
+		</table>
+	</div>

@@ -1,0 +1,257 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,800&display=swap');
+
+* {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+a:hover {
+    color: #000;
+}
+.container-fluid {
+    height: 100%;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+}
+.cart {
+    background: #fff;
+    padding: 50px;
+    border-radius: 20px;
+    margin: 27px 50px;
+    box-shadow: 0 0 15px 2px rgba(0,0,0,0.1);
+}
+.row1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+#ProductImg {
+    margin-bottom: 25px;
+    transition: 0.4s;
+}
+.black,
+.red,
+.white,
+.yellow {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    transition: 0.3s;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+.black:hover {
+    border: 1px solid #000;
+}
+.black::before {
+    content: "";
+    background: #000;
+    width: 19px;
+    height: 19px;
+    display: block;
+    border-radius: 50%;
+    position: relative;
+    top: 2px;
+    left: 2px;
+}
+.red:hover {
+    border: 1px solid #ff0000;
+}
+.red::before {
+    content: "";
+    background: #ff0000;
+    width: 19px;
+    height: 19px;
+    display: block;
+    border-radius: 50%;
+    position: relative;
+    top: 2px;
+    left: 2px;
+}
+.white:hover {
+    border: 1px solid #fff;
+}
+.white::before {
+    content: "";
+    background: #fff;
+    width: 19px;
+    height: 19px;
+    display: block;
+    border-radius: 50%;
+    position: relative;
+    top: 2px;
+    left: 2px;
+}
+.yellow:hover {
+    border: 1px solid #ffff00;
+}
+.yellow::before {
+    content: "";
+    background: #ffff00;
+    width: 19px;
+    height: 19px;
+    display: block;
+    border-radius: 50%;
+    position: relative;
+    top: 2px;
+    left: 2px;
+}
+
+.colors {
+    display: flex;
+    background: rgb(55, 55, 55);
+    padding: 5px;
+    border-radius: 10px;
+    align-items: center;
+    justify-content: center;
+}
+.price {
+    margin-bottom: 15px;
+}
+.price span:first-child {
+    font-size: 30px;
+    font-weight: 700;
+    margin-right: 10px;
+}
+.price span:last-child {
+    color: rgb(117, 117, 117);
+    text-decoration: line-through;
+    font-size: 19px;
+}
+.reviews {
+    display: flex;
+    margin: 16px 0;
+}
+.reviews p {
+    font-size: 15px;
+    color: #777;
+    margin: 0;
+    margin-left: 8px;
+    line-height: 19px;
+}
+.reviews i {
+    color: #000;
+}
+.product-title {
+    font-size: 35px;
+    font-weight: 700;
+    font-style: italic;
+    color: #000;
+}
+.product-inf {
+    margin-top: 20px;
+}
+.product-inf ul {
+    display: flex;
+    list-style: none;
+}
+.product-inf ul li:first-child {
+    margin-right: 15px;
+}
+.product-inf ul li {
+    padding: 10px 30px;
+    border-radius: 10px;
+    transition: 0.3s;
+    cursor: pointer;
+}
+.product-inf ul li:hover {
+    border-radius: 5px;
+    background: #eee;
+}
+.product-inf ul li a {
+    color: #000;
+    font-size: 18px;
+    font-weight: 500;
+}
+.product-inf ul li a:hover {
+    text-decoration: none;
+}
+.product-inf ul li.active {
+    border-bottom: 3px solid #000;
+    background: #eee;
+    transition: 0.3s;
+}
+#Details {
+    display: none;
+}
+
+.custom-btn {
+    background: #000;
+    color: #fff;
+    display: block;
+    width: 200px;
+    text-align: center;
+    font-size: 16px;
+    border-radius: 25px;
+    padding: 10px;
+    transition: 0.3s;
+    font-weight: 500;
+    margin-top: 20px;
+}
+.custom-btn:hover {
+    text-decoration: none;
+    color: #fff;
+    opacity: 0.88;
+}
+
+.buttons .row .col-md-6 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.small-imgs {
+    display: flex;
+}
+.small-img {
+    margin: 0 5px;
+    cursor: pointer;
+    width: 22%;
+}
+
+.custom-btn i {
+    margin-left: 15px;
+}
+
+.size,
+.quantity {
+    cursor: pointer;
+}
+.size:focus,
+.quantity:focus {
+    border-color: #919191 !important;
+    outline: 0;
+    box-shadow: 0 0 0 .2rem rgba(0, 0, 0, 0.25) !important;
+}
+
+@media only screen and (max-width: 768px){
+    .product-title {
+        margin-top: 65px;
+    }
+    .sze {
+        margin-top: 28px;
+    }
+    .qty {
+        margin-top: 28px;
+    }
+    .cart {
+        padding: 25px;
+    }
+    * {
+        text-align: center;
+    }
+    .reviews {
+        display: flex;
+        margin: 16px 0;
+        text-align: center !important;
+        align-items: center;
+        justify-content: center;
+    }
+}
+@media only screen and (max-width: 390px){
+    .cart {
+        padding: 15px;
+    }
+}

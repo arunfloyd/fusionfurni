@@ -1,0 +1,128 @@
+<!-- Add Bootstrap CSS -->
+
+ <link rel="stylesheet" href="/css/userStyle.css">
+<div class="container" id="container">
+	<div class="form-container sign-up-container">
+		<form action="" method="post" id="signupForm">
+
+            <h1>Create Account</h1>
+            <div class="social-container">
+                <% if(message && message.length > 0) { %>
+                    <p style="color: green;"><%= message %></p>
+                <% } %>
+            </div>
+
+            <input type="text" placeholder="Name" id="userName" name="name" required/>
+            <span id="userNameError" style="color: red;"></span>
+
+            <input type="email" placeholder="Email" id="email" name="email" required />
+            <span id="emailError" style="color: red;"></span>
+
+            <input type="mobile" placeholder="Mobile Number" id="mobileNumber" name="mobile" required/>
+            <span id="mobileNumberError" style="color: red;"></span>
+
+            <input type="password" placeholder="Password" id="password" name="password" required/>
+            <span id="passwordError" style="color: red;"></span>
+            <button type="button" onclick="registerButton()">Sign Up</button>
+
+        </form>
+		
+	</div>
+	
+	<div class="form-container sign-in-container">
+		
+			<form action="" method="post">
+				<h1>Sign in</h1>
+				
+			
+					<div class="social-container">
+						<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+						<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+						<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+					</div>
+				
+				<input type="email" placeholder="Email" name="email" required/>
+				<input type="password" placeholder="Password" name="password" required />
+				<% if(message && message.length > 0) { %>
+					<p style="color: red;"><%= message %></p>
+				<% } %>
+				
+				<a href="#">Forgot your password?</a>
+				<button type="submit">Sign In</button>
+				
+			</form>
+			
+			
+		
+	</div>
+	<div class="overlay-container">
+		<div class="overlay">
+			<div class="overlay-panel overlay-left">
+				<h1>Welcome Back!</h1>
+				<p>To keep connected with us please login with your personal info</p>
+				<button class="ghost" id="signIn">Sign In</button>
+			</div>
+			<div class="overlay-panel overlay-right">
+				<h1>Hello, Friend!</h1>
+				<p>Enter your personal details and start journey with us</p>
+				<button class="ghost" id="signUp">Sign Up</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+  
+
+<script src="/js/ind.js" ></script> 
+
+
+
+
+<script>
+    async function registerButton(event) {
+    let userName = document.getElementById('userName').value;
+    let email = document.getElementById('email').value.toLowerCase();
+    let mobileNumber = document.getElementById('mobileNumber').value;
+    let password = document.getElementById('password').value;
+
+    const nameRegex = /^[a-zA-Z][a-zA-Z0-9]+$/;
+    if (!nameRegex.test(userName)) {
+        document.getElementById('userNameError').innerHTML = 'Name should start with an alphabet ';
+        return false;
+    } else {
+        document.getElementById('userNameError').innerHTML = '';
+    }
+
+    const emailOne = /^[^\s@]+@/;
+    const emailTwo = /[a-zA-Z\d-]+\.(com|net|org)$/;
+    const combinedRegex = new RegExp(emailOne.source + emailTwo.source);
+
+    if (!combinedRegex.test(email)) {
+        document.getElementById('emailError').innerHTML = '  Please enter a valid Gmail address';
+        return false;
+    } else {
+        document.getElementById('emailError').innerHTML = '';
+    }
+
+    const mobileRegex = /^\d{10}$/;
+
+    if (!mobileRegex.test(mobileNumber)) {
+        document.getElementById('mobileNumberError').innerHTML = 'Mobile number should contain only numbers should have exactly 10 ';
+        return false;
+    } else {
+        document.getElementById('mobileNumberError').innerHTML = '';
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/;
+
+    if (!passwordRegex.test(password)) {
+        document.getElementById('passwordError').innerHTML = 'Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, one digit, and one special character (@ $ ! % * ? &)';
+        return false;
+    } else {
+        document.getElementById('passwordError').innerHTML = '';
+    }
+
+ document.getElementById('signupForm').submit();}
+
+
+</script> 

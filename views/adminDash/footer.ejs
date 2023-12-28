@@ -1,0 +1,60 @@
+<footer class="main-footer font-xs">
+    <div class="row pb-30 pt-15">
+        <div class="col-sm-6">
+            <script>
+                document.write(new Date().getFullYear());
+            </script>
+            &copy; Nest - HTML Ecommerce Template .
+        </div>
+        <div class="col-sm-6">
+            <div class="text-sm-end">All rights reserved</div>
+        </div>
+    </div>
+</footer>
+</main>
+
+<script>function deleteSelectedImages() {
+    const selectedCheckboxes = document.querySelectorAll('input[name="selectedImages"]:checked');
+    const selectedImageValues = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+  
+    if (selectedImageValues.length > 0) {
+      if (confirm('Are you sure you want to delete the selected images?')) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/admin/product/delete/images', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            // Refresh the page or update UI with a success message
+            location.reload();
+          } else {
+            // Display an informative error message to the user
+            alert('Failed to delete images. Please try again.');
+          }
+        };
+        xhr.onerror = function () {
+          // Handle network errors
+          console.error('Network error during image deletion');
+        };
+        xhr.send(JSON.stringify({ selectedImages: selectedImageValues }));
+      }
+    } else {
+      alert('Please select images to delete.');
+    }
+  }
+  </script>
+
+
+<script src="/javascripts/vendors/jquery-3.6.0.min.js"></script>
+
+
+<script src="/javascripts/vendors/bootstrap.bundle.min.js"></script>
+<script src="/javascripts/vendors/select2.min.js"></script>
+<script src="/javascripts/vendors/perfect-scrollbar.js"></script>
+<script src="/javascripts/vendors/jquery.fullscreen.min.js"></script>
+<script src="/javascripts/vendors/chart.js"></script>
+<!-- Main Script -->
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+<script src="/javascripts/main.js?v=1.1" type="text/javascript"></script>
+<script src="/javascripts/custom-chart.js" type="text/javascript"></script>
+</body>
+</html>
