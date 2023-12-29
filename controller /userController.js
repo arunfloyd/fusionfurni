@@ -607,8 +607,21 @@ const verifyMail = asyncHandler(async (req, res) => {
 
 
 
-const resendMail = asyncHandler(async(req,res)=>{
-    console.log("HElllooo");
+const resendMsail = asyncHandler(async(req,res)=>{
+       var mailOptions = {
+        to: email,
+        subject: "Otp for registration is: ",
+        html: "<h3>OTP for account verification is </h3>" + "<h1 style='font-weight:bold;'>" + otp + "</h1>" // html body
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log(error);
+        }
+        console.log('Message sent: %s', info.messageId);
+        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+        res.render('otp', { msg: "otp has been sent" });
+    });
 
 
 })
@@ -621,5 +634,9 @@ const errorPage = asyncHandler(async(req,res)=>{
         res.sendStatus(404)
     }
 })
+const resendMail = asyncHandler(async(req,res)=>{
+    console.log("HElllooo");
 
+
+})
  module.exports = {errorPage,createUser,loginUserCtrl,getallUser,getaUser,deleteaUser,updateaUser,blockUser,unBlockUser,handleRefreshToken,logout,loadlogin,shop,contact,blog,services,checkout,cart,about,home,product,loadVerify,sendMail,resendMail,verifyMail}

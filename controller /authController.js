@@ -9,9 +9,18 @@ const jwt = require("jsonwebtoken")
 // login for Admin
 const loginAdmin = asyncHandler(async (req,res)=>{
     try{
-        if(req.cookies.refreshToken){
-            res.redirect('/admin/dash')
-        }else{
+  const token = req.cookies.refreshToken;
+  if(token){
+    const decoded = jwt.verify(token,process.env.JWT_SECRET);
+    const user = await User.findById(decoded?.id);
+    if (user.role === "admin") {
+        // Redirect to the admin dashboard
+        res.redirect('/admin/dash');
+      } else {
+        // Handle the case where the user is not an admin
+        res.render('adminLogs', { message: 'Access denied. User is not an admin.' });
+      }
+     }else{
             res.render('adminLogs',{ message: req.flash('message') })
 
         }

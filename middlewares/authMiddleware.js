@@ -45,31 +45,65 @@ const asyncHandler =require("express-async-handler");
 //     }
 // });
 
-const authMiddleware = asyncHandler(async(req,res,next)=>{
-  const token = req.cookies.refreshToken;
-    // let token;  
-    // const { authorization } = req.headers
-    // if (authorization && authorization.startsWith('Bearer')){
-    // if(req?.headers?.authorization?.startsWith("Bearer")){
-    //     token=req.headers.authorization.split(" ")[1];
+// const authMiddleware = asyncHandler(async(req,res,next)=>{
+//   const token = req.cookies.refreshToken;
+//     // let token;  
+//     // const { authorization } = req.headers
+//     // if (authorization && authorization.startsWith('Bearer')){
+//     // if(req?.headers?.authorization?.startsWith("Bearer")){
+//     //     token=req.headers.authorization.split(" ")[1];
 
-        try{
-            if(token){
-                const decoded = jwt.verify(token,process.env.JWT_SECRET);
-                const user = await User.findById(decoded?.id);
-                req.user=user;
-                next();
-            }else{
-                res.redirect('/admin/login')
+//         try{
+//             if(token){
+//                 const decoded = jwt.verify(token,process.env.JWT_SECRET);
+//                 const user = await User.findById(decoded?.id);
+//                 req.user=user;
+//                 next();
+//             }else{
+//                 res.redirect('/admin/login')
                 
-              throw new Error("There is no token attached to header")
-          }
-        }catch(error){
-            throw new Error("No Authorized token expired, Please Login again");
+//               throw new Error("There is no token attached to header")
+//           }
+//         }catch(error){
+//             throw new Error("No Authorized token expired, Please Login again");
 
-        }
+//         }
     
-});
+// });
+const authMiddleware = asyncHandler(async (req, res, next) => {
+    const token = req.cookies.refreshToken;
+  
+    try {
+      if (token) {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded?.id);
+  
+        if (user) {
+          // Check if the user is an admin
+          if (user.role === 'admin') {
+            req.user = user;
+            next();
+          } else {
+            // Redirect or handle the case where the user is not an admin
+            res.redirect('/admin/login');
+            throw new Error('Access denied. User is not an admin.');
+          }
+        } else {
+          res.redirect('/admin/login');
+          throw new Error('User not found.');
+        }
+      } else {
+        res.redirect('/admin/login');
+        throw new Error('There is no token attached to the header.');
+      }
+    } catch (error) {
+      console.error(error);
+      // Redirect or handle the case where authentication fails
+      res.redirect('/admin/login');
+      throw new Error('Authentication failed.');
+    }
+  });
+  
 const userMiddleware = asyncHandler(async(req,res,next)=>{
     const token = req.cookies.refreshToken;
       // let token;  
