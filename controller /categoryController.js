@@ -8,7 +8,9 @@ const createCategory = asyncHandler(async (req,res)=>{
         res.redirect('/admin/category/list')
         res.json(newCategory)
     }catch(error){
-        throw new Error(error)
+        // throw new Error(error)
+        res.send(error)
+        res.render('error')
     }
 });
 //update Category
@@ -21,7 +23,9 @@ const loadUpdate = asyncHandler(async(req,res)=>{
 
     
     }catch{
-        throw new Error(error)
+        // throw new Error(error)
+        res.send(error)
+        res.render('error')
     }
 })
 const updateCategory = asyncHandler(async (req,res)=>{
@@ -33,7 +37,9 @@ const updateCategory = asyncHandler(async (req,res)=>{
         });
         res.redirect('/admin/category/list')
     }catch(error){
-        throw new Error(error)
+        // throw new Error(error)
+        res.send(error)
+        res.render('error')
     }
 });
 //delete Category
@@ -44,7 +50,9 @@ const deleteCategory = asyncHandler(async (req,res)=>{
         const deleteCategory = await Category.findOneAndDelete({_id:id})
         res.redirect('/admin/category/list')
     }catch(error){
-        throw new Error(error)
+        // throw new Error(error)
+        res.send(error)
+        res.render('error')
     }
 });
 
@@ -54,7 +62,9 @@ const getCategory = asyncHandler(async (req,res)=>{
         const getCategory = await Category.findById(id)
         res.json(getCategory)
     }catch(error){
-        throw new Error(error)
+        // throw new Error(error)
+        res.send(error)
+        res.render('error')
     }
 });
 const getallCategory = asyncHandler(async (req,res)=>{
@@ -63,7 +73,9 @@ const getallCategory = asyncHandler(async (req,res)=>{
         res.render('adminDash/indexAddCategory',{getallCategory:getallCategory})
         res.json(getallCategory)
     }catch(error){
-        throw new Error(error)
+        // throw new Error(error)
+        res.send(error)
+        res.render('error')
     }
 });
 

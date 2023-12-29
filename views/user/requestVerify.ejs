@@ -1,13 +1,17 @@
 <link rel="stylesheet" href="/css/userStyle.css">
 <div class="container" id="container">
     <form action="/user/send" method="post">
+
         <h1>Request for OTP</h1>
         <h3>Please verify the mail to Explore the Excellence in Craft</h3>
         <div class="social-container">
             <!-- Social icons go here -->
         </div>
-        <input type="email" value="<%= userId.email %>" name="email" readonly />
-        <button type="submit">Request for OTP</button>
+        
+    <input type="email" value="<%= userId.email %>" name="email" readonly />
+
+
+    <button type="submit">Request for OTP</button>
     </form>
 
     

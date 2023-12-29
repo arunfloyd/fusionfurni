@@ -141,6 +141,58 @@ const updateImages = async function (req, res) {
 //         throw new Error(error)
 //     }
 // })
+// const updateProduct = asyncHandler(async (req, res) => {
+//     const { id } = req.params;
+  
+//     try {
+//       const {
+//         title,
+//         description,
+//         price,
+//         images,
+//         category,
+//         productDetails,
+//         specification,
+//         warranty,
+//         quantity,
+//         list
+//         // Add other fields as needed
+//       } = req.body;
+  
+//       // Check if the 'images' field is present and not empty
+//       const updateFields = {
+//         $set: {
+//           title,
+//           description,
+//           price,
+//           category,
+//           productDetails,
+//           specification,
+//           warranty,
+//           quantity,
+//           list
+//           // Add other fields as needed
+//         },
+//       };
+  
+//       if (images && images.length > 0) {
+//         updateFields.$push = { images: { $each: images } };
+//       }
+  
+//       const updateProduct = await Product.findOneAndUpdate(
+//         { _id: id },
+//         updateFields,
+//         { new: true }
+//       );
+  
+//       res.redirect('/admin/product/list');
+//     } catch (error) {
+//       console.error('Error updating product:', error);
+//       res.status(500).render('error', { error: 'Failed to update product' });
+//     }
+//   });
+  
+  
 const updateProduct = asyncHandler(async (req, res) => {
     const { id } = req.params;
   
@@ -154,7 +206,8 @@ const updateProduct = asyncHandler(async (req, res) => {
         productDetails,
         specification,
         warranty,
-        quantity
+        quantity,
+        list
         // Add other fields as needed
       } = req.body;
   
@@ -168,13 +221,20 @@ const updateProduct = asyncHandler(async (req, res) => {
           productDetails,
           specification,
           warranty,
-          quantity
+          quantity,
+          list
           // Add other fields as needed
         },
       };
   
-      if (images && images.length > 0) {
-        updateFields.$push = { images: { $each: images } };
+      if (images) {
+        if (Array.isArray(images)) {
+          // If images is an array, use $push with $each
+          updateFields.$push = { images: { $each: images } };
+        } else {
+          // If images is a string, use $push without $each
+          updateFields.$push = { images };
+        }
       }
   
       const updateProduct = await Product.findOneAndUpdate(
@@ -191,7 +251,6 @@ const updateProduct = asyncHandler(async (req, res) => {
   });
   
   
-  
 const loadUpdateProduct = asyncHandler(async(req,res)=>{
     const {id} = req.params;
     try{
@@ -200,7 +259,9 @@ const loadUpdateProduct = asyncHandler(async(req,res)=>{
         res.render('adminDash/indexUpdateProduct',{updateProduct:updateProduct,category:category})
         
     }catch(error){
-        throw new Error(error)
+        // throw new Error(error)
+        res.send(error)
+        res.render('error')
     }
 })
 //Load Update Product
@@ -215,7 +276,9 @@ const loadUpdate = asyncHandler(async(req,res)=>{
         //     res.redirect('/admin/dash')
         // }
     } catch (error) {
-        console.log(error.message)
+        // console.log(error.message)
+        res.send(error)
+        res.render('error')
     }})
 //Delete Product
 // const deleteProduct = asyncHandler(async(req,res)=>{
@@ -248,7 +311,9 @@ const deleteProduct = asyncHandler( async(req, res) => {
        const deletedProduct =  await Product.deleteOne({ _id: id })
         res.redirect('/admin/product/list')
     } catch (error) {   
-        console.log(error.message)
+        // console.log(error.message)
+        res.send(error)
+        res.render('error')
     }
 });
 
@@ -259,7 +324,9 @@ const getaProduct = asyncHandler (async(req,res)=>{
         const findProduct = await Product.findById(id);
         res.json(findProduct);
     }catch(error){
-        throw new Error(error)
+        // throw new Error(error)
+        res.send(error)
+        res.render('error')
     }
 });
 const getallProduct = asyncHandler(async(req,res)=>{
@@ -267,7 +334,9 @@ const getallProduct = asyncHandler(async(req,res)=>{
         const getallProduct = await Product.find();
         res.render("adminDash/indexProductList",{getallProduct:getallProduct})
     }catch(error){
-        throw new Error
+        // throw new Error
+        res.send(error)
+        res.render('error')
     }
 })
 const loadaUser = asyncHandler(async(req,res)=>{
@@ -281,7 +350,9 @@ const loadaUser = asyncHandler(async(req,res)=>{
         }
 
     } catch (error) {
-        console.log(error.message)
+        // console.log(error.message)
+        res.send(error)
+        res.render('error')
     }})
 
 module.exports ={createProduct,getaProduct,getallProduct,updateProduct,deleteProduct,addProduct,loadUpdate,loadaUser,loadUpdateProduct,updateImages}

@@ -16,7 +16,8 @@ const loginAdmin = asyncHandler(async (req,res)=>{
 
         }
     }catch(error){
-        throw new Error("Can't Load Admin ")
+        res.send(error)
+        res.render('error')
     }
 })
 const loginAdminCtrl = asyncHandler(async (req, res) => {
@@ -105,7 +106,9 @@ const dashboard = asyncHandler(async(req,res)=>{
     try {
         res.render('adminDash/indexHome')
     }catch(error){
-        throw new Error("DashBoard cant be loaded")
+        res.send(error)
+        res.render('error')
+        
     }
 })
 //Product List 
@@ -114,7 +117,9 @@ const product = asyncHandler(async(req,res)=>{
     try{
         res.render('adminDash/indexProductList')
     }catch(error){
-        throw new Error("Product list can not Access")
+        res.send(error)
+        res.render('error')
+        // throw new Error("Product list can not Access")
     }
 })
 //Add Product
@@ -122,7 +127,9 @@ const addProduct = asyncHandler(async(req,res)=>{
     try{
         res.render('adminDash/indexAddProduct')
     }catch(error){
-        throw new Error("Add Product Can not Access")
+        // throw new Error("Add Product Can not Access")
+        res.send(error)
+        res.render('error')
     }
 })
 
@@ -132,7 +139,9 @@ const addCategory = asyncHandler(async(req,res)=>{
     try{
         res.render("adminDash/indexAddCategory")
     }catch(error){
-        throw new Error("Add Product Can not Access")
+        // throw new Error("Add Product Can not Access")
+        res.send(error)
+        res.render('error')
     }
 })
 
@@ -143,7 +152,9 @@ const getallUser = asyncHandler(async(req,res)=>{
         res.render("adminDash/indexUserList")
         
     }catch(error){
-        throw new Error ("User List can not Access")
+        // throw new Error ("User List can not Access")
+        res.send(error)
+        res.render('error')
     }
 })
 const userList= asyncHandler(async(req,res)=>{
@@ -153,7 +164,9 @@ const userList= asyncHandler(async(req,res)=>{
         console.log(getUsers.name)
         // res.json(getUsers);
     }catch(err){
-        throw new Error(error)
+        // throw new Error(error)
+        res.send(error)
+        res.render('error')
     }
  })
  const loadaUser = asyncHandler(async(req,res)=>{
@@ -167,7 +180,9 @@ const userList= asyncHandler(async(req,res)=>{
         }
 
     } catch (error) {
-        console.log(error.message)
+        // console.log(error.message)
+        res.send(error)
+        res.render('error')
     }})
 // const updateaUser = asyncHandler(async(req,res)=>{
 //     try{
@@ -187,7 +202,9 @@ const updateaUser = asyncHandler(async(req,res)=>{
         res.redirect('/admin/users')
        
     }catch(error){
-        throw new Error(error)
+        // throw new Error(error)
+        res.send(error)
+        res.render('error')
     }
  })
 const loadDelete = asyncHandler(async (req,res)=>{
@@ -201,7 +218,9 @@ const loadDelete = asyncHandler(async (req,res)=>{
         }
 
     } catch (error) {
-        console.log(error.message)
+        // console.log(error.message)
+        res.send(error)
+        res.render('error')
     }});
 
 
@@ -274,7 +293,9 @@ const deleteaUser = async(req, res) => {
         req.flash('message', 'Deleted the User Sucessfully');
         res.redirect('/admin/users')
     } catch (error) {
-        console.log(error.message)
+        // console.log(error.message)
+        res.send(error)
+        res.render('error')
     }
 }
 
@@ -283,7 +304,9 @@ const deleteaUser = async(req, res) => {
         await User.deleteOne({ _id: req.query.id })
         res.redirect('/admin/dashboard')
     } catch (error) {
-        console.log(error.message)
+        // console.log(error.message)
+        res.send(error)
+        res.render('error')
     }
 }
 const getaUser =asyncHandler(async(req,res)=>{
@@ -296,7 +319,9 @@ const getaUser =asyncHandler(async(req,res)=>{
             getaUser
         })
     }catch(error){
-        throw new Error(error)
+        // throw new Error(error)
+        res.send(error)
+        res.render('error')
     }
     
 })
@@ -444,6 +469,7 @@ const updateCategoryStatus = async (req, res) => {
 //      res.sendStatus(204);//forbidden
 //  });
 const logout = asyncHandler(async(req, res) => {
+    try{
     const cookie = req.cookies;
     if (!cookie?.refreshToken) throw new Error("No Refresh Token in Cookies");
     
@@ -472,7 +498,11 @@ const logout = asyncHandler(async(req, res) => {
 
     req.flash('message', ' Logout Successfully ');
     res.redirect('/admin/login');
-    res.sendStatus(204); // Forbidden
+    res.sendStatus(204);}
+    catch{
+        res.send(error)
+        res.render('error')
+    } // Forbidden
 });
 
 module.exports ={loginAdminCtrl,getallUser,deleteaUser,getaUser,loginAdmin,dashboard,userList,addCategory,addProduct,product,loadaUser,updateaUser,loadDelete,loadDeleteUser,accessOff,accessOn,updateCategoryStatus,logout}

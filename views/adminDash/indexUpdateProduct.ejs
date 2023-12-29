@@ -42,45 +42,23 @@
                                     <div class="row gx-2">
                                         <div class="col-sm-6 mb-3">
                                             <label class="form-label">Category</label>
-                                            <select class="form-select"  name="category">
-                                                <% if(category.length > 0) { 
-                                                    for(let i = 0; i < category.length; i++) { %>
-                                                <option><%= category[i].title %></option>
-                                                
-                                                <% } 
-                                            } else { %>
-                                                <td colspan="5">Category Not Found</td>
+                                            <% if (category.length > 0) { %>
+                                                <select class="form-select" name="category">
+                                                    <% for (let i = 0; i < category.length; i++) { %>
+                                                        <option value="<%= category[i].title %>" <%= category[i].title === updateProduct.category ? 'selected' : '' %>>
+                                                            <%= category[i].title %>
+                                                        </option>
+                                                    <% } %>
+                                                </select>
+                                            <% } else { %>
+                                                <p>Category Not Found</p>
                                             <% } %>
-                                            
-                                               
-                                            </select>
                                         </div>
+                                        
+                                        
                                        
                                     </div>
-                                    <!-- <div class="row">
-                                        <div class="col-lg-4">
-                                            <div class="mb-4">
-                                                <label class="form-label">Regular price</label>
-                                                <div class="row gx-2">
-                                                    <input placeholder="₹" type="text" name="price" class="form-control" value="<%= updateProduct.price%>" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                      
-                                        <div class="mb-4">
-                                            <label class="form-label">Product Details</label>
-                                            <textarea placeholder="" name="productDetails" class="form-control" rows="4" value="<%= updateProduct.price%>" required></textarea>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="form-label">Specification</label>
-                                            <textarea placeholder="Type here" name="specification" class="form-control" rows="4" value="<%= updateProduct.specification%>" required></textarea>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="form-label">Warranty</label>
-                                            <textarea placeholder="Type here" name="warranty" class="form-control" rows="4" value="<%= updateProduct.warranty%>" required></textarea>
-                                        </div>
-                                        </div> 
-                                    </div> -->
+                                   
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <div class="mb-4">
@@ -104,21 +82,7 @@
                                             <textarea placeholder="Type here" name="warranty" class="form-control" rows="4" required><%= updateProduct.warranty %></textarea>
                                         </div>
                                     </div>
-                                    
-                                   
-                                    <!-- <div class="col-elg-4">
-                                        <div class="card mb-4">
-                                            <div class="card-header">
-                                                <h4>Sub Images</h4>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="input-upload">
-                                                    <img src="/productImage/<%= updateProduct.images%>" alt="Image"  />
-                                                    <input class="form-control" type="file" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div> -->
+                               
                                     <div class="col-lg-4">
                                         <div class="card mb-4">
                                             <div class="card-header">
@@ -142,13 +106,13 @@
                                             <div class="radio-group">
                                                 <label>
                                                     <input type="radio" name="list" value="true" <%= updateProduct.list ? 'checked' : '' %> />
-                                                    Enabled
+                                                    List
                                                 </label>
                                                 <label>
                                                     <input type="radio" name="list" value="false" <%= !updateProduct.list ? 'checked' : '' %> />
-                                                    Disabled
+                                                    Unlist
                                                 </label>
-                                            </div>
+                                            </div>  
                                         </div>
                                     </div>
                                     <thead>

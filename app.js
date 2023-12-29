@@ -1,9 +1,9 @@
-var createError = require('http-errors');
+const createError = require('http-errors');
 const dotenv = require('dotenv').config()
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var morgan = require('morgan');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const morgan = require('morgan');
 const { notFound, errorHandler } = require('./middlewares/errorHandler');
 const authMiddleware = require('./middlewares/authMiddleware')
 const authRouter= require('./routes/authRoute');
@@ -11,13 +11,13 @@ const adminRouter= require('./routes/adminRoute');
 const dbConnect = require('./config/dbConnect');
 const productRouter =require("./routes/productRoute");
 const categoryRouter =require("./routes/categoryRoute");
-var cors = require('cors')
-var sessions = require('express-session')
+const cors = require('cors')
+const sessions = require('express-session')
 
 
 // const flash = require('connect-flash')
 const flash = require('express-flash');
-var app = express();
+const app = express();
 dbConnect()
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -31,13 +31,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-// app.use(session({
-//   secret:'secret',
-//   cookie:{maxAge:6000},
-//   resave:false,
-//   saveUninitialized:false
-// }));
-// app.use(flash());
+
 
 app.use(sessions({
   secret: 'your-secret-key', // Use a secure secret key

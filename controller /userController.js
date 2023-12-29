@@ -30,7 +30,9 @@ const loadlogin = asyncHandler(async (req,res)=>{
          res.render('user/loginAndSignUp',{ message: req.flash('message')})
         }
     }catch(error){
-        throw new Error("Can't Load Admin ")
+        // throw new Error("Can't Load Admin ")
+        res.send(error)
+        res.render('error')
     }
 })
 const loginUserCtrl = asyncHandler(async (req, res) => {
@@ -65,39 +67,87 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
         res.redirect('/user/login', { message: 'An error occurred' });
     }
 });
-const createUser = asyncHandler(async (req,res)=>{
-    try {
-    const email = req.body.email
-    const mobile = req.body.mobile
-    console.log(mobile)
-    const mob = await User.findOne({mobile:mobile})
-    const findUser= await User.findOne({email:email});
-    console.log(findUser);
-    let userId;
-    if(!findUser&& !mob){
+// const createUser = asyncHandler(async (req, res) => {
+//     try {
+//         const email = req.body.email;
+//         const mobile = req.body.mobile;
+//         console.log(mobile);
+//         const mob = await User.findOne({ mobile: mobile });
+//         const findUser = await User.findOne({ email: email });
+//         console.log(findUser);
+//         if (!findUser && !mob) {
+//             const findUser = await User.create(req.body);
+//             console.log(`User created with _id: ${newUser._id}`);
+//             res.render('user/requestVerify', { userId: findUser });
+//         } else {
+//             req.flash('message', 'User Already Exists');
+//             res.redirect('/user/login');
+//         }
+//     } catch (error) {
+//         console.error(error);
+//         res.render('user/errorLoginAndSignUp', { message: 'An error occurred' });
+//     }
+// });
+// const createUser = asyncHandler(async (req,res)=>{
+//     try {
+//     const email = req.body.email
+//     const mobile = req.body.mobile
+//     console.log(mobile)
+//     const mob = await User.findOne({mobile:mobile})
+//     const findUser= await User.findOne({email:email});
+//     console.log(findUser);
+//     let userId;
+//     if(!findUser&& !mob){
         
-        const newUser = await User.create(req.body);
-        console.log(`User created with _id: ${userId}`);
-        const id = newUser._id;
-        const findUser= await User.findById({_id: id});
-      res.render('user/requestVerify',{userId:findUser})
-        res.json(newUser)
-    }else{
-        req.flash('message', 'User Already Exists');
-        res.redirect('/user/login');
+//         const newUser = await User.create(req.body);
+//         console.log(`User created with _id: ${userId}`);
+//         const id = newUser._id;
+//         const findUser= await User.findById({_id: id});
+//       res.render('user/requestVerify',{userId:findUser})
+//     }else{
+//         req.flash('message', 'User Already Exists');
+//         res.redirect('/user/login');
 
+//     }
+// } catch (error) {
+//     console.error(error);
+//     res.render('user/errorLoginAndSignUp', { message: 'An error occurred' });
+// }
+//  });
+const createUser = asyncHandler(async (req, res) => {
+    try {
+        const email = req.body.email;
+        const mobile = req.body.mobile;
+        const mob = await User.findOne({ mobile: mobile });
+        const findUser = await User.findOne({ email: email });
+        console.log(findUser);
+        let userId;
+        if (!findUser && !mob) {
+            const newUser = await User.create(req.body);
+            console.log(`User created with _id: ${newUser._id}`);
+            // const id = newUser._id; // This line is not needed
+            // const findUser = await User.findById({ _id: id }); // This line is not needed
+            res.render('user/requestVerify', { userId: newUser });
+            // res.json(newUser); // Remove this line
+        } else {
+            req.flash('message', 'User Already Exists');
+            res.redirect('/user/login');
+        }
+    } catch (error) {
+        console.error(error);
+        res.render('user/errorLoginAndSignUp', { message: 'An error occurred' });
     }
-} catch (error) {
-    console.error(error);
-    res.render('user/errorLoginAndSignUp', { errorMessage: 'An error occurred' });
-}
- })
+});
+
  console.log(otp)
  const loadVerify = asyncHandler(async(req,res)=>{
     try{
         res.render('user/verifyEmail')
     }catch(error){
-        throw new Error(error)
+        // throw new Error(error)
+        res.send(error)
+        res.render('error')
+        
     }
  })
 
@@ -117,7 +167,9 @@ const createUser = asyncHandler(async (req,res)=>{
         res.json(updatedUser);
        
     }catch(error){
-        throw new Error(error)
+        // throw new Error(error)
+        res.send(error)
+        res.render('error')
     }
  })
 //shop
@@ -129,7 +181,9 @@ const home = asyncHandler(async(req,res)=>{
             res.render('index',{getallProduct:getallProduct})
    
     }catch(error){
-        throw new Error("Home Can't Access")
+        // throw new Error("Home Can't Access")
+        res.send(error)
+        res.render('error')
     }
 })
 // const home = asyncHandler(async (req, res) => {
@@ -161,49 +215,63 @@ const shop = asyncHandler(async(req,res)=>{
         const getallProduct = await Product.find({list:true});
         res.render('UI/shop',{getallProduct:getallProduct})
     }catch(error){
-        throw new Error("Shop Can't Access")
+        // throw new Error("Shop Can't Access")
+        res.send(error)
+        res.render('error')
     }
 })
 const about = asyncHandler(async(req,res)=>{
     try{
         res.render('UI/about')
     }catch(error){
-        throw new Error("Shop Can't Access")
+        // throw new Error("Shop Can't Access")
+        res.send(error)
+        res.render('error')
     }
 })
 const cart = asyncHandler(async(req,res)=>{
     try{
         res.render('UI/cart')
     }catch(error){
-        throw new Error("Shop Can't Access")
+        // throw new Error("Shop Can't Access")
+        res.send(error)
+        res.render('error')
     }
 })
 const checkout = asyncHandler(async(req,res)=>{
     try{
         res.render('UI/checkout')
     }catch(error){
-        throw new Error("Shop Can't Access")
+        // throw new Error("Shop Can't Access")
+        res.send(error)
+        res.render('error')
     }
 })
 const services = asyncHandler(async(req,res)=>{
     try{
         res.render('UI/services')
     }catch(error){
-        throw new Error("Shop Can't Access")
+        // throw new Error("Shop Can't Access")
+        res.send(error)
+        res.render('error')
     }
 })
 const blog = asyncHandler(async(req,res)=>{
     try{
         res.render('UI/blog')
     }catch(error){
-        throw new Error("Shop Can't Access")
+        // throw new Error("Shop Can't Access")
+        res.send(error)
+        res.render('error')
     }
 })
 const contact = asyncHandler(async(req,res)=>{
     try{
         res.render('UI/contact')
     }catch(error){
-        throw new Error("Shop Can't Access")
+        // throw new Error("Shop Can't Access")
+        res.send(error)
+        res.render('error')
     }
 })
 const product = asyncHandler(async(req,res)=>{
@@ -215,7 +283,9 @@ const product = asyncHandler(async(req,res)=>{
         res.render('UI/productDetail',{getallProduct:getallProduct})
         
     }catch(error){
-        throw new Error("Shop Can't Access")
+        // throw new Error("Shop Can't Access")
+        res.send(error)
+        res.render('error')
     }
 })
 
@@ -305,7 +375,9 @@ const product = asyncHandler(async(req,res)=>{
         const getUsers =await User.find();
         res.json(getUsers);
     }catch(err){
-        throw new Error(error)
+        // throw new Error(error)
+        res.send(error)
+        res.render('error')
     }
  })
 const getaUser= asyncHandler(async(req,res)=>{
@@ -313,7 +385,10 @@ const getaUser= asyncHandler(async(req,res)=>{
         const getUsers =await User.find();
         res.json(getUsers);
     }catch(err){
-        throw new Error(error)
+        // throw new Error(error)
+        res.send(error)
+        res.render('error')
+
     }
  })
  //Get a single Users
@@ -342,7 +417,9 @@ const deleteaUser =asyncHandler(async(req,res)=>{
             deleteaUser,
         })
     }catch(error){
-        throw new Error(error)
+        // throw new Error(error)
+        res.send(error)
+        res.render('error')
     }
     
 });
@@ -366,6 +443,7 @@ const handleRefreshToken = asyncHandler(async(req,res)=>{
  //logout Functionality
 
  const logout = asyncHandler(async(req,res)=>{
+    try{
     const cookie = req.cookies;
     if(!cookie?.refreshToken) throw new Error ("No Refresh Token in Cookies");
     const refreshToken = cookie.refreshToken;
@@ -388,7 +466,10 @@ const handleRefreshToken = asyncHandler(async(req,res)=>{
     req.flash('message', ' Logout Successfully ');
     res.redirect('/user/login')
      res.sendStatus(204);//forbidden
-    
+}catch(error){
+    res.send(error)
+        res.render('error')
+}
  });
 
 //Blocking and Unbloc
@@ -470,7 +551,7 @@ let transporter = nodemailer.createTransport({
 
 });
 const sendMail = asyncHandler(async(req,res)=>{
-
+try{
     email = req.body.email;
     // send mail with defined transport object
     var mailOptions = {
@@ -486,28 +567,44 @@ const sendMail = asyncHandler(async(req,res)=>{
         console.log('Message sent: %s', info.messageId);
         console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
         req.flash('message', 'Sucessfully Sent to Your Mail id');
-        res.render('user/verifyEmail', { email, message: req.flash('message') });
-    });
-})
-
-const verifyMail = asyncHandler(async(req,res)=>{
-
-    email = req.body.email;
-    
-    
-    if (req.body.otp == otp) {
-        const adminUser = await User.findOne({email:email})
-        const updateuser = await User.findByIdAndUpdate(adminUser.id, { isBlocked: false }, { new: true });
-        req.flash('message', 'Sucessfully Verified');
-        // res.render('user/loginAndSignUp')
-        res.redirect('/user/login')
-    }
-    else {
-        req.flash('message', 'Sorry OTP id is invalid');
-        res.render('user/verifyEmail', { email, message: req.flash('message') });
-        res.render('user/verifyEmail', { message: req.flash('message')});
+        res.render('user/verifyEmail', { email , message: req.flash('message') });
+    });}catch(error){
+        res.send(error)
+        res.render('error')
     }
 })
+
+const verifyMail = asyncHandler(async (req, res) => {
+    try {
+       
+        const email =req.body.email    
+
+
+        if (req.body.otp == otp) {
+            const adminUser = await User.findOne({ email: email })
+        
+            const updateuser = await User.findByIdAndUpdate(adminUser.id, { isBlocked: false }, { new: true });
+
+
+            req.flash('message', 'Successfully Verified');
+            res.redirect('/user/login');
+        } else {
+        
+          req.flash('message', 'Sorry the OTP is invalid');
+        res.render('user/verifyEmail', { email, message: req.flash('message') });
+        res.render('user/verifyEmail', { message: req.flash('message')});  
+        // res.render('user/verifyEmail')
+        console.log("3");
+
+        }
+    } catch (error) {
+        console.log("4");
+        console.log(error)
+        throw new Error(error);
+       
+    }
+});
+
 
 
 const resendMail = asyncHandler(async(req,res)=>{

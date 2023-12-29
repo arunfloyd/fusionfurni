@@ -9,6 +9,7 @@
         <div class="social-container">
             <!-- Social icons go here -->
         </div>
+        <input type="hidden" value="<%=email%>" name="email" readonly />
 
         <input type="text" placeholder="Verify OTP" name="otp" required/>
 
@@ -18,6 +19,8 @@
 
         <button type="submit">Verify</button>
 <br>
+<br>
+
 <button type="button" id="reloadButton">Resend OTP</button>
     </form>        
 </div>
