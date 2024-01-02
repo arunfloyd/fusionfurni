@@ -46,11 +46,11 @@ app.use((req, res, next) => {
 
 app.use(flash());
 app.use('/admin',adminRouter)
-app.use('/user',authRouter);
+app.use('',authRouter);
 app.use('/admin/product',productRouter);
 app.use('/admin/category',categoryRouter);
-app.use(errorHandler)
-app.use(notFound);
+// app.use(errorHandler)
+// app.use(notFound);
 
 
 

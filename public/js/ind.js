@@ -4,11 +4,11 @@
 
 	signUpButton.addEventListener('click', () => {
 		container.classList.add("right-panel-active");
-		history.pushState(null, null, '/user/register');
+		history.pushState(null, null, '/register');
 		
 	});
 
 	signInButton.addEventListener('click', () => {
 		container.classList.add("left-panel-active");
-		window.location.href = '/user/login';
+		window.location.href = '/login';
 	});

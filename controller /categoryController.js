@@ -2,17 +2,44 @@ const Category =require('../models/categoryModel');
 const asyncHandler = require('express-async-handler');
 const validateMongoDbId= require("../utils/validateMongodbid");
 //create Category
-const createCategory = asyncHandler(async (req,res)=>{
-    try{
-        const newCategory = await Category.create(req.body);
-        res.redirect('/admin/category/list')
-        res.json(newCategory)
-    }catch(error){
-        // throw new Error(error)
-        res.send(error)
-        res.render('error')
+// const createCategory = asyncHandler(async (req,res)=>{
+//     try{
+//         const title = req.body.title;
+//         const category = await Category.findOne({ title: title });
+//         if(!category){
+//             const newCategory = await Category.create(req.body);
+//             res.redirect('/admin/category/list')
+//         }else{
+//             req.flash('message', 'Categoty Title Already Exists');
+//             res.redirect('/admin/category/list')
+//         }
+//     }catch(error){
+//         // throw new Error(error)
+//         res.send(error)
+//         res.render('error')
+//     }
+// });
+
+const createCategory = asyncHandler(async (req, res) => {
+    try {
+        const title = req.body.title;
+        const category = await Category.findOne({ title: title });
+        if (!category) {
+            const newCategory = await Category.create(req.body);
+            req.flash('message', 'Category Created Successfully');
+        } else {
+            req.flash('message', 'Category Title Already Exists');
+        }
+        res.redirect('/admin/category/list');
+    } catch (error) {
+        // handle error appropriately
+        // console.error(error);
+        // res.render('error');
+        res.redirect('/admin/category/list');
+
     }
 });
+
 //update Category
 
 const loadUpdate = asyncHandler(async(req,res)=>{

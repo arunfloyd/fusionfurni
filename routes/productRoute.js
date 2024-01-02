@@ -15,7 +15,7 @@ router.get("/add",authMiddleware,addProduct);
 router.post("/add",upload.array('images'),authMiddleware, createProduct);
 
 // router.get("/:id",getaProduct);
-router.get("/list",authMiddleware,authMiddleware,getallProduct);
+router.get("/list",authMiddleware,getallProduct);
 // router.put("/:id",authMiddleware,isAdmin,updateProduct);
 router.get("/:id",authMiddleware,loadUpdateProduct);
 router.post("/delete/images", asyncHandler(updateImages));
