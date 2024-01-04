@@ -106,12 +106,6 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
   
 const userMiddleware = asyncHandler(async(req,res,next)=>{
     const token = req.cookies.refreshToken;
-      // let token;  
-      // const { authorization } = req.headers
-      // if (authorization && authorization.startsWith('Bearer')){
-      // if(req?.headers?.authorization?.startsWith("Bearer")){
-      //     token=req.headers.authorization.split(" ")[1];
-  
           try{
               if(token){
                   const decoded = jwt.verify(token,process.env.JWT_SECRET);
@@ -119,7 +113,7 @@ const userMiddleware = asyncHandler(async(req,res,next)=>{
                   req.user=user;
                   next();
               }else{
-                  res.redirect('/user/login')
+                  res.redirect('/login')
                   
                 throw new Error("There is no token attached to header")
             }
@@ -174,4 +168,4 @@ const isAdmin = asyncHandler(async(req,res,next)=>{
     }
 });
 
-module.exports={authMiddleware,isAdmin};
+module.exports={authMiddleware,isAdmin,userMiddleware};

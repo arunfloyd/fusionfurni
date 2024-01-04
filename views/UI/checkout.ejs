@@ -22,9 +22,7 @@
 <div class="container">
   <div class="row mb-5">
     <div class="col-md-12">
-      <div class="border p-4 rounded" role="alert">
-        Returning customer? <a href="#">Click here</a> to login
-      </div>
+      
     </div>
   </div>
   <div class="row">
@@ -57,10 +55,6 @@
         </div>
 
         <div class="form-group row">
-          <div class="col-md-12">
-            <label for="c_companyname" class="text-black">Company Name </label>
-            <input type="text" class="form-control" id="c_companyname" name="c_companyname">
-          </div>
         </div>
 
         <div class="form-group row">
@@ -96,22 +90,11 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="c_create_account" class="text-black" data-bs-toggle="collapse" href="#create_an_account" role="button" aria-expanded="false" aria-controls="create_an_account"><input type="checkbox" value="1" id="c_create_account"> Create an account?</label>
-          <div class="collapse" id="create_an_account">
-            <div class="py-2 mb-4">
-              <p class="mb-3">Create an account by entering the information below. If you are a returning customer please login at the top of the page.</p>
-              <div class="form-group">
-                <label for="c_account_password" class="text-black">Account Password</label>
-                <input type="email" class="form-control" id="c_account_password" name="c_account_password" placeholder="">
-              </div>
-            </div>
-          </div>
-        </div>
+        
 
 
         <div class="form-group">
-          <label for="c_ship_different_address" class="text-black" data-bs-toggle="collapse" href="#ship_different_address" role="button" aria-expanded="false" aria-controls="ship_different_address"><input type="checkbox" value="1" id="c_ship_different_address"> Ship To A Different Address?</label>
+          <label for="c_ship_different_address" class="text-black" data-bs-toggle="collapse" href="#ship_different_address" role="button" aria-expanded="false" aria-controls="ship_different_address"><input type="checkbox" value="1" id="c_ship_different_address"> Ship To Billing Address?</label>
           <div class="collapse" id="ship_different_address">
             <div class="py-2">
 
@@ -187,31 +170,12 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="c_order_notes" class="text-black">Order Notes</label>
-          <textarea name="c_order_notes" id="c_order_notes" cols="30" rows="5" class="form-control" placeholder="Write your notes here..."></textarea>
-        </div>
 
       </div>
     </div>
     <div class="col-md-6">
 
-      <div class="row mb-5">
-        <div class="col-md-12">
-          <h2 class="h3 mb-3 text-black">Coupon Code</h2>
-          <div class="p-3 p-lg-5 border bg-white">
-
-            <label for="c_code" class="text-black mb-3">Enter your coupon code if you have one</label>
-            <div class="input-group w-75 couponcode-wrap">
-              <input type="text" class="form-control me-2" id="c_code" placeholder="Coupon Code" aria-label="Coupon Code" aria-describedby="button-addon2">
-              <div class="input-group-append">
-                <button class="btn btn-black btn-sm" type="button" id="button-addon2">Apply</button>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
+     
 
       <div class="row mb-5">
         <div class="col-md-12">
@@ -242,38 +206,43 @@
               </tbody>
             </table>
 
-            <div class="border p-3 mb-3">
-              <h3 class="h6 mb-0"><a class="d-block" data-bs-toggle="collapse" href="#collapsebank" role="button" aria-expanded="false" aria-controls="collapsebank">Direct Bank Transfer</a></h3>
 
-              <div class="collapse" id="collapsebank">
-                <div class="py-2">
-                  <p class="mb-0">Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order won’t be shipped until the funds have cleared in our account.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="border p-3 mb-3">
-              <h3 class="h6 mb-0"><a class="d-block" data-bs-toggle="collapse" href="#collapsecheque" role="button" aria-expanded="false" aria-controls="collapsecheque">Cheque Payment</a></h3>
-
-              <div class="collapse" id="collapsecheque">
-                <div class="py-2">
-                  <p class="mb-0">Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order won’t be shipped until the funds have cleared in our account.</p>
-                </div>
-              </div>
-            </div>
+            <form action="/create-order" method="POST" id="checkoutForm">
+              <!-- ... other form fields ... -->
+          
+              <!-- Hidden input for payment method -->
+              <input type="hidden" name="paymentMethod" id="paymentMethod" value="">
+          
+              <!-- ... submit button ... -->
+          </form>
+          
 
             <div class="border p-3 mb-5">
-              <h3 class="h6 mb-0"><a class="d-block" data-bs-toggle="collapse" href="#collapsepaypal" role="button" aria-expanded="false" aria-controls="collapsepaypal">Paypal</a></h3>
-
+              <h3 class="h6 mb-0"><a class="d-block" data-bs-toggle="collapse" href="#collapsepaypal" role="button" aria-expanded="false" aria-controls="collapsepaypal">Cash On Delivery</a></h3>
+          
               <div class="collapse" id="collapsepaypal">
-                <div class="py-2">
-                  <p class="mb-0">Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order won’t be shipped until the funds have cleared in our account.</p>
-                </div>
+                        <br>
+                        <div class="py-2">
+                      <p class="mb-0">
+                        Safe and Flexible Payment Option for the Customer
+                        
+                        Cash on Delivery (COD) allows the customer to make the payment after receiving the product in hand- which is the most substantial advantage of this mode of payment.</p>
+                      
+                      <!-- Radio button for Cash On Delivery -->
+                      <div class="form-check">
+                          <input class="form-check-input" type="radio" name="COD" id="codRadio" value="cod">
+                          <label class="form-check-label" for="codRadio">
+                              Cash On Delivery
+                          </label>
+                      </div>
+                  </div>
               </div>
-            </div>
+          </div>
+          
 
             <div class="form-group">
-              <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location='thankyou.html'">Place Order</button>
+              <a href="/create-order"><button class="btn btn-black btn-lg py-3 btn-block" >Place Order</button>
+              </a>
             </div>
 
           </div>

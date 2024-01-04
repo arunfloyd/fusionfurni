@@ -311,6 +311,20 @@ a {
     line-height: 22px;
     color: #6a6a6a; }
 
+    .img-xs, .img-sm, .img-md, .img-lg {
+      -o-object-fit: cover;
+         object-fit: cover;
+      -ms-flex-negative: 0;
+          flex-shrink: 0;
+      -webkit-box-flex: 0;
+          -ms-flex-positive: 0;
+              flex-grow: 0;
+    }
+    
+    .img-xs {
+      width: 40px;
+      height: 40px;
+    }
 .we-help-section {
   padding: 7rem 0; }
   .we-help-section .imgs-grid {

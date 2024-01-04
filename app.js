@@ -11,6 +11,8 @@ const adminRouter= require('./routes/adminRoute');
 const dbConnect = require('./config/dbConnect');
 const productRouter =require("./routes/productRoute");
 const categoryRouter =require("./routes/categoryRoute");
+const cartRouter =require("./routes/cartRoute");
+
 const cors = require('cors')
 const sessions = require('express-session')
 
@@ -24,7 +26,7 @@ app.set('views', path.join(__dirname, 'views'));
 // Example configuration in your Express app:
 app.set('view engine', 'ejs');
 
-
+app.use(express.json());
 app.use(cors())
 app.use(morgan('dev'));
 app.use(express.json());
@@ -47,6 +49,7 @@ app.use((req, res, next) => {
 app.use(flash());
 app.use('/admin',adminRouter)
 app.use('',authRouter);
+app.use('/cart',cartRouter)
 app.use('/admin/product',productRouter);
 app.use('/admin/category',categoryRouter);
 // app.use(errorHandler)

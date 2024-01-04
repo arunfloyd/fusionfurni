@@ -36,29 +36,42 @@
                         <span><%= getallProduct.price %></span>
                         <span><%= getallProduct.price %></span>
                     </div>
-                    <% } else { %>
-                        <p>Product not found</p>
-                    <% } %>
+                    <input type="hidden" name="price" id="price" value="<%= getallProduct.price %>">
+
                     <div class="row">
                        
-                        <div class="col-md-4 qty">
-                            <h5>Quantity</h5>
-                            <select class="quantity custom-select">
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
-                                <option>6</option>
-                                <option>7</option>
-                            </select>
-                        </div>
+                        
                     </div>
                     <div class="buttons">
                         <div class="row">
-                            <div class="col-md-6">
+                            <!-- <div class="col-md-6">
                                 <a href="#" class="custom-btn">Add To Cart <i class="fas fa-angle-right"></i></a>
-                            </div>
+                            </div> -->
+                            <!-- Example EJS template code -->
+<!-- ... (previous code) ... -->
+
+<div class="col-md-6">
+  <!-- Add a form for adding the product to the cart -->
+  <form action="" method="POST">
+      <!-- Hidden input for the product ID -->
+      <input type="hidden" name="productId" id="productId" value="<%= getallProduct._id %>">
+      <div class="col-md-4 qty">
+        <h5>Quantity</h5>
+        <select class="quantity custom-select" name="quantity" id="quantity">
+          <% for (let i = 1; i <= getallProduct.quantity; i++) { %>
+            <option value="<%= i %>"><%= i %></option>
+        <% } %>
+        </select>
+    </div>
+    <input type="hidden" name="cart" id="cart" value="<%= JSON.stringify(cart) %>">
+
+      <!-- Submit button -->
+      <button type="submit" id="addToCartLink" class="custom-btn">Add To Cart <i class="fas fa-angle-right"></i></button>
+  </form>
+</div>
+
+<!-- ... (rest of your code) ... -->
+
                             <div class="col-md-6"> 
                                 <a href="#" class="custom-btn">Buy Now <i class="fas fa-angle-right"></i></a>
                             </div>
@@ -66,7 +79,9 @@
                     </div>
                     <div id="product" class="product-inf">
                        
-                    
+                      <% } else { %>
+                        <p>Product not found</p>
+                    <% } %>
                    
                 </div>
             </div>
@@ -134,3 +149,33 @@
 
     <%- include('../layout/footer.ejs') %>
 </body>
+
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+  document.getElementById('addToCartLink').addEventListener('click', function (event) {
+    event.preventDefault(); // Prevent the default navigation behavior
+    const quantity = document.getElementById('quantity').value;
+    const productId = document.getElementById('productId').value;
+    const cart = JSON.parse(document.getElementById('cart').value);
+    const price = document.getElementById('price').value;;
+    // Create a data object containing the quantity and productId
+    const data = {
+      quantity: quantity,
+      productId: productId,
+      cart: cart, 
+      price:price
+    };
+
+    // Your Axios code to send a request to the server with the data in the request body
+    axios.post('/cart', data)
+      .then(response => {
+        // Handle the response from the server if needed
+        console.log(response.data);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  });
+</script>

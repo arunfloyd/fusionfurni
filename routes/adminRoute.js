@@ -18,8 +18,8 @@ const {
   logout,
 } = require("../controller /authController");
 const { authMiddleware } = require("../middlewares/authMiddleware");
+const { userCart } = require("../controller /userController");
 const router = express.Router();
-
 router.get(
   "/login",
   (req, res, next) => {
@@ -37,6 +37,8 @@ router.get("/category", authMiddleware, addCategory);
 router.get("/addproduct", authMiddleware, addProduct);
 router.get("/product", authMiddleware, product);
 router.get("/dash", authMiddleware, dashboard);
+
+
 // router.get('/logout',logout);
 router.get(
   "/logout",

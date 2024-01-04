@@ -25,8 +25,13 @@ const {
   resendMail,
   verifyMail,
   errorPage,
+  userCart,
+  getUserCart,
+  createOrder,
+  thankyou,
+  getOrders,
 } = require("../controller /userController");
-const { authMiddleware } = require("../middlewares/authMiddleware");
+const { authMiddleware,userMiddleware } = require("../middlewares/authMiddleware");
 const config = require("../config/config");
 const router = express.Router();
 const multer = require("multer");
@@ -49,6 +54,7 @@ router.get(
   },
   loadlogin
 );
+
 router.post("/register", createUser);
 router.post("/login", loginUserCtrl);
 router.get("/shop", shop);
@@ -56,9 +62,14 @@ router.get("/home", home);
 router.get("/contact", contact);
 router.get("/product/:id", product);
 router.get("/blog", blog);
-router.get("/services", services);
+router.post("/cart",userMiddleware,userCart);
+router.get("/view-cart",userMiddleware,getUserCart);
 router.get("/checkout", checkout);
-router.get("/cart", cart);
+router.get("/orders", getOrders);
+router.get("/create-order",userMiddleware,createOrder);
+router.get("/thankyou",userMiddleware,thankyou);
+router.get("/services", services);
+router.get("/cart",cart);
 router.get("/about", about);
 router.get("/login", loadlogin);
 router.get("/all-user", getallUser);
