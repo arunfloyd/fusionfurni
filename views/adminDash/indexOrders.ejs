@@ -1,0 +1,78 @@
+<%- include('header.ejs') %>
+
+    <body>
+        <div class="screen-overlay"></div>
+        <%- include('navbar-aside.ejs') %>
+        <main class="main-wrap">
+            
+            <section class="content-main">
+                <div class="content-header">
+                    <div>
+                        <h2 class="content-title card-title">Order List</h2>
+                        <p>Here is the list of oders</p>
+                    </div>
+                  
+                </div>
+                <div class="card mb-4">
+                   
+                 
+                    <table>
+                        <tr>
+                            <th>Product Title</th>
+                            <th>Payment Status</th>
+                            <th>Order Status</th>
+                            <th>Image</th>
+                            <th>User Name</th>
+                            <th>Change Status</th>
+
+                        </tr>
+                    
+                        <% if (userorders.length > 0) { 
+                            userorders.forEach(order => { %>
+                                <% order.products.forEach(productItem => { %>
+                                    <tr>
+                                        <td><%= productItem.product.title %></td>
+                                        <td><%= order.orderStatus %></td>
+                                        <td><%= order.paymentIntent.status %></td>
+
+                                        <td><img src="/productImage/<%= productItem.product.images[0] %>" alt="Product Image" width="100px" height="100px"></td>
+                                        <td><%= order.orderby.name %></td>
+                                        <td>
+                                            <a href="/admin/update-status/<%= order._id %>">
+                                                <button type="button" class="btn btn-warning">Edit</button>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="3">Orders Not Found</td>
+                            </tr>
+                        <% } %>
+                    </table>
+                    
+                            <!-- row .// -->
+                        </article>
+                    </div>
+                    <!-- card-body end// -->
+                </div>
+                <!-- card end// -->
+                <div class="pagination-area mt-30 mb-50">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-start">
+                            <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                            <li class="page-item"><a class="page-link" href="#">02</a></li>
+                            <li class="page-item"><a class="page-link" href="#">03</a></li>
+                            <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                            <li class="page-item"><a class="page-link" href="#">16</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </section>
+            <!-- content-main end// -->
+            <%- include('footer.ejs') %>
+

@@ -41,21 +41,27 @@
 					</ul>
 
 					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-						<% console.log(locals.user); %>
-						<% if (locals.user) { %>
-							<li><a class="nav-link" href="/logout">Logout</a></li>
-						<% } else { %>
-							<li><a class="nav-link" href="/login">Login</a></li>
-						<% } %>
+						
 						<li class="dropdown nav-item">
-                            <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false"> <img class="img-xs rounded-circle" src="/images/people/avatar-2.png" alt="User" /></a>
-                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
-                                <a class="dropdown-item" href="#"><i class="material-icons md-help_outline"></i>Edit Profile</a>
-								<a class="dropdown-item" href="#"><i class="material-icons md-help_outline"></i>My Orders</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item text-danger" href="/logout"><i class="material-icons md-exit_to_app"></i>Logout</a>
-                            </div>
-                        </li>
+							<a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false">
+								<img class="img-xs rounded-circle" src="/images/people/avatar-2.png" alt="User" />
+							</a>
+							<div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+								
+						
+								<a class="dropdown-item" href="/profile"><i class="material-icons md-help_outline"></i>Edit Profile</a>
+								<a class="dropdown-item" href="/orders"><i class="material-icons md-help_outline"></i>My Orders</a>
+								<div class="dropdown-divider"></div>
+								<% console.log(locals.user); %>
+								<% if (locals.user) { %>
+									<a class="dropdown-item text-danger" href="/logout"><i class="material-icons md-help_outline"></i>Logout</a>
+								<% } else { %>
+									<a class="dropdown-item" href="/login"><i class="material-icons md-help_outline"></i>Login</a>
+								<% } %>
+								
+							</div>
+						</li>
+						
 						<li><a class="nav-link" href="/view-cart"><img src="/images/cart.svg"></a></li>
 					</ul>
 				</div>

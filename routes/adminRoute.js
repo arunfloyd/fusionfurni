@@ -16,9 +16,12 @@ const {
   accessOn,
   updateCategoryStatus,
   logout,
+  updateOrderStatus,
+  getAllOrders,
+  loadUpdateOrderStatus,
 } = require("../controller /authController");
 const { authMiddleware } = require("../middlewares/authMiddleware");
-const { userCart } = require("../controller /userController");
+const { userCart, getOrders } = require("../controller /userController");
 const router = express.Router();
 router.get(
   "/login",
@@ -28,6 +31,7 @@ router.get(
   },
   loginAdmin
 );
+
 router.post("/login", loginAdminCtrl);
 router.get("/edit-user/:id", authMiddleware, loadaUser);
 router.post("/edit-user/:id", authMiddleware, updateaUser);
@@ -37,7 +41,9 @@ router.get("/category", authMiddleware, addCategory);
 router.get("/addproduct", authMiddleware, addProduct);
 router.get("/product", authMiddleware, product);
 router.get("/dash", authMiddleware, dashboard);
-
+router.get("/orders", authMiddleware, getAllOrders);
+router.get("/update-status/:id", authMiddleware, loadUpdateOrderStatus);
+router.post("/update-status/:id", authMiddleware, updateOrderStatus);
 
 // router.get('/logout',logout);
 router.get(

@@ -4,7 +4,11 @@ const asyncHandler = require('express-async-handler');
 const validateMongoDbId = require("../utils/validateMongodbid");
 const { generateRefreshToken } = require("../config/refreshToken");
 const jwt = require("jsonwebtoken")
-
+const Product = require("../models/productModel");
+const nodemailer = require("nodemailer");
+const Cart = require("../models/cartModel");
+const Category = require("../models/categoryModel");
+const Order = require("../models/orderModel");
 
 // login for Admin
 const loginAdmin = asyncHandler(async (req,res)=>{
@@ -513,5 +517,77 @@ const logout = asyncHandler(async(req, res) => {
         res.render('error')
     } // Forbidden
 });
+// const getAllOrders = asyncHandler(async (req, res) => {
+//     // validateMongoDbId(_id);
+//     try {
+//       const userorders = await Order.find({ })
+//         .populate("products.product")
+//         .populate("orderby")
+//         .exec();
+//         console.log(userorders)
+//       res.render("adminDash/indexOrders",{userorders:userorders})
+//     } catch (error) {
+//       throw new Error(error);
+//     }
+//   });
 
-module.exports ={loginAdminCtrl,getallUser,deleteaUser,getaUser,loginAdmin,dashboard,userList,addCategory,addProduct,product,loadaUser,updateaUser,loadDelete,loadDeleteUser,accessOff,accessOn,updateCategoryStatus,logout}
+const getAllOrders = asyncHandler(async (req, res) => {
+    try {
+        const userorders = await Order.find({})
+            .populate({
+                path: "products.product",
+                select: "title images price", // Select the fields you want to populate
+            })
+            .populate({
+                path: "orderby",
+                select: "name", // Assuming user has a "name" field
+            })
+            .exec();
+
+        res.render("adminDash/indexOrders", { userorders: userorders });
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+const updateOrderStatus = asyncHandler(async (req, res) => {
+    const { payment ,orderStatus ,paymentId,amount,method,created } = req.body;
+    const { id } = req.params;
+    validateMongoDbId(id);
+    try {
+      const userorders = await Order.findByIdAndUpdate(
+        id,
+        {
+        id:paymentId,
+          orderStatus: payment,
+          paymentIntent: {
+            status: orderStatus,
+            amount:amount,
+            method:method,
+            created:created
+
+          },
+        },
+        { new: true }
+      );
+       res.redirect("/admin/orders");
+    } catch (error) {
+      throw new Error(error);
+    }
+  });
+  const loadUpdateOrderStatus = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    console.log(id)
+    // validateMongoDbId(_id);
+    try {
+        const userorders = await Order.findOne({ _id: id })
+        .populate("products.product")
+        .populate("orderby")
+        .exec();
+        console.log(userorders)
+      res.render("adminDash/editOrderStatus",{userorders:userorders})
+    } catch (error) {
+      throw new Error(error);
+    }
+  });
+
+module.exports ={loginAdminCtrl,getallUser,deleteaUser,getaUser,loginAdmin,dashboard,userList,addCategory,addProduct,product,loadaUser,updateaUser,loadDelete,loadDeleteUser,accessOff,accessOn,updateCategoryStatus,logout,updateOrderStatus,getAllOrders,loadUpdateOrderStatus}

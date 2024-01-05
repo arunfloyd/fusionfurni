@@ -10,8 +10,10 @@ const nodemailer = require("nodemailer");
 const Cart = require("../models/cartModel");
 const Category = require("../models/categoryModel");
 const Order = require("../models/orderModel");
+const Address = require("../models/addressModel");
 
-const uniqid = require('uniqid'); 
+
+const uniqid = require("uniqid");
 var otp;
 
 // const loadlogin = async(req, res) => {
@@ -247,7 +249,12 @@ const cart = asyncHandler(async (req, res) => {
 });
 const checkout = asyncHandler(async (req, res) => {
   try {
-    res.render("UI/checkout");
+    const {_id} = req.user;
+    const cart = await Cart.findOne({ orderby: _id }).populate(
+      "products.product"
+    );
+    const addresses = await Address.find({ user: _id }).exec();
+    res.render("UI/checkout",{addresses,cart});
   } catch (error) {
     // throw new Error("Shop Can't Access")
     res.send(error);
@@ -282,14 +289,14 @@ const contact = asyncHandler(async (req, res) => {
   }
 });
 const thankyou = asyncHandler(async (req, res) => {
-    try {
-      res.render("UI/thankyou");
-    } catch (error) {
-      // throw new Error("Shop Can't Access")
-      res.send(error);
-      res.render("error");
-    }
-  });
+  try {
+    res.render("UI/thankyou");
+  } catch (error) {
+    // throw new Error("Shop Can't Access")
+    res.send(error);
+    res.render("error");
+  }
+});
 const product = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
@@ -570,42 +577,41 @@ const userCart = asyncHandler(async (req, res) => {
   try {
     let products = [];
     const user = await User.findById(_id);
-   const alreadyExistCart = await Cart.findOne({ orderby: user._id });
-let updatedCart;
+    const alreadyExistCart = await Cart.findOne({ orderby: user._id });
+    let updatedCart;
 
-if (alreadyExistCart) {
-  // Update existing cart
-  alreadyExistCart.products.push({
-    product: productId,
-    quantity: quantity,
-    price: price,
-  });
-
-  alreadyExistCart.cartTotal += price * quantity;
-
-  updatedCart = await alreadyExistCart.save();
-} else {
-  // Create a new cart
-  let newCart = await new Cart({
-    products: [
-      {
+    if (alreadyExistCart) {
+      // Update existing cart
+      alreadyExistCart.products.push({
         product: productId,
         quantity: quantity,
         price: price,
-      },
-    ],
-    cartTotal: price * quantity,
-    orderby: user?._id,
-  }).save();
+      });
 
-  updatedCart = newCart;
-}
+      alreadyExistCart.cartTotal += price * quantity;
 
-res.json(updatedCart);
+      updatedCart = await alreadyExistCart.save();
+    } else {
+      // Create a new cart
+      let newCart = await new Cart({
+        products: [
+          {
+            product: productId,
+            quantity: quantity,
+            price: price,
+          },
+        ],
+        cartTotal: price * quantity,
+        orderby: user?._id,
+      }).save();
 
+      updatedCart = newCart;
+    }
+
+    res.json(updatedCart);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 // const userCart = asyncHandler(async (req, res) => {
@@ -614,20 +620,20 @@ res.json(updatedCart);
 //     console.log(req.body);
 
 //     validateMongoDbId(_id);
-  
+
 //     try {
 //       if (!Array.isArray(productId)) {
 //         res.status(400).json({ error: 'Invalid request: productDetails must be an array' });
 //         return;
 //       }
-  
+
 //       let products = [];
 //       const user = await User.findById(_id);
-  
+
 //       let alreadyExistCart = await Cart.findOne({ orderby: user._id });
-  
+
 //       let newCart;
-  
+
 //       if (!alreadyExistCart) {
 //         newCart = await new Cart({
 //           products: [],
@@ -637,7 +643,7 @@ res.json(updatedCart);
 //       } else {
 //         alreadyExistCart.remove(); // Remove existing cart if needed
 //       }
-  
+
 //       for (const product of productId) {
 //         const object = {
 //           product: product.productId,
@@ -646,23 +652,23 @@ res.json(updatedCart);
 //         };
 //         products.push(object);
 //       }
-  
+
 //       let cartTotal = 0;
 //       for (let i = 0; i < products.length; i++) {
 //         cartTotal = cartTotal + products[i].price * products[i].quantity;
 //       }
-  
+
 //       newCart.products = products;
 //       newCart.cartTotal = cartTotal;
 //       await newCart.save();
-  
+
 //       res.json(newCart);
 //     } catch (error) {
 //       console.error(error);
 //       res.status(500).json({ error: 'Internal Server Error' });
 //     }
 //   });
-  
+
 const getUserCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
 
@@ -672,10 +678,10 @@ const getUserCart = asyncHandler(async (req, res) => {
     const cart = await Cart.findOne({ orderby: _id }).populate(
       "products.product"
     );
-    console.log(cart)
-    const product = cart.products[0].product;
+    console.log(cart);
+
     //  console.log(id)
-    res.render("UI/cart", { cart: cart, product: product });
+    res.render("UI/cart", { cart: cart });
   } catch (error) {
     console.error(error); // Log the error for further investigation
     res.status(500).json({ error: "Internal Server Error" });
@@ -684,11 +690,10 @@ const getUserCart = asyncHandler(async (req, res) => {
 
 const createOrder = asyncHandler(async (req, res) => {
   const { COD, couponApplied } = req.body;
-//   console.log(COD)
+  //   console.log(COD)
   const { _id } = req.user;
-//   validateMongoDbId(_id);
+  //   validateMongoDbId(_id);
   try {
-    // if (!COD) throw new Error("Create cash order failed");
     const user = await User.findById(_id);
     console.log(user);
     let userCart = await Cart.findOne({ orderby: user._id });
@@ -699,7 +704,7 @@ const createOrder = asyncHandler(async (req, res) => {
     } else {
       finalAmout = userCart.cartTotal;
     }
-console.log(finalAmout)
+    console.log(finalAmout);
     let newOrder = await new Order({
       products: userCart.products,
       paymentIntent: {
@@ -713,27 +718,21 @@ console.log(finalAmout)
       orderby: user._id,
       orderStatus: "Cash on Delivery",
     }).save();
-    // let update = userCart.products.map((item) => {
-    //   return {
-    //     updateOne: {
-    //       filter: { _id: item.product._id },
-    //       update: { $inc: { quantity: -item.count, sold: +item.count } },
-    //     },
-    //   };
-    // });
     let update = userCart.products.map((item) => {
-        const count = typeof item.count === 'number' ? item.count : 0;
-        const updatedQuantity = isNaN(count) ? 0 : +count;
-      
-        return {
-          updateOne: {
-            filter: { _id: item.product._id },
-            update: { $inc: { quantity: -updatedQuantity, sold: updatedQuantity } },
+      const count = typeof item.count === "number" ? item.count : 0;
+      const updatedQuantity = isNaN(count) ? 0 : +count;
+
+      return {
+        updateOne: {
+          filter: { _id: item.product._id },
+          update: {
+            $inc: { quantity: -updatedQuantity, sold: updatedQuantity },
           },
-        };
-      });      
+        },
+      };
+    });
     const updated = await Product.bulkWrite(update, {});
-    res.redirect('/thankyou')
+    res.redirect("/thankyou");
     res.json({ message: "success" });
   } catch (error) {
     throw new Error(error);
@@ -743,11 +742,13 @@ const getOrders = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   validateMongoDbId(_id);
   try {
-    const userorders = await Order.findOne({ orderby: _id })
-      .populate("products.product")
-      .populate("orderby")
-      .exec();
-    res.json(userorders);
+    const userorders = await Order.find({ orderby: _id })
+    .populate("products.product")
+    .populate("orderby")
+    .exec();
+  
+    console.log(userorders);
+    res.render("UI/orders", { userorders: userorders });
   } catch (error) {
     throw new Error(error);
   }
@@ -981,6 +982,104 @@ const errorPage = asyncHandler(async (req, res) => {
 const resendMail = asyncHandler(async (req, res) => {
   console.log("HElllooo");
 });
+
+const loadProfile = asyncHandler(async (req, res) => {
+  try {
+    const { _id } = req.user;
+
+    // Query all addresses associated with the user
+    const addresses = await Address.find({ user: _id }).exec();
+console.log(addresses);
+    // Query the user's profile
+    const profile = await User.findById(_id);
+
+    res.render("UI/profile", { profile, addresses });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+const addAddress = asyncHandler(async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const { name,mobile,street, area, landmark, pincode, addressType } = req.body;
+    const newAddress = new Address({
+      user: _id,
+      name,
+      mobile,
+      street,
+      area,
+      landmark,
+      pincode,
+      addressType,
+
+    });
+    console.log('New Address:', newAddress);
+
+    await newAddress.save();
+    console.log('Address Saved');
+
+    const updatedUser = await User.findByIdAndUpdate(
+      _id,
+      { $push: { addresses: newAddress._id } },
+      { new: true }
+    );
+    console.log('User Updated:', updatedUser);
+
+    res.render('UI/profile', { profile: updatedUser });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+// const removeItem = asyncHandler(async(req,res)=>{
+//   try{
+//     const {_id}= req.user;
+//     const order = await Cart.findByIdAndDelete({ orderby: _id }).exec();
+//     res.redirect('/view-cart')
+//   }catch(error){
+//     throw new Error(error)
+// }});
+
+const removeItem = asyncHandler(async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const { productId } = req.body; // Assuming you're sending productId in the request body
+
+    // Find the cart for the user
+    const cart = await Cart.findOne({ orderby: _id });
+
+    if (!cart) {
+      return res.status(404).json({ error: 'Cart not found' });
+    }
+
+    // Find the product to be removed
+    const removedProduct = cart.products.find(productItem => {
+      return productItem.product.toString() === productId;
+    });
+
+    if (!removedProduct) {
+      return res.status(404).json({ error: 'Product not found in the cart' });
+    }
+
+    // Decrease the cartTotal by the price of the removed product
+    cart.cartTotal -= removedProduct.price;
+
+    // Remove the product from the products array
+    cart.products = cart.products.filter(productItem => {
+      return productItem.product.toString() !== productId;
+    });
+
+    // Update the cart with the modified data
+    await cart.save();
+
+    res.redirect('/view-cart');
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+
 module.exports = {
   errorPage,
   createUser,
@@ -1011,5 +1110,8 @@ module.exports = {
   getUserCart,
   createOrder,
   thankyou,
-  getOrders
+  getOrders,
+  loadProfile,
+  addAddress,
+  removeItem
 };

@@ -1,0 +1,102 @@
+<%- include('header.ejs') %>
+
+    <body>
+        <div class="screen-overlay"></div>
+        <%- include('navbar-aside.ejs') %>
+        <main class="main-wrap">
+           
+            <section class="content-main">
+                <div class="content-header">
+                    <div>
+                        <h2 class="content-title card-title">Order Status Control</h2>
+                        <p>You can change the Order status and payment status here</p>
+                    </div>
+                   
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            
+                                <form action="" method="post">
+                                    <div class="mb-4">
+                                        <label for="product_name" class="form-label">Product Title</label>
+                                    <% if (userorders && userorders.products && userorders.products.length > 0) { %>
+                                        <% userorders.products.forEach(productItem => { %>
+                                            
+                                                <input type="text" placeholder="Type here" class="form-control" id="product_name" name="title" value="<%= productItem.product.title %>" readonly />
+                                            </div>
+                                            <!-- Add other input fields for additional product details -->
+                                        <% }); %>
+                                    <% } else { %>
+                                        <div class="alert alert-warning" role="alert">
+                                            No Products Found
+                                        </div>
+                                    <% } %>
+                                    
+                                    
+                                    <div class="mb-4">
+                                        <label for="product_slug" class="form-label">Payment id</label>
+                                        <input type="text" placeholder="Type here" class="form-control" id="product_slug" name="paymentId" value="<%= userorders.paymentIntent.id%>" readonly/>
+                                        <label for="product_slug" class="form-label">Total Amount </label>
+
+                                        <input type="text" placeholder="Type here" class="form-control" id="product_slug" name="amount" value=" <%= userorders.paymentIntent.amount%>" readonly/>
+                                        <label for="product_slug" class="form-label">Payment Method </label>
+
+                                        <input type="text" placeholder="Type here" class="form-control" id="product_slug" name="method" value="<%= userorders.paymentIntent.method%>" readonly/>
+                                        <label for="product_slug" class="form-label">Transaction Time </label>
+
+                                        <input type="text" placeholder="Type here" class="form-control" id="product_slug" name="created" value=" <%= userorders.paymentIntent.created%>" readonly/>
+
+
+                                        <br>
+                                        <label class="form-label">Conform the Payment Status (if COD click choose Completed)</label>
+                                        <br>
+                                        <div class="radio-group">
+                                            <label>
+                                                <input type="radio" name="payment" value="Completed" <%= userorders.paymentIntent.status === 'Completed' ? 'checked' : '' %> />
+                                                Completed
+                                            </label>
+                                            <label>
+                                                <input type="radio" name="payment" value="Pending" <%= userorders.paymentIntent.status === 'Pending' ? 'checked' : '' %> />
+                                                Pending
+                                            </label>
+                                        </div> 
+                                        
+
+                                    </div>
+                                
+                                    <div class="mb-4">
+                                        <label class="form-label">Date Of Order</label>
+                                        <input placeholder="Type here" class="form-control" name="description" value="<%= userorders.createdAt%>" readonly/>
+                                    </div>
+                                
+                                    <div class="mb-4">
+                                        <label class="form-label">Order Status</label>
+                                        <select class="form-select" name="orderStatus">
+                                            <option value="Processing" <%= userorders.orderStatus === 'Processing' ? 'selected' : '' %>>Processing</option>
+                                            <option value="Shipped" <%= userorders.orderStatus === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                                            <option value="Delivered" <%= userorders.orderStatus === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                                            <option value="Returning" <%= userorders.orderStatus === 'Delivered' ? 'selected' : '' %>>Returning</option>
+                                            <option value="Returned " <%= userorders.orderStatus === 'Delivered' ? 'selected' : '' %>>Returned</option>
+
+
+                                        </select>
+                                    </div>
+                                
+                                    <div class="col-md-3">
+                                        <button type="submit" class="btn btn-primary">Update Status</button>
+                                    </div>
+                                </form>
+                                
+                            </div>
+                           
+                            <!-- .col// -->
+                        </div>
+                        <!-- .row // -->
+                    </div>
+                    <!-- card body .// -->
+                </div>
+                <!-- card .// -->
+            </section>
+            <!-- content-main end// -->
+            <%- include('footer.ejs') %>

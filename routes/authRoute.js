@@ -30,17 +30,18 @@ const {
   createOrder,
   thankyou,
   getOrders,
+  loadProfile,
+  addAddress,
+  removeItem,
 } = require("../controller /userController");
-const { authMiddleware,userMiddleware } = require("../middlewares/authMiddleware");
+const {
+  authMiddleware,
+  userMiddleware,
+} = require("../middlewares/authMiddleware");
 const config = require("../config/config");
 const router = express.Router();
 const multer = require("multer");
 const storage = config.configureMulter();
-
-// router.get('/login', (req, res, next) => {
-//     res.set('Cache-Control', 'no-store, no-cache');
-//     next();
-//   }, loginUserCtrl);
 router.get(
   "/login",
   (req, res, next) => {
@@ -54,7 +55,6 @@ router.get(
   },
   loadlogin
 );
-
 router.post("/register", createUser);
 router.post("/login", loginUserCtrl);
 router.get("/shop", shop);
@@ -62,14 +62,14 @@ router.get("/home", home);
 router.get("/contact", contact);
 router.get("/product/:id", product);
 router.get("/blog", blog);
-router.post("/cart",userMiddleware,userCart);
-router.get("/view-cart",userMiddleware,getUserCart);
-router.get("/checkout", checkout);
-router.get("/orders", getOrders);
-router.get("/create-order",userMiddleware,createOrder);
-router.get("/thankyou",userMiddleware,thankyou);
+router.post("/cart", userMiddleware, userCart);
+router.get("/view-cart", userMiddleware, getUserCart);
+router.get("/checkout", userMiddleware, checkout);
+router.get("/orders", userMiddleware, getOrders);
+router.get("/create-order", userMiddleware, createOrder);
+router.get("/thankyou", userMiddleware, thankyou);
 router.get("/services", services);
-router.get("/cart",cart);
+router.get("/cart", cart);
 router.get("/about", about);
 router.get("/login", loadlogin);
 router.get("/all-user", getallUser);
@@ -79,6 +79,9 @@ router.post("/send", sendMail);
 router.post("/verification", verifyMail);
 router.post("/resendMail", resendMail);
 router.get("/error", errorPage);
+router.get("/profile", userMiddleware, loadProfile);
+router.post("/profile", userMiddleware, addAddress);
+router.post("/remove-item", userMiddleware, removeItem);
 
 // var email;
 
