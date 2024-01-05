@@ -10,28 +10,18 @@ const {
   loadaUser,
   updateaUser,
   deleteaUser,
-  loadDelete,
-  loadDeleteUser,
-  accessOff,
-  accessOn,
-  updateCategoryStatus,
   logout,
   updateOrderStatus,
   getAllOrders,
   loadUpdateOrderStatus,
 } = require("../controller /authController");
-const { authMiddleware } = require("../middlewares/authMiddleware");
-const { userCart, getOrders } = require("../controller /userController");
+const {
+  authMiddleware,
+  noCacheHeaders,
+} = require("../middlewares/authMiddleware");
 const router = express.Router();
-router.get(
-  "/login",
-  (req, res, next) => {
-    res.set("Cache-Control", "no-store, no-cache");
-    next();
-  },
-  loginAdmin
-);
 
+router.get("/login", noCacheHeaders, loginAdmin);
 router.post("/login", loginAdminCtrl);
 router.get("/edit-user/:id", authMiddleware, loadaUser);
 router.post("/edit-user/:id", authMiddleware, updateaUser);
@@ -44,15 +34,5 @@ router.get("/dash", authMiddleware, dashboard);
 router.get("/orders", authMiddleware, getAllOrders);
 router.get("/update-status/:id", authMiddleware, loadUpdateOrderStatus);
 router.post("/update-status/:id", authMiddleware, updateOrderStatus);
-
-// router.get('/logout',logout);
-router.get(
-  "/logout",
-  (req, res, next) => {
-    res.set("Cache-Control", "no-store, no-cache");
-    next();
-  },
-  logout
-);
-
+router.get("/logout", noCacheHeaders, logout);
 module.exports = router;

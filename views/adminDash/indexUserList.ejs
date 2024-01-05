@@ -1,134 +1,100 @@
-    <%- include('header.ejs') %>
-  
-
-    <body>
-        <div class="screen-overlay"></div>
-        <%- include('navbar-aside.ejs') %>
-        <main class="main-wrap">
+<%- include('header.ejs') %>
+<body>
+    <div class="screen-overlay"></div>
+    <%- include('navbar-aside.ejs') %>
+    <main class="main-wrap">
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Users List</h2>
+                    <p>The list of registered Users</p>
+                </div>
+                <% if(message && message.length > 0) { %>
+                    <p style="color: darkgreen;"><%= message %></p>
+                <% } %>
+            </div>
+            
+            <!-- Heading for User List -->
            
-            <section class="content-main">
-                <div class="content-header">
-                    <div>
-                        <h2 class="content-title card-title">Users List</h2>
-                        <p>The list of registered Users</p>
-                    </div>
-                    <% if(message && message.length > 0) { %>
-                        <p style="color: darkgreen;"><%= message %></p>
-                    <% } %>
-                    <div>
-                        <a href="#" class="btn btn-light rounded font-md">Export</a>
-                        <a href="#" class="btn btn-light rounded font-md">Import</a>
-                        <a href="#" class="btn btn-primary btn-sm rounded">Create new</a>
-                    </div>
-                </div>
-                <div class="card mb-4">
-                    <!-- <header class="card-header">
-                        <div class="row align-items-center">
-                            <div class="col col-check flex-grow-0">
-                                <div class="form-check ms-2">
-                                    <input class="form-check-input" type="checkbox" value="" />
+
+            <!-- User List -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <!-- Loop through users -->
+                    <% if (users.length > 0) {
+                        for (let i = 0; i < users.length; i++) { %>
+                            <article class="itemlist">
+                                <div class="row align-items-center">
+                                    <!-- Name -->
+                                    <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                                        <h6>Name:</h6>
+                                        <a class="itemside" href="#">
+                                            <div class="info">
+                                                <h4 class="mb-0"><%= users[i].name %></h4>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <!-- Email -->
+                                    <div class="col-lg-2 col-sm-2 col-4 col-price">
+                                        <h6>Email:</h6>
+                                        <span>  <%= users[i].email %></span>
+                                    </div>
+                                    <!-- Mobile -->
+                                    <div class="col-lg-2 col-sm-2 col-4 col-price">
+                                        <h6>Mobile:</h6>
+                                        <span>  <%= users[i].mobile %></span>
+                                    </div>
+                                    <!-- Blocked Status -->
+                                    <div class="col-lg-2 col-sm-2 col-4 col-price">
+                                        <h6>Access Status:</h6>
+                                        <span>   <% if (users[i].isBlocked) { %>
+                                            <%= "No" %>
+                                        <% } else { %>
+                                            <%= "YES" %>
+                                        <% } %>  %></span>
+                                    </div>
+                                    <!-- Access Status -->
+                                    <div class="col-lg-2 col-sm-2 col-4 col-status">
+                                        <h6>Access Status:</h6>
+                                        <span class="badge rounded-pill <%= users[i].accessStatus ? 'alert-danger' : 'alert-success' %>">
+                                            <% if (users[i].accessStatus) { %>
+                                                <%= "Active" %>
+                                            <% } else { %>
+                                                <%= "Not Active" %>
+                                            <% } %>  %>
+                                        </span>
+                                    </div>
+                                    <!-- Edit Button -->
+                                    <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
+                                        <a href="/admin/edit-user/<%= users[i]._id %>" class="btn btn-sm font-sm rounded btn-brand">
+                                            <i class="material-icons md-edit"></i> Edit
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
-                                <select class="form-select">
-                                    <option selected>All category</option>
-                                    <option>Electronics</option>
-                                    <option>Clothes</option>
-                                    <option>Automobile</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2 col-6">
-                                <input type="date" value="02.05.2021" class="form-control" />
-                            </div>
-                            <div class="col-md-2 col-6">
-                                <select class="form-select">
-                                    <option selected>Status</option>
-                                    <option>Active</option>
-                                    <option>Disabled</option>
-                                    <option>Show all</option>
-                                </select>
-                            </div>
-                        </div>
-                    </header> -->
-                    <!-- card-header end// -->
-                    <div class="card-body">
-                        <article class="itemlist">
-                            <div class="row align-items-center">
-                                <table>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Mobile Number</th>
-                                        <th>Verified</th>
-                                        
-                                        <th>Access Status</th>
-                                        <th>Actions</th>
-                                        
-                                    </tr>
-                        
-                                    <% if(users.length > 0) { 
-                                        for(let i = 0; i < users.length; i++) { %>
-                                            <tr>
-                                                <td><%= users[i].name %></td>
-                                                <td><%= users[i].email %></td>
-                                                <td><%= users[i].mobile %></td>
-                                                <td>
-                                                    <% if (users[i].isBlocked) { %>
-                                                        <%= "No" %>
-                                                    <% } else { %>
-                                                        <%= "YES" %>
-                                                    <% } %>
-                                                </td>
-                                            
-                                                <td>
-                                                    <% if (users[i].accessStatus) { %>
-                                                        <%= "Active" %>
-                                                    <% } else { %>
-                                                        <%= "Not Active" %>
-                                                    <% } %>
-                                                </td>
-                                        
-                                                  
-                                                                                                 
-                                               
-                                            <td>
-                                                <a href="/admin/edit-user/<%= users[i]._id %>"><button  type="button" class="btn btn-warning">Edit Status</button></a><br>
-                                                
-                                            </td>  
-
-                                            </tr>
-                                            
-                                        <% } 
-                                    } else { %>
-                                        <td colspan="5">Users Not Found</td>
-                                    <% } %>
-                                </table>
-                            </div>
-                            <!-- row .// -->
-                        </article>
-                        <!-- itemlist  .// -->
-                       
-                        <!-- itemlist  .// -->
-                    </div>
-                    <!-- card-body end// -->
+                            </article>
+                        <% }
+                    } else { %>
+                        <td colspan="5">Products Not Found</td>
+                    <% } %>
                 </div>
-                <!-- card end// -->
-                <div class="pagination-area mt-30 mb-50">
-                    <nav aria-label="Page navigation example">
-                        <ul class="pagination justify-content-start">
-                            <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                            <li class="page-item"><a class="page-link" href="#">02</a></li>
-                            <li class="page-item"><a class="page-link" href="#">03</a></li>
-                            <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                            <li class="page-item"><a class="page-link" href="#">16</a></li>
-                            <li class="page-item">
-                                <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-            </section>
-          
+            </div>
 
-            <!-- content-main end// -->
-            <%- include('footer.ejs') %>
+            <!-- Pagination -->
+            <div class="pagination-area mt-30 mb-50">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-start">
+                        <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                        <li class="page-item"><a class="page-link" href="#">02</a></li>
+                        <li class="page-item"><a class="page-link" href="#">03</a></li>
+                        <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                        <li class="page-item"><a class="page-link" href="#">16</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </section>
+
+        <!-- content-main end// -->
+        <%- include('footer.ejs') %>

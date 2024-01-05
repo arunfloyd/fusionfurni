@@ -100,9 +100,17 @@
                                                         <% } %>
                                                     <% } %>
                                                     <input class="form-control" type="file" name="images" multiple />
-                                                    <button type="button" onclick="deleteSelectedImages()">Delete Selected Images</button>
+                                                    <br>
+
+                                                    <button type="button" class="btn btn-info" onclick="deleteSelectedImages()">Delete Selected Images</button>
                                                 </div>
                                             </div>
+                                            
+                                            
+                                        </div>
+                                    </div>
+                                    <h4>Make the Product List or Unlist</h4>
+                                    <br>
                                             <div class="radio-group">
                                                 <label>
                                                     <input type="radio" name="list" value="true" <%= updateProduct.list ? 'checked' : '' %> />
@@ -113,19 +121,19 @@
                                                     Unlist
                                                 </label>
                                             </div>  
-                                        </div>
-                                    </div>
                                     <thead>
+                                    <br>
+
                                         <tr>
                                             <th>
-                                                <button type="button" onclick="confirmDelete('<%= updateProduct._id %>')">
+                                                <button type="button" class="btn btn-danger" onclick="confirmDelete('<%= updateProduct._id %>')">
                                                     Delete
                                                 </button>
                                             </th>
                                         </tr>
                                     </thead>
                                     
-                                        <button type="submit">Submit</button>
+                                        <button type="submit" class="btn btn-success">Submit</button>
 
                                     </div>
                                 </form>

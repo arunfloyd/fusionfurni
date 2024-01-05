@@ -11,24 +11,7 @@ const Cart = require("../models/cartModel");
 const Category = require("../models/categoryModel");
 const Order = require("../models/orderModel");
 const Address = require("../models/addressModel");
-
-
 const uniqid = require("uniqid");
-var otp;
-
-// const loadlogin = async(req, res) => {
-//     try {
-//         if(!req.cookies.refreshToken){
-//             res.render('user/loginAndSignUp',{ message: req.flash('message')})
-
-//             else{
-//             res.redirect('/user/home')}
-
-//             }
-//     } catch (error) {
-//         console.log(error.message)
-//     }
-// }
 const loadlogin = asyncHandler(async (req, res) => {
   try {
     if (req.cookies.refreshToken) {
@@ -78,53 +61,7 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
     res.redirect("/user/login", { message: "An error occurred" });
   }
 });
-// const createUser = asyncHandler(async (req, res) => {
-//     try {
-//         const email = req.body.email;
-//         const mobile = req.body.mobile;
-//         console.log(mobile);
-//         const mob = await User.findOne({ mobile: mobile });
-//         const findUser = await User.findOne({ email: email });
-//         console.log(findUser);
-//         if (!findUser && !mob) {
-//             const findUser = await User.create(req.body);
-//             console.log(`User created with _id: ${newUser._id}`);
-//             res.render('user/requestVerify', { userId: findUser });
-//         } else {
-//             req.flash('message', 'User Already Exists');
-//             res.redirect('/user/login');
-//         }
-//     } catch (error) {
-//         console.error(error);
-//         res.render('user/errorLoginAndSignUp', { message: 'An error occurred' });
-//     }
-// });
-// const createUser = asyncHandler(async (req,res)=>{
-//     try {
-//     const email = req.body.email
-//     const mobile = req.body.mobile
-//     console.log(mobile)
-//     const mob = await User.findOne({mobile:mobile})
-//     const findUser= await User.findOne({email:email});
-//     console.log(findUser);
-//     let userId;
-//     if(!findUser&& !mob){
 
-//         const newUser = await User.create(req.body);
-//         console.log(`User created with _id: ${userId}`);
-//         const id = newUser._id;
-//         const findUser= await User.findById({_id: id});
-//       res.render('user/requestVerify',{userId:findUser})
-//     }else{
-//         req.flash('message', 'User Already Exists');
-//         res.redirect('/user/login');
-
-//     }
-// } catch (error) {
-//     console.error(error);
-//     res.render('user/errorLoginAndSignUp', { message: 'An error occurred' });
-// }
-//  });
 const createUser = asyncHandler(async (req, res) => {
   try {
     const email = req.body.email;
@@ -149,8 +86,8 @@ const createUser = asyncHandler(async (req, res) => {
     res.render("user/errorLoginAndSignUp", { message: "An error occurred" });
   }
 });
+var otp;
 
-console.log(otp);
 const loadVerify = asyncHandler(async (req, res) => {
   try {
     res.render("user/verifyEmail");
@@ -195,29 +132,6 @@ const home = asyncHandler(async (req, res) => {
     res.render("error");
   }
 });
-// const home = asyncHandler(async (req, res) => {
-//     try {
-//       let user = null;
-
-//       // Check if refreshToken cookie is present
-//       if (req.cookies.refreshToken) {
-//         const token = req.cookies.refreshToken;
-
-//         // Verify the refresh token and get user information
-//         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//         const userId = decoded.id;
-
-//         // Retrieve user details from the database
-//         user = await User.findById(userId);
-//       }
-
-//       const getallProduct = await Product.find();
-
-//       res.render('index', { getallProduct, user });
-//     } catch (error) {
-//       throw new Error("Shop Can't Access");
-//     }
-//   });
 
 const shop = asyncHandler(async (req, res) => {
   try {
@@ -249,12 +163,12 @@ const cart = asyncHandler(async (req, res) => {
 });
 const checkout = asyncHandler(async (req, res) => {
   try {
-    const {_id} = req.user;
+    const { _id } = req.user;
     const cart = await Cart.findOne({ orderby: _id }).populate(
       "products.product"
     );
     const addresses = await Address.find({ user: _id }).exec();
-    res.render("UI/checkout",{addresses,cart});
+    res.render("UI/checkout", { addresses, cart });
   } catch (error) {
     // throw new Error("Shop Can't Access")
     res.send(error);
@@ -314,76 +228,6 @@ const product = asyncHandler(async (req, res) => {
   }
 });
 
-// login for User
-// const loginUserCtrl = asyncHandler(async(req,res)=>{
-//             const email = req.body.email
-//             const password = req.body.password
-//             // const{email,password}=req.body;
-
-//             //check if user exists or not
-//             const findUser = await User.findOne({email});
-//             if(findUser && await findUser.isPasswordMatched(password) && findUser.isBlocked==false){
-//                 const refreshToken = await generateRefreshToken(findUser?._id);
-//                 const updateuser = await User.findByIdAndUpdate(
-//                     findUser.id,{
-//                         refreshToken:refreshToken,
-//                     },{
-//                         new:true
-//                     }
-//                 );
-//                 res.cookie('refreshToken',refreshToken,{
-//                     httpOnly:true,
-//                     maxAge:72*60*60*1000
-//                 })
-//         res.redirect('/user/home')
-
-//             }else{
-//                 res.render('user/loginAndSignUp', { errorMessage: 'Invalid credentials' })
-//             }
-//             console.log(email)
-//         });
-
-// // login for Admin
-// const loginAdmin = asyncHandler(async (req,res)=>{
-//     try{
-// res.render('adminLogin')
-//     }catch(error){
-//         throw new Error("Can't Load Admin ")
-//     }
-// })
-// const loginAdminCtrl = asyncHandler(async(req,res)=>{
-//     // const email = req.body.email
-//     // const password = req.body.password
-//     const{email,password}=req.body;
-//     //check if user exists or not
-//     const adminUser = await User.findOne({email});
-//     if(adminUser && await adminUser.isPasswordMatched(password ) && (adminUser.role =="admin")){
-//         const refreshToken = await generateRefreshToken(adminUser?._id);
-//         const updateuser = await User.findByIdAndUpdate(
-//             adminUser.id,{
-//                 refreshToken:refreshToken,
-//             },{
-//                 new:true
-//             }
-//         );
-//         res.cookie('refreshToken',refreshToken,{
-//             httpOnly:true,
-//             maxAge:72*60*60*1000
-//         })
-// res.json({
-//     _id:adminUser?._id,
-//     name:adminUser?.name,
-//     email:adminUser.email,
-//     mobile:adminUser?.mobile,
-//     tokens:generateToken(adminUser?._id),
-// })
-
-//     }else{
-//         throw new Error("Invalid Credentials")
-//     }
-//     console.log(email)
-// });
-
 //Get all users
 const getallUser = asyncHandler(async (req, res) => {
   try {
@@ -395,6 +239,8 @@ const getallUser = asyncHandler(async (req, res) => {
     res.render("error");
   }
 });
+//Get a single Users
+
 const getaUser = asyncHandler(async (req, res) => {
   try {
     const getUsers = await User.find();
@@ -405,21 +251,7 @@ const getaUser = asyncHandler(async (req, res) => {
     res.render("error");
   }
 });
-//Get a single Users
-// const getaUser =asyncHandler(async(req,res)=>{
 
-//     const { id } =req.params;
-//     // validateMongoDbId(id);
-//     try{
-//         const getaUser = await User.findById(id);
-//         res.json({
-//             getaUser
-//         })
-//     }catch(error){
-//         throw new Error(error)
-//     }
-
-// })
 //Delete a User
 const deleteaUser = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -479,7 +311,7 @@ const logout = asyncHandler(async (req, res) => {
       secure: true,
     });
     req.flash("message", " Logout Successfully ");
-    res.redirect("/user/login");
+    res.redirect("/login");
     res.sendStatus(204); //forbidden
   } catch (error) {
     res.send(error);
@@ -530,45 +362,6 @@ const unBlockUser = asyncHandler(async (req, res, next) => {
     throw new Error(error);
   }
 });
-// const userCart = asyncHandler(async (req, res) => {
-//     const cookie = req.cookies;
-//     if(!cookie?.refreshToken) throw new Error ("No Refresh Token in Cookies");
-//     const refreshToken = cookie.refreshToken;
-//     const user = await User.findOne({refreshToken});
-//     const { cart } = req.body;
-//     const { _id } = user.id;
-//     // validateMongoDbId(_id);
-//     try {
-//       let products = [];
-//       const user = await User.findById(_id);
-//       // check if user already have product in cart
-//       const alreadyExistCart = await Cart.findOne({ orderby: user._id });
-//       if (alreadyExistCart) {
-//         alreadyExistCart.remove();
-//       }
-//       for (let i = 0; i < cart.length; i++) {
-//         let object = {};
-//         object.product = cart[i]._id;
-//         object.count = cart[i].count;
-//         object.color = cart[i].color;
-//         let getPrice = await Product.findById(cart[i]._id).select("price").exec();
-//         object.price = getPrice.price;
-//         products.push(object);
-//       }
-//       let cartTotal = 0;
-//       for (let i = 0; i < products.length; i++) {
-//         cartTotal = cartTotal + products[i].price * products[i].count;
-//       }
-//       let newCart = await new Cart({
-//         products,
-//         cartTotal,
-//         orderby: user?._id,
-//       }).save();
-//       res.json(newCart);
-//     } catch (error) {
-//       throw new Error(error);
-//     }
-//   });
 const userCart = asyncHandler(async (req, res) => {
   const { productId, quantity, price } = req.body;
   const { _id } = req.user;
@@ -614,60 +407,6 @@ const userCart = asyncHandler(async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-// const userCart = asyncHandler(async (req, res) => {
-//     const { productId } = req.body;
-//     const { _id } = req.user;
-//     console.log(req.body);
-
-//     validateMongoDbId(_id);
-
-//     try {
-//       if (!Array.isArray(productId)) {
-//         res.status(400).json({ error: 'Invalid request: productDetails must be an array' });
-//         return;
-//       }
-
-//       let products = [];
-//       const user = await User.findById(_id);
-
-//       let alreadyExistCart = await Cart.findOne({ orderby: user._id });
-
-//       let newCart;
-
-//       if (!alreadyExistCart) {
-//         newCart = await new Cart({
-//           products: [],
-//           cartTotal: 0,
-//           orderby: user?._id,
-//         }).save();
-//       } else {
-//         alreadyExistCart.remove(); // Remove existing cart if needed
-//       }
-
-//       for (const product of productId) {
-//         const object = {
-//           product: product.productId,
-//           quantity: product.quantity,
-//           price: product.price
-//         };
-//         products.push(object);
-//       }
-
-//       let cartTotal = 0;
-//       for (let i = 0; i < products.length; i++) {
-//         cartTotal = cartTotal + products[i].price * products[i].quantity;
-//       }
-
-//       newCart.products = products;
-//       newCart.cartTotal = cartTotal;
-//       await newCart.save();
-
-//       res.json(newCart);
-//     } catch (error) {
-//       console.error(error);
-//       res.status(500).json({ error: 'Internal Server Error' });
-//     }
-//   });
 
 const getUserCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
@@ -743,123 +482,16 @@ const getOrders = asyncHandler(async (req, res) => {
   validateMongoDbId(_id);
   try {
     const userorders = await Order.find({ orderby: _id })
-    .populate("products.product")
-    .populate("orderby")
-    .exec();
-  
+      .populate("products.product")
+      .populate("orderby")
+      .exec();
+
     console.log(userorders);
     res.render("UI/orders", { userorders: userorders });
   } catch (error) {
     throw new Error(error);
   }
 });
-// const userCart = asyncHandler(async (req, res) => {
-//     const { cart } = req.body;
-//     const { productId, quantity } = req.body;
-//     console.log(productId);
-//     console.log(quantity);
-
-//     const { _id } = req.user;
-//     validateMongoDbId(_id);
-//     try {
-//       let products = [];
-//       const user = await User.findById(_id);
-//       console.log(user)
-//       // check if user already have product in cart
-//       const alreadyExistCart = await Cart.findOne({ orderby: user._id });
-//       console.log(1)
-
-//       if (alreadyExistCart) {
-//         alreadyExistCart.remove();
-//       }
-//       console.log(2)
-
-//       for (let i = 0; i < cart.length; i++) {
-//         let object = {};
-//         object.product = cart[i].productId;
-//         object.count = cart[i].quantity;
-//         let getPrice = await Product.findById(cart[i].productId).select("price").exec();
-//         object.price = getPrice.price;
-//         products.push(object);
-//       }
-//       console.log(3)
-
-//       let cartTotal = 0;
-//       for (let i = 0; i < products.length; i++) {
-//         cartTotal = cartTotal + products[i].price * products[i].count;
-//       }
-//       let newCart = await new Cart({
-//         products,
-//         cartTotal,
-//         orderby: user?._id,
-//       }).save();
-//       console.log(2)
-
-//       res.json(newCart);
-//     } catch (error) {
-//       throw new Error(error);
-//     }
-//   });
-// const userCart = asyncHandler(async (req, res) => {
-//     const cookie = req.cookies;
-//     if (!cookie?.refreshToken) {
-//       throw new Error("No Refresh Token in Cookies");
-//     }
-
-//     const token = cookie.refreshToken;
-
-//     try {
-//       // Find user by refreshToken
-//       const user = await User.findOne({ refreshToken });
-//   console.log(1);
-//       if (!user) {
-//         return res.status(400).json({ error: 'User not found' });
-//       }
-//       console.log(2);
-
-//       const { cart } = req.body;
-//       const { _id } = user;
-
-//       let products = [];
-//       // Check if user already has a cart
-//       const alreadyExistCart = await Cart.findOne({ orderby: user._id });
-
-//       // If a cart already exists, remove it
-//       if (alreadyExistCart) {
-//         await alreadyExistCart.remove();
-//       }
-//       console.log(3);
-
-//       for (let i = 0; i < cart.length; i++) {
-//         let object = {};
-//         object.product = cart[i]._id;
-//         object.count = cart[i].count;
-//         object.color = cart[i].color;
-
-//         // Use lean() to convert the result to a plain JavaScript object
-//         let getPrice = await Product.findById(cart[i]._id).select('price').lean().exec();
-//         object.price = getPrice.price;
-//         products.push(object);
-//       }
-//       console.log(4);
-
-//       let cartTotal = 0;
-//       for (let i = 0; i < products.length; i++) {
-//         cartTotal = cartTotal + products[i].price * products[i].count;
-//       }
-
-//       let newCart = await new Cart({
-//         products,
-//         cartTotal,
-//         orderby: user._id,
-//       }).save();
-
-//       res.json(newCart);
-//     } catch (error) {
-//       console.error(error);
-//       res.status(500).json({ error: 'Internal Server Error' });
-//     }
-//   });
 
 var email;
 
@@ -870,7 +502,6 @@ var email;
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
 }
-
 // // Initial OTP generation
 otp = generateOTP();
 console.log(otp);
@@ -989,7 +620,7 @@ const loadProfile = asyncHandler(async (req, res) => {
 
     // Query all addresses associated with the user
     const addresses = await Address.find({ user: _id }).exec();
-console.log(addresses);
+    console.log(addresses);
     // Query the user's profile
     const profile = await User.findById(_id);
 
@@ -1002,7 +633,8 @@ console.log(addresses);
 const addAddress = asyncHandler(async (req, res) => {
   try {
     const { _id } = req.user;
-    const { name,mobile,street, area, landmark, pincode, addressType } = req.body;
+    const { name, mobile, street, area, landmark, pincode, addressType } =
+      req.body;
     const newAddress = new Address({
       user: _id,
       name,
@@ -1012,34 +644,25 @@ const addAddress = asyncHandler(async (req, res) => {
       landmark,
       pincode,
       addressType,
-
     });
-    console.log('New Address:', newAddress);
+    console.log("New Address:", newAddress);
 
     await newAddress.save();
-    console.log('Address Saved');
+    console.log("Address Saved");
 
     const updatedUser = await User.findByIdAndUpdate(
       _id,
       { $push: { addresses: newAddress._id } },
       { new: true }
     );
-    console.log('User Updated:', updatedUser);
+    console.log("User Updated:", updatedUser);
 
-    res.render('UI/profile', { profile: updatedUser });
+    res.render("UI/profile", { profile: updatedUser });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
-// const removeItem = asyncHandler(async(req,res)=>{
-//   try{
-//     const {_id}= req.user;
-//     const order = await Cart.findByIdAndDelete({ orderby: _id }).exec();
-//     res.redirect('/view-cart')
-//   }catch(error){
-//     throw new Error(error)
-// }});
 
 const removeItem = asyncHandler(async (req, res) => {
   try {
@@ -1050,35 +673,34 @@ const removeItem = asyncHandler(async (req, res) => {
     const cart = await Cart.findOne({ orderby: _id });
 
     if (!cart) {
-      return res.status(404).json({ error: 'Cart not found' });
+      return res.status(404).json({ error: "Cart not found" });
     }
 
     // Find the product to be removed
-    const removedProduct = cart.products.find(productItem => {
+    const removedProduct = cart.products.find((productItem) => {
       return productItem.product.toString() === productId;
     });
 
     if (!removedProduct) {
-      return res.status(404).json({ error: 'Product not found in the cart' });
+      return res.status(404).json({ error: "Product not found in the cart" });
     }
 
     // Decrease the cartTotal by the price of the removed product
     cart.cartTotal -= removedProduct.price;
 
     // Remove the product from the products array
-    cart.products = cart.products.filter(productItem => {
+    cart.products = cart.products.filter((productItem) => {
       return productItem.product.toString() !== productId;
     });
 
     // Update the cart with the modified data
     await cart.save();
 
-    res.redirect('/view-cart');
+    res.redirect("/view-cart");
   } catch (error) {
     throw new Error(error);
   }
 });
-
 
 module.exports = {
   errorPage,
@@ -1113,5 +735,5 @@ module.exports = {
   getOrders,
   loadProfile,
   addAddress,
-  removeItem
+  removeItem,
 };

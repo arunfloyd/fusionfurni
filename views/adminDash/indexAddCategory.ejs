@@ -1,119 +1,111 @@
 <%- include('header.ejs') %>
 
-    <body>
-        <div class="screen-overlay"></div>
-        <%- include('navbar-aside.ejs') %>
-        <main class="main-wrap">
-            
-            <section class="content-main">
-                <div class="content-header">
-                    <div>
-                        <h2 class="content-title card-title">Categories</h2>
-                        <p>Add, edit or delete a category</p>
-                    </div>
-                    <div>
-                        <input type="text" placeholder="Search Categories" class="form-control bg-white" />
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <form action="" method="post">
-                                    <div class="mb-4">
-                                        <label for="product_name" class="form-label">Category Title</label>
-                                        <input type="text" placeholder="Type here" class="form-control" id="product_name" name="title"/>
-                                    </div>
-                                    <div class="mb-4">
-                                        <label for="product_slug" class="form-label">Slug</label>
-                                        <input type="text" placeholder="Type here" class="form-control" id="product_slug" name="slug"/>
-                                    </div>
-                    
-                                    <div class="mb-4">
-                                        <label class="form-label">Description</label>
-                                        <input placeholder="Type here" class="form-control" name="description" />
-                                    </div>
-                                
-                                    </div>
-                                    <div class="d-grid">
-                                        <button type="submit" class="btn btn-primary">Create category</button>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="col-md-9">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                            
-                                                <th>Title</th>
-                
-                                                <th>Slug</th>
-                                                <th >List</th>
-                                                <th >Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            
-                                                <% if(getallCategory.length > 0) { 
-                                                    for(let i = 0; i < getallCategory.length; i++) { %>
-                                                        <tr>
-                                                            <td><%= getallCategory[i].title %></td>
-                                                            <td><%= getallCategory[i].slug %></td>
-                                                            <td>
-                                                                <% if (getallCategory[i].list) { %>
-                                                                    Yes
-                                                                <% } else { %>
-                                                                    No
-                                                                <% } %>
-                                                            </td>
-                                                            
+<body>
+    <div class="screen-overlay"></div>
+    <%- include('navbar-aside.ejs') %>
+    <main class="main-wrap">
 
-                                                            <td >
-                                                                <div class="dropdown">
-                                                                    <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm">
-                                                                        <i class="material-icons md-more_horiz"></i>
-                                                                    </a>
-                                                                    <div class="dropdown-menu">
-                                                                        <a class="dropdown-item" href="/admin/category/edit/<%= getallCategory[i]._id %>">Edit info</a>
-                                                                        <a class="dropdown-item text-danger" href="#" onclick="confirmDelete('<%= getallCategory[i]._id %>')">Delete</a>
-                                                                    </div>
-                                                                </div>
-                                                                <!-- dropdown //end -->
-                                                            </td>
-                                                            
-                                                        </tr>
-                                                
-                                                            
-                                                            
-                                                        </tr>
-                                                        
-                                                    <% } 
-                                                } else { %>
-                                                    <td colspan="5">Users Not Found</td>
-                                                <% } %>
-                                               
-                                                    
-                                            
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <!-- .col// -->
-                        </div>
-                        <!-- .row // -->
-                    </div>
-                    <!-- card body .// -->
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Categories</h2>
+                    <p>Add, edit, or delete a category</p>
                 </div>
-                <!-- card .// -->
-            </section>
-            <!-- content-main end// -->
-            <%- include('footer.ejs') %>
-            <script>
-                function confirmDelete(categoryId) {
-                    var result = confirm("Are you sure you want to delete this category?");
-                    if (result) {
-                        window.location.href = "/admin/category/delete/" + categoryId;
-                    }
+                <div>
+                    <input type="text" placeholder="Search Categories" class="form-control bg-white" />
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <form action="" method="post">
+                                <div class="mb-4">
+                                    <label for="product_name" class="form-label">Category Title</label>
+                                    <input type="text" placeholder="Type here" class="form-control" id="product_name"
+                                        name="title" />
+                                </div>
+                                <div class="mb-4">
+                                    <label for="product_slug" class="form-label">Slug</label>
+                                    <input type="text" placeholder="Type here" class="form-control" id="product_slug"
+                                        name="slug" />
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label">Description</label>
+                                    <input placeholder="Type here" class="form-control" name="description" />
+                                </div>
+                               
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">Create category</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Slug</th>
+                                            <th>List</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if(getallCategory.length > 0) { 
+                                            for(let i = 0; i < getallCategory.length; i++) { %>
+                                                <tr>
+                                                    <td><%= getallCategory[i].title %></td>
+                                                    <td><%= getallCategory[i].slug %></td>
+                                                    <td>
+                                                        <% if (getallCategory[i].list) { %>
+                                                            Yes
+                                                        <% } else { %>
+                                                            No
+                                                        <% } %>
+                                                    </td>
+                                                    <td>
+                                                        <div class="dropdown">
+                                                            <a href="#" data-bs-toggle="dropdown"
+                                                                class="btn btn-light rounded btn-sm font-sm">
+                                                                <i class="material-icons md-more_horiz"></i>
+                                                            </a>
+                                                            <div class="dropdown-menu">
+                                                                <a class="dropdown-item"
+                                                                    href="/admin/category/edit/<%= getallCategory[i]._id %>">Edit
+                                                                    info</a>
+                                                                <a class="dropdown-item text-danger" href="#"
+                                                                    onclick="confirmDelete('<%= getallCategory[i]._id %>')">Delete</a>
+                                                            </div>
+                                                        </div>
+                                                        <!-- dropdown //end -->
+                                                    </td>
+                                                </tr>
+                                            <% } 
+                                        } else { %>
+                                            <td colspan="5">Users Not Found</td>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- .col// -->
+                    </div>
+                    <!-- .row // -->
+                </div>
+                <!-- card body .// -->
+            </div>
+            <!-- card .// -->
+        </section>
+        <!-- content-main end// -->
+        <%- include('footer.ejs') %>
+        <script>
+            function confirmDelete(categoryId) {
+                var result = confirm("Are you sure you want to delete this category?");
+                if (result) {
+                    window.location.href = "/admin/category/delete/" + categoryId;
                 }
-            </script>
+            }
+        </script>
+    

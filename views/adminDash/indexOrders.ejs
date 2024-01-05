@@ -15,50 +15,70 @@
                 </div>
                 <div class="card mb-4">
                    
-                 
-                    <table>
-                        <tr>
-                            <th>Product Title</th>
-                            <th>Payment Status</th>
-                            <th>Order Status</th>
-                            <th>Image</th>
-                            <th>User Name</th>
-                            <th>Change Status</th>
-
-                        </tr>
-                    
-                        <% if (userorders.length > 0) { 
-                            userorders.forEach(order => { %>
-                                <% order.products.forEach(productItem => { %>
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <!-- Loop through users -->
+                            <% if (userorders.length > 0) { 
+                                userorders.forEach(order => { %>
+                                    <% order.products.forEach(productItem => { %>
+                                        <article class="itemlist">  
+                                        <div class="row align-items-center">
+                                            <!-- Name -->
+                                            <div class="left">
+                                                <img src="/productImage/<%= productItem.product.images[0] %>" class="img-sm img-thumbnail" alt="Item" />
+                                            </div>  
+                                            <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                                                <h6>Product Title:</h6>
+                                                <a class="itemside" href="#">
+                                                    <div class="info">
+                                                        <h4 class="mb-0"><%= productItem.product.title %></h4>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                            
+                                            <div class="col-lg-2 col-sm-2 col-4 col-price">
+                                                <h6>Order Status:</h6>
+                                                <span> <%= order.orderStatus %></span>
+                                            </div>
+                                            <!-- Email -->
+                                            <div class="col-lg-2 col-sm-2 col-4 col-price">
+                                                <h6>Order Status:</h6>
+                                                <span>  <%= order.paymentIntent.status %></span>
+                                            </div>
+                                            <div class="col-lg-2 col-sm-2 col-4 col-price">
+                                                <h6>Users Name:</h6>
+                                                <span> <%= order.orderby.name %></span>
+                                            </div>
+                                            
+                                            
+                                            
+                                            <!-- Mobile -->
+                                            
+                                            <!-- Blocked Status -->
+                                           
+                                            
+                                            <!-- Edit Button -->
+                                            <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
+                                                <a href="/admin/update-status/<%= order._id %>" class="btn btn-sm font-sm rounded btn-brand">
+                                                    <i class="material-icons md-edit"></i> Edit
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </article>
+                                    <% }); %>
+                                    <% }); %>
+                                <% } else { %>
                                     <tr>
-                                        <td><%= productItem.product.title %></td>
-                                        <td><%= order.orderStatus %></td>
-                                        <td><%= order.paymentIntent.status %></td>
-
-                                        <td><img src="/productImage/<%= productItem.product.images[0] %>" alt="Product Image" width="100px" height="100px"></td>
-                                        <td><%= order.orderby.name %></td>
-                                        <td>
-                                            <a href="/admin/update-status/<%= order._id %>">
-                                                <button type="button" class="btn btn-warning">Edit</button>
-                                            </a>
-                                        </td>
+                                        <td colspan="3">Orders Not Found</td>
                                     </tr>
-                                <% }); %>
-                            <% }); %>
-                        <% } else { %>
-                            <tr>
-                                <td colspan="3">Orders Not Found</td>
-                            </tr>
-                        <% } %>
-                    </table>
-                    
-                            <!-- row .// -->
-                        </article>
+                                <% } %>
+                             
+                        </div>
                     </div>
-                    <!-- card-body end// -->
-                </div>
+                 
+                   
                 <!-- card end// -->
-                <div class="pagination-area mt-30 mb-50">
+                <!-- <div class="pagination-area mt-30 mb-50">
                     <nav aria-label="Page navigation example">
                         <ul class="pagination justify-content-start">
                             <li class="page-item active"><a class="page-link" href="#">01</a></li>
@@ -71,7 +91,7 @@
                             </li>
                         </ul>
                     </nav>
-                </div>
+                </div> -->
             </section>
             <!-- content-main end// -->
             <%- include('footer.ejs') %>

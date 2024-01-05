@@ -1,15 +1,16 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 // Create a separate schema for the address
 const addressSchema = new mongoose.Schema({
-  name:{
-    type:String,
-  },mobile:{
-type:Number
+  name: {
+    type: String,
+  },
+  mobile: {
+    type: Number,
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
     required: true,
   },
   street: {
@@ -33,4 +34,4 @@ type:Number
   },
 });
 
-module.exports = mongoose.model('Address', addressSchema);
+module.exports = mongoose.model("Address", addressSchema);

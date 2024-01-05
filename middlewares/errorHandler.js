@@ -4,7 +4,7 @@ const notFound =(req,res,next)=>{
     // const error = new Error ('Not Found : ${req.originalUrl}');
     res.status(404);
     console.log(error)
-    res.redirect('/user/error')
+    res.redirect('/error')
 }
 //Error Handler
 
