@@ -1,4 +1,3 @@
-//userCreating Section
 const { generateToken } = require("../config/jwtToken");
 const User = require("../models/userModel");
 const asyncHandler = require("express-async-handler");
@@ -9,9 +8,14 @@ const Product = require("../models/productModel");
 const nodemailer = require("nodemailer");
 const Cart = require("../models/cartModel");
 const Category = require("../models/categoryModel");
+const Otp = require("../models/otpModel");
+const bcrypt = require("bcrypt");
 const Order = require("../models/orderModel");
 const Address = require("../models/addressModel");
 const uniqid = require("uniqid");
+const sendEmail = require("./emailController");
+const crypto = require("crypto");
+const otpGenerator = require("otp-generator");
 const loadlogin = asyncHandler(async (req, res) => {
   try {
     if (req.cookies.refreshToken) {
@@ -69,25 +73,162 @@ const createUser = asyncHandler(async (req, res) => {
     const mob = await User.findOne({ mobile: mobile });
     const findUser = await User.findOne({ email: email });
     console.log(findUser);
-    let userId;
     if (!findUser && !mob) {
       const newUser = await User.create(req.body);
-      console.log(`User created with _id: ${newUser._id}`);
-      // const id = newUser._id; // This line is not needed
-      // const findUser = await User.findById({ _id: id }); // This line is not needed
-      res.render("user/requestVerify", { userId: newUser });
-      // res.json(newUser); // Remove this line
+      const otp = otpGenerator.generate(6, {
+        digits: true,
+        lowerCaseAlphabets: false,
+        upperCaseAlphabets: false,
+        specialChars: false,
+      });
+      const salt = await bcrypt.genSalt(10);
+      const encryptedOtp = await bcrypt.hash(otp, salt);
+      const otps = new Otp({
+        otp: encryptedOtp,
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
+        user: newUser._id,
+      });
+      await otps.save();
+      const resetURL = `To authenticate, please use the following One Time Password (OTP):
+      ${otp}
+      Don't share this OTP with anyone. Our customer service team will never ask you for your password, OTP, credit card, or banking info.
+      We hope to see you again soon.`;
+      const data = {
+        to: email,
+        text: "Hey User",
+        subject: "OTP Verification ",
+        htm: resetURL,
+      };
+      await sendEmail(data);
+      // res.redirect('/verify-mail');
+      res.redirect(`/verify-mail?email=${encodeURIComponent(email)}`);
+
     } else {
       req.flash("message", "User Already Exists");
-      res.redirect("/user/login");
+      res.redirect("/login");
     }
   } catch (error) {
     console.error(error);
     res.render("user/errorLoginAndSignUp", { message: "An error occurred" });
   }
 });
-var otp;
+const loadVerifyEmail = asyncHandler(async (req, res) => {
+  try {
+    const email = req.query.email;
+    res.render("user/verifyEmail", { email, message: req.flash("message") });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+const verifyMail = asyncHandler(async (req, res) => {
+  try {
+    const email = req.body.email;
+    const user = await User.findOne({ email: email ,passwordResetExpires: { $gt: Date.now() }});
 
+    if (user) {
+      const enteredOTP = req.body.otp;
+      const storedOtp = await Otp.findOne({ user: user._id });
+
+      if (storedOtp) {
+        const isMatch = await bcrypt.compare(enteredOTP, storedOtp.otp);
+
+        if (isMatch) {
+          req.flash("message", "User Successfully Verified");
+          res.redirect("/login");
+        } else {
+          req.flash("message", "Entered OTP is Wrong");
+          res.redirect(`/verify-mail?email=${encodeURIComponent(email)}`);
+        }
+      } else {
+        req.flash("message", "Time Expired, Please try after sometimes");
+        res.redirect(`/verify-mail?email=${encodeURIComponent(email)}`);
+      }
+    } else {
+      req.flash("message", "User not found");
+      res.redirect("/verify-mail");
+    }
+  } catch (error) {
+    console.error(error);
+    req.flash("message", "An error occurred during OTP verification");
+    res.redirect("/verify-mail");
+  }
+});
+const resendMail = asyncHandler(async (req, res) => {
+  console.log('Resend mail route triggered');
+  try {
+    const email = req.body.email;
+const user = await User.findOne({email})
+    // Generate a new OTP
+    const otp = otpGenerator.generate(6, {
+      digits: true,
+      lowerCaseAlphabets: false,
+      upperCaseAlphabets: false,
+      specialChars: false,
+    });
+
+    const salt = await bcrypt.genSalt(10);
+    const encryptedOtp = await bcrypt.hash(otp, salt);
+
+    // Update the existing OTP in the database
+    // Assuming the Otp model has a field 'email' to match the user
+    await Otp.findOneAndUpdate({ user: user._id }, { otp: encryptedOtp, expiresAt: new Date(Date.now() + 1 * 60 * 1000) });
+
+    const resetURL = `To authenticate, please use the following One Time Password (OTP):
+      ${otp}
+      Don't share this OTP with anyone. Our customer service team will never ask you for your password, OTP, credit card, or banking info.
+      We hope to see you again soon.`;
+
+    const data = {
+      to: email,
+      text: "Hey User",
+      subject: "OTP Verification ",
+      htm: resetURL,
+    };
+
+    // Send the email with the new OTP
+    await sendEmail(data);
+
+    // Render the same page with a success message
+    res.render("user/verifyEmail", { email, message: "Resent OTP successfully" });
+  } catch (error) {
+    console.error(error);
+    throw new Error(error);
+  }
+});
+
+// const resendMail = asyncHandler(async (req, res) => {
+//   try {
+//     const email = req.body.email;
+//     const otp = otpGenerator.generate(6, {
+//       digits: true,
+//       lowerCaseAlphabets: false,
+//       upperCaseAlphabets: false,
+//       specialChars: false,
+//     });
+//     const salt = await bcrypt.genSalt(10);
+//     const encryptedOtp = await bcrypt.hash(otp, salt);
+//     const otps = new Otp({
+//       otp: encryptedOtp,
+//       expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
+//       user: newUser._id,
+//     });
+//     await otps.save();
+//     const resetURL = `To authenticate, please use the following One Time Password (OTP):
+//       ${otp}
+//       Don't share this OTP with anyone. Our customer service team will never ask you for your password, OTP, credit card, or banking info.
+//       We hope to see you again soon.`;
+//     const data = {
+//       to: email,
+//       text: "Hey User",
+//       subject: "OTP Verification ",
+//       htm: resetURL,
+//     };
+//     sendEmail(data);
+//     res.render("user/verifyEmail", { email, message: req.flash("message") });
+//   } catch (error) {
+//     throw new Error(error);
+//   }
+// });
 const loadVerify = asyncHandler(async (req, res) => {
   try {
     res.render("user/verifyEmail");
@@ -429,12 +570,12 @@ const getUserCart = asyncHandler(async (req, res) => {
 
 const createOrder = asyncHandler(async (req, res) => {
   const { COD, couponApplied } = req.body;
-  //   console.log(COD)
   const { _id } = req.user;
-  //   validateMongoDbId(_id);
+
   try {
     const user = await User.findById(_id);
     console.log(user);
+    const addresses = await Address.find({ user: _id }).exec();
     let userCart = await Cart.findOne({ orderby: user._id });
     console.log(userCart);
     let finalAmout = 0;
@@ -450,12 +591,12 @@ const createOrder = asyncHandler(async (req, res) => {
         id: uniqid(),
         method: "COD",
         amount: finalAmout,
-        status: "Cash on Delivery",
+        status: "Pending",
         created: Date.now(),
-        currency: "usd",
       },
+      address: addresses[1]._id,
       orderby: user._id,
-      orderStatus: "Cash on Delivery",
+      orderStatus: "Processing",
     }).save();
     let update = userCart.products.map((item) => {
       const count = typeof item.count === "number" ? item.count : 0;
@@ -493,125 +634,12 @@ const getOrders = asyncHandler(async (req, res) => {
   }
 });
 
-var email;
-
-// // var otp = Math.random();
-// // otp = otp * 1000000;
-// // otp = parseInt(otp);
-// // Generate OTP function
-function generateOTP() {
-  return Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
-}
-// // Initial OTP generation
-otp = generateOTP();
-console.log(otp);
-// // Set interval to generate a new OTP every 5 minutes (adjust the interval as needed)
-var otpInterval = setInterval(function () {
-  otp = generateOTP();
-  console.log("New OTP:", otp);
-}, 5 * 60 * 1000); // 5 minutes in milliseconds
-
-// // Example: Stop the interval after 15 minutes (adjust the duration as needed)
-// console.log(otp);
-
-let transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  service: "Gmail",
-
-  auth: {
-    user: "arunvinod9497@gmail.com",
-    pass: "kttq myla zmfc ldnl",
-  },
-});
-const sendMail = asyncHandler(async (req, res) => {
-  try {
-    email = req.body.email;
-    // send mail with defined transport object
-    var mailOptions = {
-      to: req.body.email,
-      subject: "Otp for registration is: ",
-      html:
-        "<h3>OTP for account verification is </h3>" +
-        "<h1 style='font-weight:bold;'>" +
-        otp +
-        "</h1>", // html body
-    };
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        return console.log(error);
-      }
-      console.log("Message sent: %s", info.messageId);
-      console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-      req.flash("message", "Sucessfully Sent to Your Mail id");
-      res.render("user/verifyEmail", { email, message: req.flash("message") });
-    });
-  } catch (error) {
-    res.send(error);
-    res.render("error");
-  }
-});
-
-const verifyMail = asyncHandler(async (req, res) => {
-  try {
-    const email = req.body.email;
-
-    if (req.body.otp == otp) {
-      const adminUser = await User.findOne({ email: email });
-
-      const updateuser = await User.findByIdAndUpdate(
-        adminUser.id,
-        { isBlocked: false },
-        { new: true }
-      );
-
-      req.flash("message", "Successfully Verified");
-      res.redirect("/user/login");
-    } else {
-      req.flash("message", "Sorry the OTP is invalid");
-      res.render("user/verifyEmail", { email, message: req.flash("message") });
-      res.render("user/verifyEmail", { message: req.flash("message") });
-      // res.render('user/verifyEmail')
-      console.log("3");
-    }
-  } catch (error) {
-    console.log("4");
-    console.log(error);
-    throw new Error(error);
-  }
-});
-
-const resendMsail = asyncHandler(async (req, res) => {
-  var mailOptions = {
-    to: email,
-    subject: "Otp for registration is: ",
-    html:
-      "<h3>OTP for account verification is </h3>" +
-      "<h1 style='font-weight:bold;'>" +
-      otp +
-      "</h1>", // html body
-  };
-
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      return console.log(error);
-    }
-    console.log("Message sent: %s", info.messageId);
-    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-    res.render("otp", { msg: "otp has been sent" });
-  });
-});
-
 const errorPage = asyncHandler(async (req, res) => {
   try {
     res.render("errorPage");
   } catch {
     res.sendStatus(404);
   }
-});
-const resendMail = asyncHandler(async (req, res) => {
-  console.log("HElllooo");
 });
 
 const loadProfile = asyncHandler(async (req, res) => {
@@ -657,7 +685,7 @@ const addAddress = asyncHandler(async (req, res) => {
     );
     console.log("User Updated:", updatedUser);
 
-    res.render("UI/profile", { profile: updatedUser });
+    res.redirect("/checkout");
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -701,6 +729,94 @@ const removeItem = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+const updatePassword = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { password } = req.body;
+  validateMongoDbId(_id);
+
+  const user = await User.findById(_id);
+  if (password) {
+    user.password = password;
+    const updatedPassword = await user.save();
+    res.json(updatedPassword);
+  } else {
+    res.json(user);
+  }
+});
+const loadForgetPassword = asyncHandler(async (req, res) => {
+  try {
+    res.render("user/forgetPassword", { message: req.flash("message") });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+const loadChangePassword = asyncHandler(async (req, res) => {
+  try {
+    const { token } = req.params;
+    res.render("user/changePassword", { token, message: req.flash("message") });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+const forgotPasswordToken = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  console.log(email);
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      req.flash("message", "User not found with this email");
+      res.redirect("/forget-password");
+    } else {
+      const token = await user.createPasswordResetToken();
+      await user.save();
+      const resetURL = `Hi, Please follow this link to reset Your Password. This link is valid till 10 minutes from now. <a href='http://localhost:3002/reset-password/${token}'>Click Here</>`;
+      const data = {
+        to: email,
+        text: "Hey User",
+        subject: "Forgot Password Link",
+        htm: resetURL,
+      };
+
+      await sendEmail(data);
+
+      req.flash("message", "Password reset email sent. Check your inbox.");
+      res.redirect("/forget-password");
+    }
+  } catch (error) {
+    console.error("Error in forgotPasswordToken:", error);
+    req.flash("message", "An error occurred. Please try again later.");
+    res.redirect("/forget-password");
+  }
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+  try {
+    const { password } = req.body;
+    const { token } = req.params;
+    const hashedToken = await crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+    const user = await User.findOne({
+      passwordResetToken: hashedToken,
+      passwordResetExpires: { $gt: Date.now() },
+    });
+    if (!user) {
+      req.flash("message", "Time Expired, Please try after sometimes");
+    } else {
+      user.password = password;
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
+      await user.save();
+      req.flash("message", "Your Password have been updated");
+      res.redirect("/login");
+    }
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+module.exports = resetPassword;
 
 module.exports = {
   errorPage,
@@ -725,9 +841,6 @@ module.exports = {
   home,
   product,
   loadVerify,
-  sendMail,
-  resendMail,
-  verifyMail,
   userCart,
   getUserCart,
   createOrder,
@@ -736,4 +849,12 @@ module.exports = {
   loadProfile,
   addAddress,
   removeItem,
+  resetPassword,
+  forgotPasswordToken,
+  updatePassword,
+  loadForgetPassword,
+  loadChangePassword,
+  loadVerifyEmail,
+  verifyMail,
+  resendMail
 };

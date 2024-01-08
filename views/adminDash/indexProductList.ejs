@@ -1,83 +1,91 @@
 <%- include('header.ejs') %>
 
 <body>
-    <div class="screen-overlay"></div>
-    <%- include('navbar-aside.ejs') %>
-    <main class="main-wrap">
+  <div class="screen-overlay"></div>
+  <%- include('navbar-aside.ejs') %>
+  <main class="main-wrap">
+    <section class="content-main">
+      <div class="content-header">
+        <div>
+          <h2 class="content-title card-title">Products List</h2>
+          <p>Here is the list of products</p>
+        </div>
+      </div>
 
-        <section class="content-main">
-            <div class="content-header">
-                <div>
-                    <h2 class="content-title card-title">Products List</h2>
-                    <p>Here is the list of products</p>
-                </div>
+      <div class="card mb-4">
+        <div class="card-body">
+          <% if (getallProduct.length > 0) { for (let i = 0; i <
+          getallProduct.length; i++) { %>
+          <article class="itemlist">
+            <div class="row align-items-center">
+              <div class="col col-check flex-grow-0"></div>
+              <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                <a class="itemside" href="#">
+                  <div class="left">
+                    <img
+                      src="/productImage/<%= getallProduct[i].images[0] %>"
+                      class="img-sm img-thumbnail"
+                      alt="Item"
+                    />
+                  </div>
+                  <div class="info">
+                    <h6>Product Title</h6>
+                    <h4 cla ss="mb-0"><%= getallProduct[i].title %></h4>
+                  </div>
+                </a>
+              </div>
+              <div class="col-lg-2 col-sm-2 col-4 col-price">
+                <h6>Price</h6>
+                <span> ₹ <%= getallProduct[i].price %></span>
+              </div>
+              <div class="col-lg-2 col-sm-2 col-4 col-status">
+                <h6>List or Unlisted</h6>
+                <span
+                  class="badge rounded-pill <%= getallProduct[i].list ? 'alert-success' : 'alert-danger' %>"
+                >
+                  <%= getallProduct[i].list ? 'Listed' : 'Unlisted' %>
+                </span>
+              </div>
+
+              <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
+                <h6>Make Changes</h6>
+                <a
+                  href="/admin/product/<%= getallProduct[i]._id %>"
+                  class="btn btn-sm font-sm rounded btn-brand"
+                >
+                  <i class="material-icons md-edit"></i> Edit
+                </a>
+              </div>
             </div>
+          </article>
+          <% } } else { %>
+          <td colspan="5">Products Not Found</td>
+          <% } %>
+        </div>
+        <!-- card-body end// -->
+      </div>
+      <!-- card end// -->
 
-            <div class="card mb-4">
-              
-
-                <div class="card-body">
-                    <% if (getallProduct.length > 0) {
-                        for (let i = 0; i < getallProduct.length; i++) { %>
-                            <article class="itemlist">
-                                <div class="row align-items-center">
-                                    <div class="col col-check flex-grow-0">
-                                       
-                                    </div>
-                                    <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                                        <a class="itemside" href="#">
-                                            
-                                            <div class="left">
-                                                <img src="/productImage/<%= getallProduct[i].images[0] %>" class="img-sm img-thumbnail" alt="Item" />
-                                            </div>
-                                            <div class="info">
-                                                <h6>Product Title</h6>
-                                                <h4 cla ss="mb-0"><%= getallProduct[i].title %></h4>
-                                            </div>
-                                        </a>
-                                    </div>
-                                    <div class="col-lg-2 col-sm-2 col-4 col-price">
-                                        <h6>Price</h6>
-                                        <span> ₹ <%= getallProduct[i].price %></span>
-                                    </div>
-                                    <div class="col-lg-2 col-sm-2 col-4 col-status">
-                                        <h6>List or Unlisted</h6>
-                                        <span class="badge rounded-pill <%= getallProduct[i].list ? 'alert-success' : 'alert-danger' %>">
-                                            <%= getallProduct[i].list ? 'Listed' : 'Unlisted' %>
-                                        </span>
-                                    </div>
-                                   
-                                    <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
-                                        <h6>Make Changes</h6>
-                                        <a href="/admin/product/<%= getallProduct[i]._id %>" class="btn btn-sm font-sm rounded btn-brand">
-                                            <i class="material-icons md-edit"></i> Edit
-                                        </a>
-                                    </div>
-                                </div>
-                            </article>
-                    <% }
-                    } else { %>
-                        <td colspan="5">Products Not Found</td>
-                    <% } %>
-                </div>
-                <!-- card-body end// -->
-            </div>
-            <!-- card end// -->
-
-            <div class="pagination-area mt-30 mb-50">
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-start">
-                        <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                        <li class="page-item"><a class="page-link" href="#">02</a></li>
-                        <li class="page-item"><a class="page-link" href="#">03</a></li>
-                        <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                        <li class="page-item"><a class="page-link" href="#">16</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </section>
-        <!-- content-main end// -->
-        <%- include('footer.ejs') %>
+      <div class="pagination-area mt-30 mb-50">
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-start">
+            <li class="page-item active">
+              <a class="page-link" href="#">01</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">02</a></li>
+            <li class="page-item"><a class="page-link" href="#">03</a></li>
+            <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+            <li class="page-item"><a class="page-link" href="#">16</a></li>
+            <li class="page-item">
+              <a class="page-link" href="#"
+                ><i class="material-icons md-chevron_right"></i
+              ></a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </section>
+    <!-- content-main end// -->
+    <%- include('footer.ejs') %>
+  </main>
+</body>

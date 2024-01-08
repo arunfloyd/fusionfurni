@@ -27,7 +27,7 @@ const createProduct = asyncHandler(async (req, res) => {
       warranty,
     } = req.body;
 
-    const images = req.files.map((file) => file.originalname);
+    const images = req.files.map((file) => file.originalname);  
 
     const newProduct = await Product.create({
       title,
@@ -39,7 +39,6 @@ const createProduct = asyncHandler(async (req, res) => {
       specification,
       warranty,
       quantity,
-      // Add other fields as needed
     });
 
     console.log("Product created successfully");

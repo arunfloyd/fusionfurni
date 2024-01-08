@@ -1,238 +1,239 @@
-<%- include('header.ejs') %>
-  
 
-<body>
-    <div class="screen-overlay"></div>
-    <%- include('navbar-aside.ejs') %>
-    <main class="main-wrap">
-       
-        <section class="content-main">
-            <div class="content-header">
-                <div>
-                    <h2 class="content-title card-title">Users List</h2>
-                    <p>The list of registered Users</p>
+<%- include('../layout/header.ejs') %>
+
+<!-- Start Hero Section -->
+<div class="hero">
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col-lg-5">
+                <div class="intro-excerpt">
+                    <h1>Checkout</h1>
                 </div>
-                <div class="card mb-4">
+            </div>
+            <div class="col-lg-7">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Hero Section -->
+
+<div class="untree_co-section">
+<div class="container">
+  <div class="row mb-5">
+    <div class="col-md-12">
+      
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6 mb-5 mb-md-0">
+      <h2 class="h3 mb-3 text-black">Select a delivery address  </h2>
+      <div class="p-3 p-lg-5 border bg-white">
+        <% addresses.forEach((address, index) => { %>
+        
+        <div class="card mt-3">
+          <div class="card-body">
+            <form action="/profile" method="post" id="mainForm" onsubmit="updateCartInfo()">
+              <div class="form-check">
+                <input type="radio" name="addressSelection" id="address2" class="form-check-input" required>
+                <label for="address2" class="form-check-label"><%= address.name %></label>
+                <p class="card-text">
+                  <%= address.mobile %>
+                  <%= address.street %>
+                  <%= address.area %>
+                  <%= address.landmark %>
+                  <%= address.pincode %>
+                  <%= address.addressType %>
+                </p>
+                <a href="#" class="card-link"> Edit</a>
+               
+              </div>
+            </div>
+           
+          </div>
+          <% if ((index + 1) % 3 === 0) { %>
+          </div><div class="row">
+        <% } %>
+      <% }); %>
+            </form>
+            
+        
+    
+        
+      </div>
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="addAddressCheckbox">
+        <label class="form-check-label" for="addAddressCheckbox">
+            Add Address
+        </label>
+    </div>
+    <form action="/profile" method="post" id="mainForm">
+
+    <div id="addressFields" style="display: none;">
+        <div class="form-group mb-3">
+            <label class="text-black" for="street">Name </label>
+            <input type="text" name="name" class="form-control" id="name">
+        </div>
+        <div class="form-group mb-3">
+            <label class="text-black" for="street">Phone Number</label>
+            <input type="text" name="mobile" class="form-control" id="mobile">
+        </div>
+        <div class="form-group mb-3">
+            <label class="text-black" for="street">Flat, House no., Building, Company, Apartment</label>
+            <input type="text" name="street" class="form-control" id="street">
+        </div>
+        <div class="form-group mb-3">
+            <label class="text-black" for="street">Area, Street, Sector, Village</label>
+            <input type="text" name="area" class="form-control" id="area">
+        </div>
+        <div class="form-group mb-3">
+            <label class="text-black" for="street">Landmark</label>
+            <input type="text" name="landmark" class="form-control" id="landmark">
+        </div>
+
+        <div class="form-group mb-3">
+            <label class="text-black" for="pincode">Pincode</label>
+            <input type="text" name="pincode" class="form-control" id="pincode">
+        </div>
+
+        <div class="form-group mb-3">
+            <label class="text-black" for="addressType">Address Type</label>
+            <select name="addressType" class="form-control" id="addressType">
+                <option value="home">Home - 9:00 AM to 5:00 PM Delivery</option>
+                <option value="work">Work - 9:00 AM to 9:00 PM Delivery</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <br>
+        <br>  
+    </form>
+    </div>
+    </div>
+    
+    <div class="col-md-6">
+
+     
+
+      <div class="row mb-5">
+        <div class="col-md-12">
+          <h2 class="h3 mb-3 text-black">Order Summary</h2>
+          <div class="p-3 p-lg-5 border bg-white">
+            <table class="table site-block-order-table mb-5">
+              <thead>
+                <th>Product</th>
+                <th>Total</th>
+              </thead>
+              <tbody>
+                <!-- <tr>
+                  <td>Top Up T-Shirt <strong class="mx-2">x</strong> 1</td>
+                  <td>$250.00</td>
+                </tr>
+                <tr>
+                  <td>Polo Shirt <strong class="mx-2">x</strong>   1</td>
+                  <td>$100.00</td>
+                </tr>
+                <tr>
+                  <td class="text-black font-weight-bold"><strong>Cart Subtotal</strong></td>
+                  <td class="text-black">$350.00</td>
+                </tr> -->
+                <tr>
+                  <td class="text-black font-weight-bold"><strong>Order Total</strong></td>
+                  <td class="text-black font-weight-bold"><strong>₹<%=cart.cartTotal%></strong></td>
+                </tr>
+              </tbody>
+            </table>
+
+
+    
+            <form action="/profile" method="post" id="mainForm" onsubmit="updateCartInfo()">
+              <!-- ... your form fields ... -->
+              <h>Select a payment method</h>
+            <div class="border p-3 mb-5">
+              
+              <h3 class="h6 mb-0"><a class="d-block" data-bs-toggle="collapse" href="#collapsepaypal" role="button" aria-expanded="false" aria-controls="collapsepaypal">Cash On Delivery</a></h3>
+          
+              <div class="collapse" id="collapsepaypal">
+                        <br>
+                        <div class="py-2">
+                      <p class="mb-0">
+                        Safe and Flexible Payment Option for the Customer
+                        
+                        Cash on Delivery (COD) allows the customer to make the payment after receiving the product in hand- which is the most substantial advantage of this mode of payment.</p>
+                      
+                      <!-- Radio button for Cash On Delivery -->
+                      <div class="form-check">
+                          <input class="form-check-input" type="radio" name="COD" id="codRadio" value="cod" required>
+                          <label class="form-check-label" for="codRadio">
+                              Cash On Delivery
+                          </label>
+                      </div>
+                  </div>
+              </div>
+          </div>
+            </form>
+            
           
 
-                    <div class="card-body">
-                        <% if (users.length > 0) {
-                            for (let i = 0; i < users.length; i++) { %>
-                                <article class="itemlist">
-                                    <div class="row align-items-center">
-                                        <div class="col col-check flex-grow-0">
-                                           
-                                        </div>
-                                        <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                                            <a class="itemside" href="#">
-                                               
-                                                <div class="info">
-                                                    <h6 class="mb-0"><%= users[i].name %></h6>
-                                                </div>
-                                            </a>
-                                        </div>
-                                        <div class="col-lg-2 col-sm-2 col-4 col-price">
-                                            <span> ₹ <%= users[i].email %></span>
-                                        </div>
-                                        <div class="col-lg-2 col-sm-2 col-4 col-price">
-                                            <span>  <%= users[i].mobile %></span>
-                                        </div>
-                                        <div class="col-lg-2 col-sm-2 col-4 col-status">
-                                            <span class="badge rounded-pill <%= users[i].isBlocked ? 'alert-success' : 'alert-danger' %>">
-                                                  <% if (users[i].isBlocked) { %>
-                                                    <%= "No" %>
-                                                <% } else { %>
-                                                    <%= "YES" %>
-                                                <% } %>  %>
-                                            </span>
-                                        </div>
-                                       
-                                        <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
-                                            <a href="/admin/edit-user/<%= users[i]._id %>"" class="btn btn-sm font-sm rounded btn-brand">
-                                                <i class="material-icons md-edit"></i> Edit
-                                            </a>
-                                        </div>
-                                    </div>
-                                </article>
-                        <% }
-                        } else { %>
-                            <td colspan="5">Products Not Found</td>
-                        <% } %>
-                    </div>
-                    <!-- card-body end// -->
-                </div>
-                <% if(message && message.length > 0) { %>
-                    <p style="color: darkgreen;"><%= message %></p>
-                <% } %>
-                <div>
-                    <a href="#" class="btn btn-light rounded font-md">Export</a>
-                    <a href="#" class="btn btn-light rounded font-md">Import</a>
-                    <a href="#" class="btn btn-primary btn-sm rounded">Create new</a>
-                </div>
+            <div class="form-group">
+              <a href="/create-order"><button class="btn btn-black btn-lg py-3 btn-block" >Place Order</button>
+              </a>
             </div>
-            <div class="card mb-4">
-                <!-- <header class="card-header">
-                    <div class="row align-items-center">
-                        <div class="col col-check flex-grow-0">
-                            <div class="form-check ms-2">
-                                <input class="form-check-input" type="checkbox" value="" />
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
-                            <select class="form-select">
-                                <option selected>All category</option>
-                                <option>Electronics</option>
-                                <option>Clothes</option>
-                                <option>Automobile</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2 col-6">
-                            <input type="date" value="02.05.2021" class="form-control" />
-                        </div>
-                        <div class="col-md-2 col-6">
-                            <select class="form-select">
-                                <option selected>Status</option>
-                                <option>Active</option>
-                                <option>Disabled</option>
-                                <option>Show all</option>
-                            </select>
-                        </div>
-                    </div>
-                </header> -->
-                <!-- card-header end// -->
-                <div class="card-body">
-                    <article class="itemlist">
-                        <div class="row align-items-center">
-                            <table>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Mobile Number</th>
-                                    <th>Verified</th>
-                                    
-                                    <th>Access Status</th>
-                                    <th>Actions</th>
-                                    
-                                </tr>
-                    
-                                <% if(users.length > 0) { 
-                                    for(let i = 0; i < users.length; i++) { %>
-                                        <tr>
-                                            <td><%= users[i].name %></td>
-                                            <td><%= users[i].email %></td>
-                                            <td><%= users[i].mobile %></td>
-                                            <td>
-                                                <% if (users[i].isBlocked) { %>
-                                                    <%= "No" %>
-                                                <% } else { %>
-                                                    <%= "YES" %>
-                                                <% } %>
-                                            </td>
-                                        
-                                            <td>
-                                                <% if (users[i].accessStatus) { %>
-                                                    <%= "Active" %>
-                                                <% } else { %>
-                                                    <%= "Not Active" %>
-                                                <% } %>
-                                            </td>
-                                    
-                                              
-                                                                                             
-                                           
-                                        <td>
-                                            <a href="/admin/edit-user/<%= users[i]._id %>"><button  type="button" class="btn btn-warning">Edit Status</button></a><br>
-                                            
-                                        </td>  
 
-                                        </tr>
-                                        
-                                    <% } 
-                                } else { %>
-                                    <td colspan="5">Users Not Found</td>
-                                <% } %>
-                            </table>
-                        </div>
-                        <!-- row .// -->
-                    </article>
-                    <!-- itemlist  .// -->
-                   
-                    <!-- itemlist  .// -->
-                </div>
-                <!-- card-body end// -->
-            </div>
-            <!-- card end// -->
-            <div class="pagination-area mt-30 mb-50">
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-start">
-                        <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                        <li class="page-item"><a class="page-link" href="#">02</a></li>
-                        <li class="page-item"><a class="page-link" href="#">03</a></li>
-                        <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                        <li class="page-item"><a class="page-link" href="#">16</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </section>
-      
-
-        <!-- content-main end// -->
-        <%- include('footer.ejs') %>
-
-
-
-        <div class="card-body">
-            <article class="itemlist">
-                <div class="row align-items-center">
-            <% if (users.length > 0) {
-                for (let i = 0; i < users.length; i++) { %>
-                    <article class="itemlist">
-                        <div class="row align-items-center">
-                            <div class="col col-check flex-grow-0">
-
-                            </div>
-                            <div class="col-lg-2 col-sm-2 col-4 col-status">
-                                <span class="badge rounded-pill <%= users[i].accessStatus ? 'alert-danger' : 'alert-success' %>">
-                                    <% if (users[i].accessStatus) { %>
-                                        <%= "Active" %>
-                                    <% } else { %>
-                                        <%= "Not Active" %>
-                                    <% } %>  %>
-                                </span>
-                            </div>
-                            <div class="col-lg-2 col-sm-2 col-4 col-status">
-                                <span class="badge rounded-pill <%= users[i].isBlocked ? 'alert-danger' : 'alert-success' %>">
-                                    <% if (users[i].isBlocked) { %>
-                                        <%= "No" %>
-                                    <% } else { %>
-                                        <%= "YES" %>
-                                    <% } %>  %>
-                            </div>
-                            <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                                <a class="itemside" href="#">
-                                    <div class="info">
-                                        <h6 class="mb-0"><%= users[i].name %></h6>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-lg-2 col-sm-2 col-4 col-price">
-                                <span> ₹ <%= users[i].email %></span>
-                            </div>
-                            <div class="col-lg-2 col-sm-2 col-4 col-price">
-                                <span>  <%= users[i].mobile %></span>
-                            </div>
-                            <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
-                                <a href="/admin/edit-user/<%= users[i]._id %>" class="btn btn-sm font-sm rounded btn-brand">
-                                    <i class="material-icons md-edit"></i> Edit
-                                </a>
-                            </div>
-                        </div>
-                    </article>
-                <% }
-            } else { %>
-                <td colspan="5">Products Not Found</td>
-            <% } %>
+          </div>
         </div>
+      </div>
+
+    </div>
+  </div>
+  <!-- </form> -->
+</div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+  function updateCartInfo() {
+    // Get the selected address
+    const selectedAddress = document.querySelector('input[name="addressSelection"]:checked');
+    const selectedAddressId = selectedAddress ? selectedAddress.value : null;
+
+    // Get the selected payment method
+    const selectedPaymentMethod = document.querySelector('input[name="COD"]:checked');
+    const selectedPaymentMethodValue = selectedPaymentMethod ? selectedPaymentMethod.value : null;
+
+    // Update the cart information using Axios with the PUT method
+    axios.put('/update-cart', {
+      addressId: selectedAddressId,
+      paymentMethod: selectedPaymentMethodValue
+    })
+    .then(function (response) {
+      console.log('Cart information updated successfully:', response.data);
+    })
+    .catch(function (error) {
+      console.error('Error updating cart information:', error);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('addAddressCheckbox').addEventListener('change', function () {
+      const addressFields = document.getElementById('addressFields');
+      addressFields.style.display = this.checked ? 'block' : 'none';
+    });
+  });
+</script>
+<script>
+    $(document).ready(function () {
+        $("#addAddressCheckbox").change(function () {
+            if (this.checked) {
+                $("#addressFields").show();
+            } else {
+                $("#addressFields").hide();
+            }
+        });
+    });
+
+    document.getElementById('mainForm').addEventListener('submit', function (event) {
+        console.log('Form submitted');
+        // Your other code here...
+    });
+</script>
+<%- include('../layout/footer.ejs') %>

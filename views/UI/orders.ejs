@@ -2,71 +2,67 @@
 
 <!-- Start Hero Section -->
 <div class="hero">
-    <div class="container">
-        <div class="row justify-content-between">
-            <div class="col-lg-5">
-                <div class="intro-excerpt">
-                    <h1>Your Orders</h1>
-                </div>
-            </div>
-            <div class="col-lg-7">
-                
-            </div>
+  <div class="container">
+    <div class="row justify-content-between">
+      <div class="col-lg-5">
+        <div class="intro-excerpt">
+          <h1>Your Orders</h1>
         </div>
+      </div>
+      <div class="col-lg-7"></div>
     </div>
-    <!-- ... (your existing code) ... -->
+  </div>
+  <!-- ... (your existing code) ... -->
 </div>
 <!-- End Hero Section -->
 
 <div class="untree_co-section before-footer-section">
-    <div class="container">
-        <div class="row mb-5">
-            <form class="col-md-12" method="post">
-                <div class="site-blocks-table">
-                   <!-- Loop through each order -->
-<% userorders.forEach(order => { %>
-    <!-- <h2>Order ID: <%= order._id %></h2> -->
-  
-    <p>Order Date: <%= order.createdAt.toLocaleString("en-US") %></p>
-  
-    <!-- Loop through each product in the order -->
-    <table class="table">
-      <thead>
-        <tr>
-            <th>Order ID</th>
-          <th>Product Title</th>
-          <th>Order Status</th>
-          <th>Image</th>
-          <th>Price</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% order.products.forEach(productItem => { %>
-          <tr>
-            <td> <%= order._id %></td>
-            <td><%= productItem.product.title %></td>
-            <td><%= order.paymentIntent.status %></td>
+  <div class="container">
+    <div class="row mb-5">
+      <form class="col-md-12" method="post">
+        <div class="site-blocks-table">
+          <!-- Loop through each order -->
+          <% userorders.forEach(order => { %>
+          <!-- <h2>Order ID: <%= order._id %></h2> -->
 
-            <td>
-              <img
-                src="/productImage/<%= productItem.product.images[0] %>"
-                alt="Product Image"
-                width="100px"
-                height="100px"
-              />
-            </td>
-            <td><%= productItem.product.price %></td>
-          </tr>
-        <% }); %>
-      </tbody>
-    </table>
-  <% }); %>
-  
-                        
-                </div>
-            </form>
+          <p>Order Date: <%= order.createdAt.toLocaleString("en-US") %></p>
+
+          <!-- Loop through each product in the order -->
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Product Title</th>
+                <th>Order Status</th>
+                <th>Image</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% order.products.forEach(productItem => { %>
+              <tr>
+                <td><%= order._id %></td>
+                <td><%= productItem.product.title %></td>
+                <td><%= order.paymentIntent.status %></td>
+
+                <td>
+                  <img
+                    src="/productImage/<%= productItem.product.images[0] %>"
+                    alt="Product Image"
+                    width="100px"
+                    height="100px"
+                  />
+                </td>
+                <td><%= productItem.product.price %></td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
+          <% }); %>
         </div>
+      </form>
     </div>
+  </div>
 </div>
 
 <%- include('../layout/footer.ejs') %>

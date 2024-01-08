@@ -1,67 +1,94 @@
 <%- include('header.ejs') %>
 
-    <body>
-        <div class="screen-overlay"></div>
-        <%- include('navbar-aside.ejs') %>
-        <main class="main-wrap">
-           
-            <section class="content-main">
-                <div class="content-header">
-                    <div>
-                        <h2 class="content-title card-title">Categories</h2>
-                        <p>Add, edit or delete a category</p>
-                    </div>
-                    <div>
-                        <input type="text" placeholder="Search Categories" class="form-control bg-white" />
-                    </div>
+<body>
+  <div class="screen-overlay"></div>
+  <%- include('navbar-aside.ejs') %>
+  <main class="main-wrap">
+    <section class="content-main">
+      <div class="content-header">
+        <div>
+          <h2 class="content-title card-title">Categories</h2>
+          <p>Add, edit or delete a category</p>
+        </div>
+        <div>
+          <input
+            type="text"
+            placeholder="Search Categories"
+            class="form-control bg-white"
+          />
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3">
+              <form action="" method="post">
+                <div class="mb-4">
+                  <label for="product_name" class="form-label"
+                    >Category Title</label
+                  >
+                  <input
+                    type="text"
+                    placeholder="Type here"
+                    class="form-control"
+                    id="product_name"
+                    name="title"
+                    value="<%= getallCategory.title %>"
+                  />
                 </div>
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <form action="" method="post">
-                                    <div class="mb-4">
-                                        <label for="product_name" class="form-label">Category Title</label>
-                                        <input type="text" placeholder="Type here" class="form-control" id="product_name" name="title" value="<%= getallCategory.title %>" />
-                                    </div>
-                                    <div class="mb-4">
-                                        <label for="product_slug" class="form-label">Slug</label>
-                                        <input type="text" placeholder="Type here" class="form-control" id="product_slug" name="slug" value="<%= getallCategory.slug %>" />
-                                    </div>
-                                
-                                    <div class="mb-4">
-                                        <label class="form-label">Description</label>
-                                        <input placeholder="Type here" class="form-control" name="description" value="<%= getallCategory.description %>" />
-                                    </div>
-                                
-                                    <div class="mb-4">
-                                        <label class="form-label">Listed</label>
-                                        <div class="radio-group">
-                                            <label>
-                                                <input type="radio" name="list" value="true" <%= getallCategory.list ? 'checked' : '' %> />
-                                                List
-                                            </label>
-                                            <label>
-                                                <input type="radio" name="list" value="false" <%= !getallCategory.list ? 'checked' : '' %> />
-                                                Unlist
-                                            </label>
-                                        </div>  
-                                    </div>
-                                
-                                    <div class="d-grid">
-                                        <button type="submit" class="btn btn-primary">Update category</button>
-                                    </div>
-                                </form>
-                                
-                            </div>
-                           
-                            <!-- .col// -->
-                        </div>
-                        <!-- .row // -->
-                    </div>
-                    <!-- card body .// -->
+                <div class="mb-4">
+                  <label for="product_slug" class="form-label">Slug</label>
+                  <input
+                    type="text"
+                    placeholder="Type here"
+                    class="form-control"
+                    id="product_slug"
+                    name="slug"
+                    value="<%= getallCategory.slug %>"
+                  />
                 </div>
-                <!-- card .// -->
-            </section>
-            <!-- content-main end// -->
-            <%- include('footer.ejs') %>
+
+                <div class="mb-4">
+                  <label class="form-label">Description</label>
+                  <input
+                    placeholder="Type here"
+                    class="form-control"
+                    name="description"
+                    value="<%= getallCategory.description %>"
+                  />
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label">Listed</label>
+                  <div class="radio-group">
+                    <label>
+                      <input type="radio" name="list" value="true" <%=
+                      getallCategory.list ? 'checked' : '' %> /> List
+                    </label>
+                    <label>
+                      <input type="radio" name="list" value="false" <%=
+                      !getallCategory.list ? 'checked' : '' %> /> Unlist
+                    </label>
+                  </div>
+                </div>
+
+                <div class="d-grid">
+                  <button type="submit" class="btn btn-primary">
+                    Update category
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- .col// -->
+          </div>
+          <!-- .row // -->
+        </div>
+        <!-- card body .// -->
+      </div>
+      <!-- card .// -->
+    </section>
+    <!-- content-main end// -->
+    <%- include('footer.ejs') %>
+  </main>
+</body>

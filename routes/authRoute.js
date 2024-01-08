@@ -27,6 +27,11 @@ const {
   loadProfile,
   addAddress,
   removeItem,
+  forgotPasswordToken,
+  resetPassword,
+  loadForgetPassword,
+  loadChangePassword,
+  loadVerifyEmail,
 } = require("../controller /userController");
 const {
   userMiddleware,
@@ -34,6 +39,7 @@ const {
 } = require("../middlewares/authMiddleware");
 const router = express.Router();
 
+router.get("/register", loginUserCtrl);
 router.post("/register", createUser);
 router.get("/login", noCacheHeaders, loadlogin);
 router.post("/login", loginUserCtrl);
@@ -55,12 +61,16 @@ router.get("/login", loadlogin);
 router.get("/all-user", getallUser);
 router.get("/refresh", handleRefreshToken);
 router.get("/logout", logout);
-router.post("/send", sendMail);
-router.post("/verification", verifyMail);
-router.post("/resendMail", resendMail);
 router.get("/error", errorPage);
 router.get("/profile", userMiddleware, loadProfile);
 router.post("/profile", userMiddleware, addAddress);
 router.post("/remove-item", userMiddleware, removeItem);
+router.get('/forget-password',loadForgetPassword);
+router.post('/forget-password',forgotPasswordToken);
+router.get('/reset-password/:token',loadChangePassword);
+router.post('/reset-password/:token',resetPassword);
+router.get('/verify-mail',loadVerifyEmail);
+router.post('/verify-mail',verifyMail);
+router.post('/resend-mail',resendMail);
 
 module.exports = router;

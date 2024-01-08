@@ -4,19 +4,16 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
-const { notFound, errorHandler } = require("./middlewares/errorHandler");
-const authMiddleware = require("./middlewares/authMiddleware");
 const authRouter = require("./routes/authRoute");
 const adminRouter = require("./routes/adminRoute");
 const dbConnect = require("./config/dbConnect");
 const productRouter = require("./routes/productRoute");
 const categoryRouter = require("./routes/categoryRoute");
-
 const cors = require("cors");
 const sessions = require("express-session");
-
 const flash = require("express-flash");
 const app = express();
+
 dbConnect();
 
 app.set("views", path.join(__dirname, "views"));
@@ -31,13 +28,12 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   sessions({
-    secret: "your-secret-key", // Use a secure secret key
+    secret: "your-secret-key",
     resave: false,
     saveUninitialized: true,
   })
 );
 app.use((req, res, next) => {
-  // Check if req.cookies is defined before accessing its properties
   res.locals.user = req.cookies.refreshToken;
   next();
 });

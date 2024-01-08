@@ -37,110 +37,113 @@
 
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <title>ADMIN LOGIN PAGE</title>
+    <link href="/css/adminLogin.css" rel="stylesheet" />
+  </head>
 
-<head>
-  <meta charset="utf-8">
-  <title>ADMIN LOGIN PAGE</title>
-  <link href="/css/adminLogin.css" rel="stylesheet">
-</head>
+  <body>
+    <div class="login-box">
+      <h2>Login</h2>
+      <form action="" method="post">
+        <div class="user-box">
+          <input type="email" name="email" required="" />
+          <label>E-mail ID</label>
+        </div>
+        <div class="user-box">
+          <input type="password" name="password" required="" />
+          <label>Password</label>
+        </div>
+        <% if(message && message.length > 0) { %>
+        <p style="color: green"><%= message %></p>
+        <% } %>
 
-<body>
-  <div class="login-box">
-    <h2>Login</h2>
-    <form action="" method="post">
-      <div class="user-box">
-        <input type="email" name="email" required="">
-        <label>E-mail ID</label>
-      </div>
-      <div class="user-box">
-        <input type="password" name="password" required="">
-        <label>Password</label>
-      </div>
-      <% if(message && message.length > 0) { %>
-        <p style="color: green;"><%= message %></p>
-      <% } %>
-      
-      <button type="submit">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        Submit
-      </button>
-    </form>
-  </div>
-</body>
-
+        <button type="submit">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          Submit
+        </button>
+      </form>
+    </div>
+  </body>
 </html>
 
-
-
-<link rel="stylesheet" href="/css/userStyle.css">
+<link rel="stylesheet" href="/css/userStyle.css" />
 <div class="container" id="container">
-	<form action="" method="post" id="signupForm">
-				<h1>Admin Login</h1>
-					<div class="social-container">
-						<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-						<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
-						<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
-					</div>
-				
-				<input type="email" placeholder="Email" name="email"  id="email" required/>
-				<input type="password" placeholder="Password" name="password" id="password" required />
-				<% if(message && message.length > 0) { %>
-					<p style="color: red;"><%= message %></p>
-				<% } %>
-				<button type="button" onclick="registerButton()">Sign Up</button>
-			</form>
+  <form action="" method="post" id="signupForm">
+    <h1>Admin Login</h1>
+    <div class="social-container">
+      <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+      <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+    </div>
+
+    <input type="email" placeholder="Email" name="email" id="email" required />
+    <input
+      type="password"
+      placeholder="Password"
+      name="password"
+      id="password"
+      required
+    />
+    <% if(message && message.length > 0) { %>
+    <p style="color: red"><%= message %></p>
+    <% } %>
+    <button type="button" onclick="registerButton()">Sign Up</button>
+  </form>
 </div>
 
 <script>
-    async function registerButton(event) {
-    let email = document.getElementById('email').value.toLowerCase();
-    let password = document.getElementById('password').value;
+  async function registerButton(event) {
+    let email = document.getElementById("email").value.toLowerCase();
+    let password = document.getElementById("password").value;
 
-	try {
-        const response = await fetch('/admin/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email, password }),
-        });
+    try {
+      const response = await fetch("/admin/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-        if (!response.ok) {
-          throw new Error(`Login failed with status: ${response.status}`);
-        }
-
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          console.error('Unexpected content type in server response:', contentType);
-          throw new Error('Unexpected content type');
-        }
-
-        const data = await response.json();
-
-        if (!data.token) {
-          console.error('Token not found in server response:', data);
-          throw new Error('Unexpected response format');
-        }
-
-        // Store the token in localStorage for future use
-        localStorage.setItem('refreshToken', data.token);
-
-        // Redirect to the admin dashboard or handle success accordingly
-        window.location.href = '/admin/dash';
-      } catch (error) {
-        console.error('Login error:', error);
-
-        // Display a generic error message
-        document.getElementById('errorMessage').innerText = 'Login failed. Please try again.';
+      if (!response.ok) {
+        throw new Error(`Login failed with status: ${response.status}`);
       }
-    
 
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.error(
+          "Unexpected content type in server response:",
+          contentType
+        );
+        throw new Error("Unexpected content type");
+      }
 
- document.getElementById('signupForm').submit();}
+      const data = await response.json();
 
+      if (!data.token) {
+        console.error("Token not found in server response:", data);
+        throw new Error("Unexpected response format");
+      }
 
-</script> 
+      // Store the token in localStorage for future use
+      localStorage.setItem("refreshToken", data.token);
+
+      // Redirect to the admin dashboard or handle success accordingly
+      window.location.href = "/admin/dash";
+    } catch (error) {
+      console.error("Login error:", error);
+
+      // Display a generic error message
+      document.getElementById("errorMessage").innerText =
+        "Login failed. Please try again.";
+    }
+
+    document.getElementById("signupForm").submit();
+  }
+</script>
