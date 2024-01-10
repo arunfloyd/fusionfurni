@@ -1,5 +1,5 @@
 <%- include('../layout/header.ejs') %>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <!-- Start Hero Section -->
 <div class="hero">
     <div class="container">
@@ -89,7 +89,7 @@
                                 </div>
                             </div>
                             <br>
-
+                            
                             <h3 class="h6 mb-0"><a class="d-block" data-bs-toggle="collapse" href="#collapsepaypals" role="button" aria-expanded="false" aria-controls="collapsepaypals">Online Payment ↓</a></h3>
                             <div class="collapse" id="collapsepaypals">
                                 <br>
@@ -98,14 +98,19 @@
                                         Online payments are transactions that occur online. The most common payment forms online are a credit card and debit card; others are an e-wallet, bank transfer, and UPI.
                                     </p>
                                     <!-- Radio button for Online Payment -->
-                                    <div class="form-check">
+                                    <div class="pay-form">
                                         <input class="form-check-input" type="radio" name="paymentMethod" id="codRadio2" value="OnlinePayment" required>
                                         <label class="form-check-label" for="codRadio2">
                                             Online Payment
+                                            <button class="btn btn-primary" id="pay-button">Pay Now</button>
+                                             
                                         </label>
+                                       
+    
                                     </div>
                                 </div>
                             </div>
+                            
 
                         </div>
                         <div class="form-group">
@@ -171,6 +176,7 @@
                                                 <td> <strong class="mx-2">x</strong> <%= productItem.quantity %></td>
                                                 <td><%= productItem.product.price %> <strong class="mx-2">x</strong> <%= productItem.quantity %> = <%= productItem.product.price * productItem.quantity %></td>
                                             </tr>
+                                            
                                         <% }); %>
                                     <% } else { %>
                                         <!-- Handle the case where cart or products are null or empty -->
@@ -186,6 +192,10 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            <input type="hidden" id="amount" placeholder="Amount" value="<%=cart.cartTotal%>">
+                            <input type="text" id="productName" placeholder="Product Name" >
+   
+    <input type="text" id="email" placeholder="Email" >
                         </div>
                     </div>
                 </div>
@@ -198,8 +208,13 @@
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
     $(document).ready(function () {
+        $("#codRadio2").change(function () {
+                // Enable or disable the "Pay Now" button based on the radio button's checked status
+                $("#pay-button").prop("disabled", !$(this).prop("checked"));
+            })
         $("#addAddressCheckbox").change(function () {
             if (this.checked) {
                 $("#addressForm").show();
@@ -207,6 +222,66 @@
                 $("#addressForm").hide();
             }
         });
+        $('#pay-button').click(function(e){
+        e.preventDefault();
+
+        // Collect values from input fields
+        var productName = $('#productName').val();
+        var amount = $('#amount').val();
+        var email = $('#email').val();
+
+        // Placeholder for other values you might need (contact, description, etc.)
+        // var contact = ...
+        // var description = ...
+
+        // Send data to server for order creation
+        $.ajax({
+            url: "/create-online-payment",
+            type: "POST",
+            data: {
+                productName: productName,
+                amount: amount,
+                email: email,
+                // Add other fields as needed
+            },
+            success: function(res){
+                if(res.success){
+                    var options = {
+                        "key": res.key_id, // No need for extra quotes around variables
+                        "amount": res.amount,
+                        "currency": "INR",
+                        "name": res.product_name,
+                        "description": res.description,
+                        "image": "https://dummyimage.com/600x400/000/fff",
+                        "order_id": res.order_id,
+                        "handler": function (response){
+                            alert("Payment Succeeded");
+                            // window.open("/","_self")
+                        },
+                        "prefill": {
+                            "contact": res.contact,
+                            "name": res.name,
+                            "email": res.email
+                        },
+                        "notes": {
+                            "description": res.description
+                        },
+                        "theme": {
+                            "color": "#2300a3"
+                        }
+                    };
+                    var razorpayObject = new Razorpay(options);
+                    razorpayObject.on('payment.failed', function (response){
+                        alert("Payment Failed");
+                    });
+                    razorpayObject.open();
+                }
+                else{
+                    alert(res.msg);
+                }
+            }
+        });
+    });
 
         $("#placeOrderBtn").click(function () {
     // Get the selected address and payment method
@@ -231,7 +306,8 @@
     } else {
         console.error('Please select both an address and a payment method.');
     }
-});
+}); 
+
 
     });
 </script>

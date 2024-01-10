@@ -33,7 +33,8 @@ const {
   loadChangePassword,
   loadVerifyEmail,
   updateQuantity,
-  getOrdersDetails
+  getOrdersDetails,
+  createOnlinePayment
 } = require("../controller /userController");
 const {
   userMiddleware,
@@ -65,6 +66,7 @@ router.post("/remove-item", userMiddleware, removeItem);
 router.post("/update-quantity/:productId", userMiddleware, updateQuantity);
 router.get("/checkout", userMiddleware, checkout);
 router.post("/create-order", userMiddleware, createOrder);
+router.post("/create-online-payment", userMiddleware, createOnlinePayment);
 router.get("/thankyou", userMiddleware, thankyou);
 router.get("/all-user", getallUser);
 router.get("/orders", userMiddleware, getOrders);
