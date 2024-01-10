@@ -9,11 +9,19 @@ var orderSchema = new mongoose.Schema(
           type: mongoose.Schema.Types.ObjectId,
           ref: "Product",
         },
-        count: Number,
-        color: String,
+        quantity: Number,
+        price: Number,
       },
     ],
+    orderId:{
+      type: String,
+    },
     paymentIntent: {},
+    request: {
+      type: String,
+      default: "No Request",
+      enum: ["No Request", "Request Cancellation", "Request Return"],
+    },
     orderStatus: {
       type: String,
       default: "Not Processed",
@@ -33,6 +41,9 @@ var orderSchema = new mongoose.Schema(
     address: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Address",
+    },
+    expectedDelivery: {
+      type: String,
     },
   },
   {

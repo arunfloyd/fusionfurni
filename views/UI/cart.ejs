@@ -9,9 +9,7 @@
                     <h1>Cart</h1>
                 </div>
             </div>
-            <div class="col-lg-7">
-
-            </div>
+            <div class="col-lg-7"></div>
         </div>
     </div>
 </div>
@@ -20,130 +18,174 @@
 <div class="untree_co-section before-footer-section">
     <div class="container">
         <div class="row mb-5">
-        
-                <div class="site-blocks-table">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th class="product-thumbnail">Image</th>
-                                <th class="product-name">Product</th>
-                                <th class="product-price">Price</th>
-                                <!-- <th class="product-quantity">Quantity</th> -->
-                                <th class="product-remove">Remove</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% if (cart && cart.products && cart.products.length > 0) { %>
-                                <% cart.products.forEach(productItem => { %>
-                                    <tr>
-                                        <td class="product-thumbnail">
-                                            <% if (productItem.product.images && productItem.product.images.length > 0) { %>
-                                                <img src="/productImage/<%= productItem.product.images[0] %>" alt="Image" class="img-fluid">
-                                            <% } else { %>
-                                                <p>No image available</p>
-                                            <% } %>
-                                        </td>
-                                        <td class="product-name">
-                                            <h2 class="h5 text-black"><%= productItem.product.title %></h2>
-                                        </td>
-                                        <td class="product-price">
-                                            <%= productItem.product.price %>
-                                        </td>
-                                        <!-- Add other columns for product details -->
-                                        <td class="product-remove">
-                                            <form action="/remove-item" method="post">
-                                                <input type="hidden" name="productId" value="<%= productItem.product._id %>">
-                                                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                <% }); %>
-                            <% } else { %>
-                                <!-- Handle the case where cart or products are null or empty -->
+            <div class="site-blocks-table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="product-thumbnail">Image</th>
+                            <th class="product-name">Product</th>
+                            <th class="product-price">Price</th>
+                            <th class="product-quantity">Quantity</th>
+                            <th class="product-remove">Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (cart && cart.products && cart.products.length > 0) { %>
+                            <% cart.products.forEach(productItem => { %>
                                 <tr>
-                                    <td colspan="5">
-                                        <p>Product is Empty</p>
+                                    <td class="product-thumbnail">
+                                        <% if (productItem.product.images && productItem.product.images.length > 0) { %>
+                                            <img src="/productImage/<%= productItem.product.images[0] %>" alt="Image" class="img-fluid">
+                                        <% } else { %>
+                                            <p>No image available</p>
+                                        <% } %>
+                                    </td>
+                                    <td class="product-name">
+                                        <h2 class="h5 text-black"><%= productItem.product.title %></h2>
+                                    </td>
+                                    <td class="product-price">
+                                        <%= productItem.product.price %>
+                                    </td>
+                                    <td class="product-price">
+                                        <div class="quantity-dropdown-container">
+                                            <select class="quantity custom-select" name="quantity" id="quantity" data-product-id="<%= productItem.product._id %>" data-current-quantity="<%= productItem.quantity %>">
+                                                <% for (let i = 1; i <= productItem.product.quantity; i++) { %>
+                                                    <option value="<%= i %>" <%= i === productItem.quantity ? 'selected' : '' %>><%= i %></option>
+                                                <% } %>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <!-- Add other columns for product details -->
+                                    <td class="product-remove">
+                                        <form action="/remove-item" method="post">
+                                            <input type="hidden" name="productId" value="<%= productItem.product._id %>">
+                                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                        </form>
                                     </td>
                                 </tr>
-                            <% } %>
-                        </tbody>
-                        
-                      
-
-                    </table>
-                </div>
-
+                            <% }); %>
+                        <% } else { %>
+                            <!-- Handle the case where cart or products are null or empty -->
+                            <tr>
+                                <td colspan="5">
+                                    <h4>Your Fushion Furni Cart is empty. <a href="/shop">Continue Shopping</a>
+                                        </h4>
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-6">
-                <div class="row mb-5">
-                    <div class="col-md-6 mb-3 mb-md-0">
-                        <button class="btn btn-black btn-sm btn-block">Update Cart</button>
+        <% if (cart && cart.products && cart.products.length > 0) { %>
+        
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="row mb-5">
+    
+                        <div class="col-md-6">
+                            <a href="/shop"><button class="btn btn-outline-black btn-sm btn-block">Continue Shopping</button>
+                            </a>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <button class="btn btn-outline-black btn-sm btn-block">Continue Shopping</button>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="text-black h4" for="coupon">Coupon</label>
+                            <p>Enter your coupon code if you have one.</p>
+                        </div>
+                        <div class="col-md-8 mb-3 mb-md-0">
+                            <input type="text" class="form-control py-3" id="coupon" placeholder="Coupon Code">
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-black">Apply Coupon</button>
+                        </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <label class="text-black h4" for="coupon">Coupon</label>
-                        <p>Enter your coupon code if you have one.</p>
-                    </div>
-                    <div class="col-md-8 mb-3 mb-md-0">
-                        <input type="text" class="form-control py-3" id="coupon" placeholder="Coupon Code">
-                    </div>
-                    <div class="col-md-4">
-                        <button class="btn btn-black">Apply Coupon</button>
+                <div class="col-md-6 pl-5">
+                    <div class="row justify-content-end">
+                        <div class="col-md-7">
+                            <div class="row">
+                                <div class="col-md-12 text-right border-bottom mb-5">
+                                    <h3 class="text-black h4 text-uppercase">Cart Totals</h3>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <span class="text-black">Subtotal</span>
+                                </div>
+                                <div class="col-md-6 text-right">
+                                    <strong class="text-black">₹<%= cart.cartTotal %></strong>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <span class="text-black">Coupon Discount</span>
+                                </div>
+                                <div class="col-md-6 text-right">
+                                    <strong class="text-black">₹00.00</strong>
+                                </div>
+                            </div>
+                            <div class="row mb-5">
+                                <div class="col-md-6">
+                                    <span class="text-black">Total</span>
+                                </div>
+                                <div class="col-md-6 text-right">
+                                    <strong class="text-black">₹<%= cart.cartTotal %></strong>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <a href="/checkout">
+                                        <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location='checkout.html'">Proceed To Checkout</button>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 pl-5">
-                <div class="row justify-content-end">
-                    <div class="col-md-7">
-                        <div class="row">
-                            <div class="col-md-12 text-right border-bottom mb-5">
-                                <h3 class="text-black h4 text-uppercase">Cart Totals</h3>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <span class="text-black">Subtotal</span>
-                            </div>
-                            <div class="col-md-6 text-right">
-                                <strong class="text-black">₹<%= cart.cartTotal %></strong>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <span class="text-black">Coupon Discount</span>
-                            </div>
-                            <div class="col-md-6 text-right">
-                                <strong class="text-black">₹00.00</strong>
-                            </div>
-                        </div>
-                        <div class="row mb-5">
-                            <div class="col-md-6">
-                                <span class="text-black">Total</span>
-                            </div>
-                            <div class="col-md-6 text-right">
-                                <strong class="text-black">₹<%= cart.cartTotal %></strong>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-12">
-                                <a href="/checkout">
-                                    <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location='checkout.html'">Proceed To Checkout</button>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <% } else { %>
+            <!-- Handle the case where cart or products are null or empty -->
+        
+        <% } %>
     </div>
 </div>
-</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const quantityDropdowns = document.querySelectorAll('.quantity');
+
+        quantityDropdowns.forEach(dropdown => {
+            dropdown.addEventListener('change', async (event) => {
+                const productId = event.target.dataset.productId;
+                const currentQuantity = event.target.dataset.currentQuantity;
+                const newQuantity = event.target.value;
+
+                if (newQuantity !== currentQuantity) {
+                    try {
+                        const response = await axios.post(`/update-quantity/${productId}`, { newQuantity });
+
+                        // Handle the response if needed
+                        console.log(response.data);
+
+                        // Refresh the window after successful update
+                        window.location.reload();
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+
 
 <%- include('../layout/footer.ejs') %>
+
+
+
+
+
+  

@@ -125,7 +125,7 @@ const updateProduct = asyncHandler(async (req, res) => {
   }
 });
 
-const loadUpdateProduct = asyncHandler(async (req, res) => {
+const   loadUpdateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   try {
     const category = await Category.find({ list: true });

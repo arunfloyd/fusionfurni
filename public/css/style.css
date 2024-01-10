@@ -8,6 +8,44 @@
 body {
   overflow-x: hidden;
   position: relative; }
+  .quantity-dropdown-container {
+    position: relative;
+}
+
+/* Dropdown container */
+.quantity-dropdown-container {
+  position: relative;
+}
+.p-5 {
+  overflow: auto; /* or overflow: hidden; */
+}
+/* Actual dropdown style */
+.quantity {
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #3A5D4E;
+  border-radius: 5px;
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  background-color: #fff;
+  color: #3A5D4E;
+  cursor: pointer;
+  width: 80px; /* Adjust the width as needed */
+  background-size: 20px 20px; /* Adjust the size of the arrow */
+}
+
+/* Hover effect */
+.quantity:hover {
+  border-color: #3A5D4E;
+}
+
+/* Selected option style */
+.quantity option:checked {
+  background-color: #3A5D4E;
+  color: #fff;
+}
+
 
 body {
   font-family: "Inter", sans-serif;

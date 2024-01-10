@@ -1,6 +1,5 @@
 <%- include('../layout/header.ejs') %>
 
-<!-- Start Hero Section -->
 <div class="hero">
   <div class="container">
     <div class="row justify-content-between">
@@ -9,60 +8,48 @@
           <h1>Your Orders</h1>
         </div>
       </div>
-      <div class="col-lg-7"></div>
     </div>
   </div>
-  <!-- ... (your existing code) ... -->
 </div>
-<!-- End Hero Section -->
 
-<div class="untree_co-section before-footer-section">
-  <div class="container">
-    <div class="row mb-5">
-      <form class="col-md-12" method="post">
-        <div class="site-blocks-table">
-          <!-- Loop through each order -->
-          <% userorders.forEach(order => { %>
-          <!-- <h2>Order ID: <%= order._id %></h2> -->
-
-          <p>Order Date: <%= order.createdAt.toLocaleString("en-US") %></p>
-
-          <!-- Loop through each product in the order -->
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Product Title</th>
-                <th>Order Status</th>
-                <th>Image</th>
-                <th>Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% order.products.forEach(productItem => { %>
-              <tr>
-                <td><%= order._id %></td>
-                <td><%= productItem.product.title %></td>
-                <td><%= order.paymentIntent.status %></td>
-
-                <td>
-                  <img
-                    src="/productImage/<%= productItem.product.images[0] %>"
-                    alt="Product Image"
-                    width="100px"
-                    height="100px"
-                  />
-                </td>
-                <td><%= productItem.product.price %></td>
-              </tr>
-              <% }); %>
-            </tbody>
-          </table>
-          <% }); %>
-        </div>
-      </form>
+<div class="card text-center">
+  <% userorders.forEach(order => { %>
+    <div class="card-header">
+      <h4>Order ID: <%= order.orderId %></h4>
     </div>
-  </div>
+    
+    <% order.products.forEach((productItem, index, array) => { %>
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-md-2 offset-md-1">
+            <!-- Adjusted grid classes for image placement -->
+            <img
+              src="/productImage/<%= productItem.product.images[0] %>"
+              alt="Product Image"
+              width="100px"
+              height="100px"
+            />
+          </div>
+          <div class="col-md-7">
+            <!-- Adjusted grid classes for text content -->
+            <h5 class="card-title"><strong>Product Title:</strong> <%= productItem.product.title %></h5>
+            <h5 class="card-text"><strong>Order Status:</strong> <%= order.paymentIntent.status %></h5>
+            <h6 class="card-text"><strong>Product Price:</strong> <%= productItem.product.price %></h6>
+
+            <% if (index === array.length - 1) { %>
+              <strong> <p>Expected Delivery Date: <%= new Date(parseInt(order.expectedDelivery)).toLocaleDateString("en-US") %></p></strong>
+              <!-- Display expected delivery date and "More Details" button for the last product -->
+             
+              <a href="/orders-details/<%= order._id %>" class="btn btn-primary">More Details</a>
+            <% } %>
+          </div>
+          <div class="col-md-2">
+    
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  <% }); %>
 </div>
 
 <%- include('../layout/footer.ejs') %>

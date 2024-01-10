@@ -32,17 +32,25 @@ const {
   loadForgetPassword,
   loadChangePassword,
   loadVerifyEmail,
+  updateQuantity,
+  getOrdersDetails
 } = require("../controller /userController");
 const {
   userMiddleware,
   noCacheHeaders,
 } = require("../middlewares/authMiddleware");
 const router = express.Router();
-
-router.get("/register", loginUserCtrl);
-router.post("/register", createUser);
 router.get("/login", noCacheHeaders, loadlogin);
 router.post("/login", loginUserCtrl);
+router.get("/register", loginUserCtrl);
+router.post("/register", createUser);
+router.get("/forget-password", loadForgetPassword);
+router.post("/forget-password", forgotPasswordToken);
+router.get("/reset-password/:token", loadChangePassword);
+router.post("/reset-password/:token", resetPassword);
+router.get("/verify-mail", loadVerifyEmail);
+router.post("/verify-mail", verifyMail);
+router.post("/resend-mail", resendMail);
 router.get("/shop", shop);
 router.get("/home", home);
 router.get("/contact", contact);
@@ -53,24 +61,19 @@ router.get("/cart", cart);
 router.get("/about", about);
 router.post("/cart", userMiddleware, userCart);
 router.get("/view-cart", userMiddleware, getUserCart);
+router.post("/remove-item", userMiddleware, removeItem);
+router.post("/update-quantity/:productId", userMiddleware, updateQuantity);
 router.get("/checkout", userMiddleware, checkout);
-router.get("/orders", userMiddleware, getOrders);
-router.get("/create-order", userMiddleware, createOrder);
+router.post("/create-order", userMiddleware, createOrder);
 router.get("/thankyou", userMiddleware, thankyou);
-router.get("/login", loadlogin);
 router.get("/all-user", getallUser);
-router.get("/refresh", handleRefreshToken);
-router.get("/logout", logout);
-router.get("/error", errorPage);
+router.get("/orders", userMiddleware, getOrders);
+router.get("/orders-details/:id", userMiddleware, getOrdersDetails);
 router.get("/profile", userMiddleware, loadProfile);
 router.post("/profile", userMiddleware, addAddress);
-router.post("/remove-item", userMiddleware, removeItem);
-router.get('/forget-password',loadForgetPassword);
-router.post('/forget-password',forgotPasswordToken);
-router.get('/reset-password/:token',loadChangePassword);
-router.post('/reset-password/:token',resetPassword);
-router.get('/verify-mail',loadVerifyEmail);
-router.post('/verify-mail',verifyMail);
-router.post('/resend-mail',resendMail);
+router.get("/logout", logout);
+router.get("/login", loadlogin);
+router.get("/refresh", handleRefreshToken);
+router.get("/error", errorPage);
 
 module.exports = router;

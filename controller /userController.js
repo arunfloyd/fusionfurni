@@ -16,6 +16,7 @@ const uniqid = require("uniqid");
 const sendEmail = require("./emailController");
 const crypto = require("crypto");
 const otpGenerator = require("otp-generator");
+const orderid = require('order-id')('key');
 const loadlogin = asyncHandler(async (req, res) => {
   try {
     if (req.cookies.refreshToken) {
@@ -102,7 +103,6 @@ const createUser = asyncHandler(async (req, res) => {
       await sendEmail(data);
       // res.redirect('/verify-mail');
       res.redirect(`/verify-mail?email=${encodeURIComponent(email)}`);
-
     } else {
       req.flash("message", "User Already Exists");
       res.redirect("/login");
@@ -123,7 +123,10 @@ const loadVerifyEmail = asyncHandler(async (req, res) => {
 const verifyMail = asyncHandler(async (req, res) => {
   try {
     const email = req.body.email;
-    const user = await User.findOne({ email: email ,passwordResetExpires: { $gt: Date.now() }});
+    const user = await User.findOne({
+      email: email,
+      passwordResetExpires: { $gt: Date.now() },
+    });
 
     if (user) {
       const enteredOTP = req.body.otp;
@@ -154,10 +157,10 @@ const verifyMail = asyncHandler(async (req, res) => {
   }
 });
 const resendMail = asyncHandler(async (req, res) => {
-  console.log('Resend mail route triggered');
+  console.log("Resend mail route triggered");
   try {
     const email = req.body.email;
-const user = await User.findOne({email})
+    const user = await User.findOne({ email });
     // Generate a new OTP
     const otp = otpGenerator.generate(6, {
       digits: true,
@@ -171,7 +174,10 @@ const user = await User.findOne({email})
 
     // Update the existing OTP in the database
     // Assuming the Otp model has a field 'email' to match the user
-    await Otp.findOneAndUpdate({ user: user._id }, { otp: encryptedOtp, expiresAt: new Date(Date.now() + 1 * 60 * 1000) });
+    await Otp.findOneAndUpdate(
+      { user: user._id },
+      { otp: encryptedOtp, expiresAt: new Date(Date.now() + 1 * 60 * 1000) }
+    );
 
     const resetURL = `To authenticate, please use the following One Time Password (OTP):
       ${otp}
@@ -189,46 +195,17 @@ const user = await User.findOne({email})
     await sendEmail(data);
 
     // Render the same page with a success message
-    res.render("user/verifyEmail", { email, message: "Resent OTP successfully" });
+    res.render("user/verifyEmail", {
+      email,
+      message: "Resent OTP successfully",
+    });
   } catch (error) {
     console.error(error);
     throw new Error(error);
   }
 });
 
-// const resendMail = asyncHandler(async (req, res) => {
-//   try {
-//     const email = req.body.email;
-//     const otp = otpGenerator.generate(6, {
-//       digits: true,
-//       lowerCaseAlphabets: false,
-//       upperCaseAlphabets: false,
-//       specialChars: false,
-//     });
-//     const salt = await bcrypt.genSalt(10);
-//     const encryptedOtp = await bcrypt.hash(otp, salt);
-//     const otps = new Otp({
-//       otp: encryptedOtp,
-//       expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
-//       user: newUser._id,
-//     });
-//     await otps.save();
-//     const resetURL = `To authenticate, please use the following One Time Password (OTP):
-//       ${otp}
-//       Don't share this OTP with anyone. Our customer service team will never ask you for your password, OTP, credit card, or banking info.
-//       We hope to see you again soon.`;
-//     const data = {
-//       to: email,
-//       text: "Hey User",
-//       subject: "OTP Verification ",
-//       htm: resetURL,
-//     };
-//     sendEmail(data);
-//     res.render("user/verifyEmail", { email, message: req.flash("message") });
-//   } catch (error) {
-//     throw new Error(error);
-//   }
-// });
+
 const loadVerify = asyncHandler(async (req, res) => {
   try {
     res.render("user/verifyEmail");
@@ -296,20 +273,6 @@ const about = asyncHandler(async (req, res) => {
 const cart = asyncHandler(async (req, res) => {
   try {
     res.render("UI/cart");
-  } catch (error) {
-    // throw new Error("Shop Can't Access")
-    res.send(error);
-    res.render("error");
-  }
-});
-const checkout = asyncHandler(async (req, res) => {
-  try {
-    const { _id } = req.user;
-    const cart = await Cart.findOne({ orderby: _id }).populate(
-      "products.product"
-    );
-    const addresses = await Address.find({ user: _id }).exec();
-    res.render("UI/checkout", { addresses, cart });
   } catch (error) {
     // throw new Error("Shop Can't Access")
     res.send(error);
@@ -509,25 +472,31 @@ const userCart = asyncHandler(async (req, res) => {
   validateMongoDbId(_id);
 
   try {
-    let products = [];
     const user = await User.findById(_id);
     const alreadyExistCart = await Cart.findOne({ orderby: user._id });
-    let updatedCart;
 
     if (alreadyExistCart) {
-      // Update existing cart
-      alreadyExistCart.products.push({
-        product: productId,
-        quantity: quantity,
-        price: price,
-      });
+      // Check if the product already exists in the cart
+      const existingProduct = alreadyExistCart.products.find(
+        (product) => product.product.toString() === productId
+      );
 
-      alreadyExistCart.cartTotal += price * quantity;
+      if (!existingProduct) {
+        // Add the product to the cart if it doesn't exist
+        alreadyExistCart.products.push({
+          product: productId,
+          quantity: quantity,
+          price: price,
+        });
 
-      updatedCart = await alreadyExistCart.save();
+        alreadyExistCart.cartTotal += price * quantity;
+        await alreadyExistCart.save();
+      }
+
+      res.json(alreadyExistCart);
     } else {
       // Create a new cart
-      let newCart = await new Cart({
+      const newCart = await new Cart({
         products: [
           {
             product: productId,
@@ -539,26 +508,85 @@ const userCart = asyncHandler(async (req, res) => {
         orderby: user?._id,
       }).save();
 
-      updatedCart = newCart;
+      res.json(newCart);
     }
-
-    res.json(updatedCart);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
+// const userCart = asyncHandler(async (req, res) => {
+//   const { productId, quantity, price } = req.body;
+//   const { _id } = req.user;
+//   validateMongoDbId(_id);
+
+//   try {
+//     let products = [];
+//     const user = await User.findById(_id);
+//     const alreadyExistCart = await Cart.findOne({ orderby: user._id });
+//     let updatedCart;
+
+//     if (alreadyExistCart) {
+//       // Update existing cart
+//       alreadyExistCart.products.push({
+//         product: productId,
+//         quantity: quantity,
+//         price: price,
+//       });
+
+//       alreadyExistCart.cartTotal += price * quantity;
+
+//       updatedCart = await alreadyExistCart.save();
+//     } else {
+//       // Create a new cart
+//       let newCart = await new Cart({
+//         products: [
+//           {
+//             product: productId,
+//             quantity: quantity,
+//             price: price,
+//           },
+//         ],
+//         cartTotal: price * quantity,
+//         orderby: user?._id,
+//       }).save();
+
+//       updatedCart = newCart;
+//     }
+
+//     res.json(updatedCart);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+
+const checkout = asyncHandler(async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const cart = await Cart.findOne({ orderby: _id }).populate(
+      "products.product"
+    );
+    const addresses = await Address.find({ user: _id }).exec();
+    res.render("UI/checkout", { addresses, cart });
+  } catch (error) {
+    // throw new Error("Shop Can't Access")
+    res.send(error);
+    res.render("error");
+  }
+});
 const getUserCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
 
-  console.log(_id);
+  
   // validateMongoDbId(_id);
   try {
     const cart = await Cart.findOne({ orderby: _id }).populate(
       "products.product"
     );
-    console.log(cart);
+    
 
     //  console.log(id)
     res.render("UI/cart", { cart: cart });
@@ -569,35 +597,38 @@ const getUserCart = asyncHandler(async (req, res) => {
 });
 
 const createOrder = asyncHandler(async (req, res) => {
-  const { COD, couponApplied } = req.body;
+  const { COD, couponApplied, addressId, paymentMethod } = req.body;
   const { _id } = req.user;
 
   try {
     const user = await User.findById(_id);
-    console.log(user);
     const addresses = await Address.find({ user: _id }).exec();
     let userCart = await Cart.findOne({ orderby: user._id });
-    console.log(userCart);
-    let finalAmout = 0;
+    let finalAmount = 0;
+
     if (couponApplied && userCart.totalAfterDiscount) {
-      finalAmout = userCart.totalAfterDiscount;
+      finalAmount = userCart.totalAfterDiscount;
     } else {
-      finalAmout = userCart.cartTotal;
+      finalAmount = userCart.cartTotal;
     }
-    console.log(finalAmout);
+
     let newOrder = await new Order({
       products: userCart.products,
       paymentIntent: {
         id: uniqid(),
-        method: "COD",
-        amount: finalAmout,
+        method: paymentMethod,
+        amount: finalAmount,
         status: "Pending",
         created: Date.now(),
       },
-      address: addresses[1]._id,
+      OrderId:orderid.generate(),
+      address: addressId,
       orderby: user._id,
       orderStatus: "Processing",
+      expectedDelivery: Date.now() + 5 * 24 * 60 * 60 * 1000
     }).save();
+
+    // Update product quantities
     let update = userCart.products.map((item) => {
       const count = typeof item.count === "number" ? item.count : 0;
       const updatedQuantity = isNaN(count) ? 0 : +count;
@@ -611,13 +642,17 @@ const createOrder = asyncHandler(async (req, res) => {
         },
       };
     });
+
     const updated = await Product.bulkWrite(update, {});
+    
+
     res.redirect("/thankyou");
-    res.json({ message: "success" });
   } catch (error) {
-    throw new Error(error);
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 const getOrders = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   validateMongoDbId(_id);
@@ -627,8 +662,24 @@ const getOrders = asyncHandler(async (req, res) => {
       .populate("orderby")
       .exec();
 
-    console.log(userorders);
     res.render("UI/orders", { userorders: userorders });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+const getOrdersDetails = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { id } = req.params;
+  validateMongoDbId(_id);
+  try {
+    const userorders = await Order.findById({ _id:id })
+      .populate("products.product")
+      .populate("orderby")
+      .populate("address")
+      .exec();
+
+    console.log(userorders);
+    res.render("UI/orderDetails", { userorder: userorders });
   } catch (error) {
     throw new Error(error);
   }
@@ -692,12 +743,48 @@ const addAddress = asyncHandler(async (req, res) => {
   }
 });
 
+// const removeItem = asyncHandler(async (req, res) => {
+//   try {
+//     const { _id } = req.user;
+//     const { productId } = req.body; 
+
+//     const cart = await Cart.findOne({ orderby: _id });
+//     const quantity = cart.products.quantity
+
+//     if (!cart) {
+//       return res.status(404).json({ error: "Cart not found" });
+//     }
+
+//     // Find the product to be removed
+//     const removedProduct = cart.products.find((productItem) => {
+//       return productItem.product.toString() === productId;
+//     });
+
+//     if (!removedProduct) {
+//       return res.status(404).json({ error: "Product not found in the cart" });
+//     }
+
+//     // Decrease the cartTotal by the price of the removed product
+//     cart.cartTotal -= removedProduct.price*quantity;
+
+//     // Remove the product from the products array
+//     cart.products = cart.products.filter((productItem) => {
+//       return productItem.product.toString() !== productId;
+//     });
+
+//     // Update the cart with the modified data
+//     await cart.save();
+
+//     res.redirect("/view-cart");
+//   } catch (error) {
+//     throw new Error(error);
+//   }
+// });
 const removeItem = asyncHandler(async (req, res) => {
   try {
     const { _id } = req.user;
-    const { productId } = req.body; // Assuming you're sending productId in the request body
+    const { productId } = req.body;
 
-    // Find the cart for the user
     const cart = await Cart.findOne({ orderby: _id });
 
     if (!cart) {
@@ -713,8 +800,8 @@ const removeItem = asyncHandler(async (req, res) => {
       return res.status(404).json({ error: "Product not found in the cart" });
     }
 
-    // Decrease the cartTotal by the price of the removed product
-    cart.cartTotal -= removedProduct.price;
+    // Decrease the cartTotal by the total price of the removed product(s)
+    cart.cartTotal -= removedProduct.price * removedProduct.quantity;
 
     // Remove the product from the products array
     cart.products = cart.products.filter((productItem) => {
@@ -729,6 +816,41 @@ const removeItem = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+const updateQuantity = asyncHandler(async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const { newQuantity } = req.body;
+
+    // Find the cart and the product in the cart
+    const cart = await Cart.findOne({ orderby: req.user._id });
+    const product = cart.products.find(productItem => productItem.product.toString() === productId);
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found in the cart" });
+    }
+
+    // Calculate the difference in quantity
+    const quantityDiff = newQuantity - product.quantity;
+
+    // Update the product quantity
+    product.quantity = newQuantity;
+
+    // Update the cart total
+    cart.cartTotal += product.price * quantityDiff;
+
+    // Save the changes to the cart
+    await cart.save();
+
+    res.status(200).json({ message: 'Quantity updated successfully', cartTotal: cart.cartTotal });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+// Add the route to your Express application
+
 const updatePassword = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const { password } = req.body;
@@ -856,5 +978,7 @@ module.exports = {
   loadChangePassword,
   loadVerifyEmail,
   verifyMail,
-  resendMail
+  resendMail,
+  updateQuantity,
+  getOrdersDetails
 };

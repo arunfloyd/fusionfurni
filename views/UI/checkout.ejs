@@ -1,4 +1,3 @@
-
 <%- include('../layout/header.ejs') %>
 
 <!-- Start Hero Section -->
@@ -11,229 +10,231 @@
                 </div>
             </div>
             <div class="col-lg-7">
-                
             </div>
         </div>
     </div>
 </div>
 <!-- End Hero Section -->
 
+<div class="form-check mb-3">
+</div>
+
 <div class="untree_co-section">
-<div class="container">
-  <div class="row mb-5">
-    <div class="col-md-12">
-      
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-6 mb-5 mb-md-0">
-      <h2 class="h3 mb-3 text-black">Select a delivery address  </h2>
-      <div class="p-3 p-lg-5 border bg-white">
-        <% addresses.forEach((address, index) => { %>
-          
-        <div class="card mt-3">
-          <div class="card-body">
-            <form
-            action="/update-cart"
-            method="put"
-            id="mainForm"
-        >
-            <div class="form-check">
-                <input
-                    type="radio"
-                    name="addressSelection"
-                    id="<%= 'address' + index %>"
-                    class="form-check-input"
-                    required
-                >
-                <label for="<%= 'address' + index %>" class="form-check-label"><%= address.name %></label>
-                <p class="card-text">
-                    <%= address.mobile %>
-                    <%= address.street %>
-                    <%= address.area %>
-                    <%= address.landmark %>
-                    <%= address.pincode %>
-                    <%= address.addressType %>
-                </p>
-                <a href="#" class="card-link"> Edit</a>
-            </div>
-    </div>
-</div>
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <h2 class="h3 mb-3 text-black">Select a delivery address </h2>
+                <div class="p-5 p-lg-5 border bg-white">
+                    <form action="/create-order" method="post" id="mainForm">
 
-<% if ((index + 1) % 3 === 0) { %>
-</div>
-<div class="row">
-<% } %>
-<% }); %>
+                        <input class="form-check-input" type="checkbox" id="addAddressCheckbox">
+                        <label class="form-check-label" for="addAddressCheckbox">
+                            Add Address
+                        </label>
 
-</form>
-            
-        
-    
-        
-      </div>
-      <div class="form-check mb-3">
-        <input class="form-check-input" type="checkbox" id="addAddressCheckbox">
-        <label class="form-check-label" for="addAddressCheckbox">
-            Add Address
-        </label>
-    </div>
-    <form action="/profile" method="post" id="mainForm">
-
-    <div id="addressFields" style="display: none;">
-        <div class="form-group mb-3">
-            <label class="text-black" for="street">Name </label>
-            <input type="text" name="name" class="form-control" id="name">
-        </div>
-        <div class="form-group mb-3">
-            <label class="text-black" for="street">Phone Number</label>
-            <input type="text" name="mobile" class="form-control" id="mobile">
-        </div>
-        <div class="form-group mb-3">
-            <label class="text-black" for="street">Flat, House no., Building, Company, Apartment</label>
-            <input type="text" name="street" class="form-control" id="street">
-        </div>
-        <div class="form-group mb-3">
-            <label class="text-black" for="street">Area, Street, Sector, Village</label>
-            <input type="text" name="area" class="form-control" id="area">
-        </div>
-        <div class="form-group mb-3">
-            <label class="text-black" for="street">Landmark</label>
-            <input type="text" name="landmark" class="form-control" id="landmark">
-        </div>
-
-        <div class="form-group mb-3">
-            <label class="text-black" for="pincode">Pincode</label>
-            <input type="text" name="pincode" class="form-control" id="pincode">
-        </div>
-
-        <div class="form-group mb-3">
-            <label class="text-black" for="addressType">Address Type</label>
-            <select name="addressType" class="form-control" id="addressType">
-                <option value="home">Home - 9:00 AM to 5:00 PM Delivery</option>
-                <option value="work">Work - 9:00 AM to 9:00 PM Delivery</option>
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Submit</button>
-        <br>
-        <br>  
-    </form>
-    </div>
-    </div>
-    
-    <div class="col-md-6">
-
-     
-
-      <div class="row mb-5">
-        <div class="col-md-12">
-          <h2 class="h3 mb-3 text-black">Order Summary</h2>
-          <div class="p-3 p-lg-5 border bg-white">
-            <table class="table site-block-order-table mb-5">
-              <thead>
-                <th>Product</th>
-                <th>Total</th>
-              </thead>
-              <tbody>
-                <!-- <tr>
-                  <td>Top Up T-Shirt <strong class="mx-2">x</strong> 1</td>
-                  <td>$250.00</td>
-                </tr>
-                <tr>
-                  <td>Polo Shirt <strong class="mx-2">x</strong>   1</td>
-                  <td>$100.00</td>
-                </tr>
-                <tr>
-                  <td class="text-black font-weight-bold"><strong>Cart Subtotal</strong></td>
-                  <td class="text-black">$350.00</td>
-                </tr> -->
-                <tr>
-                  <td class="text-black font-weight-bold"><strong>Order Total</strong></td>
-                  <td class="text-black font-weight-bold"><strong>₹<%=cart.cartTotal%></strong></td>
-                </tr>
-              </tbody>
-            </table>
-
-
-    
-            <form action="/profile" method="post" id="mainForm" onsubmit="updateCartInfo()">
-              <!-- ... your form fields ... -->
-              <h>Select a payment method</h>
-            <div class="border p-3 mb-5">
-              
-              <h3 class="h6 mb-0"><a class="d-block" data-bs-toggle="collapse" href="#collapsepaypal" role="button" aria-expanded="false" aria-controls="collapsepaypal">Cash On Delivery</a></h3>
-          
-              <div class="collapse" id="collapsepaypal">
-                        <br>
-                        <div class="py-2">
-                      <p class="mb-0">
-                        Safe and Flexible Payment Option for the Customer
+                        <div class="row">
+                            <% addresses.forEach((address, index) => { %>
+                                <div class="card mt-3">
+                                    <div class="card-body">
+                                        <div class="form-check">
+                                            <input
+                                                type="radio"
+                                                name="addressSelection"
+                                                id="<%= 'address' + index %>"
+                                                class="form-check-input"
+                                                value="<%= address.id %>"  <!-- Include the address ID as the value -->
+                                                required
+                                            >
+                                            <label for="<%= 'address' + index %>" class="form-check-label"><%= address.name %></label>
+                                            <p class="card-text">
+                                                <%= address.mobile %>
+                                                <%= address.street %>
+                                                <%= address.area %>
+                                                <%= address.landmark %>
+                                                <%= address.pincode %>
+                                                <%= address.addressType %>
+                                            </p>
+                                            <a href="#" class="card-link"> Edit</a>
+                                        </div>
+                                    </div>
+                                </div>
                         
-                        Cash on Delivery (COD) allows the customer to make the payment after receiving the product in hand- which is the most substantial advantage of this mode of payment.</p>
-                      
-                      <!-- Radio button for Cash On Delivery -->
-                      <div class="form-check">
-                          <input class="form-check-input" type="radio" name="COD" id="codRadio" value="cod" required>
-                          <label class="form-check-label" for="codRadio">
-                              Cash On Delivery
-                          </label>
-                      </div>
-                  </div>
-              </div>
-          </div>
-            </form>
-            
-          
+                                <% if ((index + 1) % 3 === 0) { %>
+                                    </div>
+                                    <div class="row">
+                                <% } %>
+                            <% }); %>
+                        </div>
+                        <br>
+                        <br>
+                        <div class="border p-3 mb-5">
+                            <h3 class="h3 mb-3 text-black">Select A Payment Method</h3>
+                            <br><br>
 
-            <div class="form-group">
-              <a href="/create-order"><button class="btn btn-black btn-lg py-3 btn-block" >Place Order</button>
-              </a>
+                            <h3 class="h6 mb-0"><a class="d-block" data-bs-toggle="collapse" href="#collapsepaypal" role="button" aria-expanded="false" aria-controls="collapsepaypal">Cash On Delivery ↓</a></h3>
+                            <div class="collapse" id="collapsepaypal">
+                                <br>
+                                <div class="py-2">
+                                    <p class="mb-0">
+                                        Safe and Flexible Payment Option for the Customer
+                                        Cash on Delivery (COD) allows the customer to make the payment after receiving the product in hand- which is the most substantial advantage of this mode of payment.
+                                    </p>
+                                    <!-- Radio button for Cash On Delivery -->
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="paymentMethod" id="codRadio1" value="COD" required>
+                                        <label class="form-check-label" for="codRadio1">
+                                            Cash On Delivery
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+
+                            <h3 class="h6 mb-0"><a class="d-block" data-bs-toggle="collapse" href="#collapsepaypals" role="button" aria-expanded="false" aria-controls="collapsepaypals">Online Payment ↓</a></h3>
+                            <div class="collapse" id="collapsepaypals">
+                                <br>
+                                <div class="py-2">
+                                    <p class="mb-0">
+                                        Online payments are transactions that occur online. The most common payment forms online are a credit card and debit card; others are an e-wallet, bank transfer, and UPI.
+                                    </p>
+                                    <!-- Radio button for Online Payment -->
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="paymentMethod" id="codRadio2" value="OnlinePayment" required>
+                                        <label class="form-check-label" for="codRadio2">
+                                            Online Payment
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" id="placeOrderBtn">Place Order</button>
+                        </div>
+                    </form>
+
+                    <form action="/profile" method="post" id="addressForm" style="display: none;">
+                        <div class="form-group mb-3">
+                            <label class="text-black" for="name">Name </label>
+                            <input type="text" name="name" class="form-control" id="name">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="text-black" for="mobile">Phone Number</label>
+                            <input type="text" name="mobile" class="form-control" id="mobile">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="text-black" for="street">Flat, House no., Building, Company, Apartment</label>
+                            <input type="text" name="street" class="form-control" id="street">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="text-black" for="area">Area, Street, Sector, Village</label>
+                            <input type="text" name="area" class="form-control" id="area">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="text-black" for="landmark">Landmark</label>
+                            <input type="text" name="landmark" class="form-control" id="landmark">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="text-black" for="pincode">Pincode</label>
+                            <input type="text" name="pincode" class="form-control" id="pincode">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="text-black" for="addressType">Address Type</label>
+                            <select name="addressType" class="form-control" id="addressType">
+                                <option value="home">Home - 9:00 AM to 5:00 PM Delivery</option>
+                                <option value="work">Work - 9:00 AM to 9:00 PM Delivery</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <br>
+                        <br>
+                    </form>
+                </div>
             </div>
 
-          </div>
+            <div class="col-md-6">
+                <div class="row mb-5">
+                    <div class="col-md-12">
+                        <h2 class="h3 mb-3 text-black">Order Summary</h2>
+                        <div class="p-3 p-lg-5 border bg-white">
+                            <table class="table site-block-order-table mb-5">
+                                <thead>
+                                    <th>Product</th>
+                                    <th>Qty</th>
+                                    <th>Total</th>
+                                </thead>
+                                <tbody>
+                                    <% if (cart && cart.products && cart.products.length > 0) { %>
+                                        <% cart.products.forEach(productItem => { %>
+                                            <tr>
+                                                <td><%= productItem.product.title %></td>
+                                                <td> <strong class="mx-2">x</strong> <%= productItem.quantity %></td>
+                                                <td><%= productItem.product.price %> <strong class="mx-2">x</strong> <%= productItem.quantity %> = <%= productItem.product.price * productItem.quantity %></td>
+                                            </tr>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <!-- Handle the case where cart or products are null or empty -->
+                                        <tr>
+                                            <td colspan="5">
+                                                <h4>Your Fushion Furni Cart is empty. <a href="/shop">Continue Shopping</a></h4>
+                                            </td>
+                                        </tr>
+                                    <% } %>
+                                    <tr>
+                                        <td class="text-black font-weight-bold"><strong>Order Total</strong></td>
+                                        <td class="text-black font-weight-bold"><strong>₹ <%=cart.cartTotal%></strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-
     </div>
-  </div>
-  <!-- </form> -->
 </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script>
-    function updateCartInfo(addressId) {
-        // Get the selected payment method
-        const selectedPaymentMethod = document.querySelector('input[name="COD"]:checked');
-        const selectedPaymentMethodValue = selectedPaymentMethod ? selectedPaymentMethod.value : null;
+</div>
 
-        // Update the cart information using Axios with the PUT method
-        axios.put('/update-cart', {
-                addressId: addressId, // Use the passed addressId
-                paymentMethod: selectedPaymentMethodValue
-            })
-            .then(function (response) {
-                console.log('Cart information updated successfully:', response.data);
-            })
-            .catch(function (error) {
-                console.error('Error updating cart information:', error);
-            });
-    }
-</script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     $(document).ready(function () {
         $("#addAddressCheckbox").change(function () {
             if (this.checked) {
-                $("#addressFields").show();
+                $("#addressForm").show();
             } else {
-                $("#addressFields").hide();
+                $("#addressForm").hide();
             }
         });
-    });
 
-    document.getElementById('mainForm').addEventListener('submit', function (event) {
-        console.log('Form submitted');
-        // Your other code here...
+        $("#placeOrderBtn").click(function () {
+    // Get the selected address and payment method
+    const selectedAddressId = $("input[name='addressSelection']:checked").val();
+    const selectedPaymentMethod = $("input[name='paymentMethod']:checked").val();
+
+    // Validate whether both address and payment method are selected
+    if (selectedAddressId && selectedPaymentMethod) {
+        // You can now use Axios to send these values to a specified route
+        axios.post('/create-order', {
+            addressId: selectedAddressId,
+            paymentMethod: selectedPaymentMethod
+        })
+        .then(function (response) {
+            console.log('Order placed successfully:', response.data);
+            // Redirect to the "/thankyou" route
+            window.location.href = '/thankyou';
+        })
+        .catch(function (error) {
+            console.error('Error placing order:', error);
+        });
+    } else {
+        console.error('Please select both an address and a payment method.');
+    }
+});
+
     });
 </script>
+
+
 <%- include('../layout/footer.ejs') %>
