@@ -84,7 +84,96 @@ const loginAdminCtrl = asyncHandler(async (req, res) => {
 
 const dashboard = asyncHandler(async (req, res) => {
   try {
-    res.render("adminDash/indexHome");
+    const revenue1 = await Order.aggregate([
+      {
+        $match: {
+          orderStatus: "Delivered",
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalCount: { $sum: 1 },
+          totalRevenue: { $sum: "$paymentIntent.amount" },
+        },
+      },
+    ]);
+    const orderCount = await Order.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalCount: { $sum: 1 }
+        }
+      }
+    ]);
+    const productCount = await Product.aggregate([{$match:{
+      list:true}},
+      {
+        $group: {
+          _id: null,
+          totalCount: { $sum: 1 }
+        }
+      }
+    ]);
+    const catCount = await Category.aggregate([{$match:{
+      list:true}},
+      {
+        $group: {
+          _id: null,
+          totalCount: { $sum: 1 }
+        }
+      }
+    ]);
+    const cancel = await Order.aggregate([
+      {
+        $match: {
+          orderStatus: "Cancelled",
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalCount: { $sum: 1 },
+        },
+      },
+    ]);
+    const returns = await Order.aggregate([
+      {
+        $match: {
+          orderStatus: "Returned",
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalCount: { $sum: 1 },
+        },
+      },
+    ]);
+    const newOrders = await User.aggregate([
+      {
+        $sort: { createdAt: -1 } // Assuming 'createdAt' is the timestamp field
+      },
+      {
+        $group: {
+          _id: null,
+          orders: { $push: "$$ROOT" } // Use $$ROOT to include the whole document
+        }
+      }
+    ]);
+    const categoryCount =catCount[0].totalCount
+    const totalCount= orderCount[0].totalCount
+    const revenue=revenue1[0].totalRevenue
+    const productsCount= productCount[0].totalCount
+    const returnCount = returns[0].totalCount
+    const cancelCount = cancel[0].totalCount
+    const completeCount = revenue1[0].totalCount
+//Calculate the Percentage    
+    const returnPercentage = (returnCount / totalCount) * 100
+    const cancelledPercentage = (cancelCount / totalCount) * 100;
+    const completedPercentage = (completeCount / totalCount) * 100;
+ 
+    res.render("adminDash/indexHome",{revenue,totalCount,productsCount,categoryCount,returnPercentage,cancelledPercentage,completedPercentage,newOrders});
   } catch (error) {
     res.send(error);
     res.render("error");

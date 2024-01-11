@@ -19,12 +19,12 @@
           <article class="itemlist">
             <div class="row align-items-center">
               <div class="col col-check flex-grow-0"></div>
-              <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+              <div class="col-lg-2 col-sm-4 col-8 flex-grow-1 col-name">
                 <a class="itemside" href="#">
                   <div class="left">
                     <img
                       src="/productImage/<%= getallProduct[i].images[0] %>"
-                      class="img-sm img-thumbnail"
+                      class="img-sm img"
                       alt="Item"
                     />
                   </div>
@@ -33,6 +33,10 @@
                     <h4 cla ss="mb-0"><%= getallProduct[i].title %></h4>
                   </div>
                 </a>
+              </div>
+              <div class="col-lg-2 col-sm-2 col-4 col-price">
+                <h6>Qty</h6>
+                <span><%= getallProduct[i].quantity %></span>
               </div>
               <div class="col-lg-2 col-sm-2 col-4 col-price">
                 <h6>Price</h6>

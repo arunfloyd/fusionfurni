@@ -32,6 +32,7 @@ var orderSchema = new mongoose.Schema(
         "Dispatched",
         "Cancelled",
         "Delivered",
+        "Returned"
       ],
     },
     orderby: {
@@ -44,7 +45,7 @@ var orderSchema = new mongoose.Schema(
     },
     expectedDelivery: {
       type: String,
-    },
+    }
   },
   {
     timestamps: true,

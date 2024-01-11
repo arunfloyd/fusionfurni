@@ -16,13 +16,13 @@ const uniqid = require("uniqid");
 const sendEmail = require("./emailController");
 const crypto = require("crypto");
 const otpGenerator = require("otp-generator");
-const orderid = require('order-id')('key');
-const Razorpay = require('razorpay');
+const orderid = require("order-id")("key");
+const Razorpay = require("razorpay");
 const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
 
 const razorpayInstance = new Razorpay({
   key_id: RAZORPAY_ID_KEY,
-  key_secret: RAZORPAY_SECRET_KEY
+  key_secret: RAZORPAY_SECRET_KEY,
 });
 const loadlogin = asyncHandler(async (req, res) => {
   try {
@@ -212,7 +212,6 @@ const resendMail = asyncHandler(async (req, res) => {
   }
 });
 
-
 const loadVerify = asyncHandler(async (req, res) => {
   try {
     res.render("user/verifyEmail");
@@ -249,6 +248,7 @@ const updateaUser = asyncHandler(async (req, res) => {
 
 const home = asyncHandler(async (req, res) => {
   try {
+   
     const getallProduct = await Product.find({ list: true });
     res.render("index", { getallProduct: getallProduct });
   } catch (error) {
@@ -569,15 +569,15 @@ const userCart = asyncHandler(async (req, res) => {
 //   }
 // });
 
-
 const checkout = asyncHandler(async (req, res) => {
   try {
     const { _id } = req.user;
+    const user = await User.findOne(_id);
     const cart = await Cart.findOne({ orderby: _id }).populate(
       "products.product"
     );
     const addresses = await Address.find({ user: _id }).exec();
-    res.render("UI/checkout", { addresses, cart });
+    res.render("UI/checkout", { addresses, cart, user });
   } catch (error) {
     // throw new Error("Shop Can't Access")
     res.send(error);
@@ -587,13 +587,11 @@ const checkout = asyncHandler(async (req, res) => {
 const getUserCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
 
-  
   // validateMongoDbId(_id);
   try {
     const cart = await Cart.findOne({ orderby: _id }).populate(
       "products.product"
     );
-    
 
     //  console.log(id)
     res.render("UI/cart", { cart: cart });
@@ -602,44 +600,43 @@ const getUserCart = asyncHandler(async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-const createOnlinePayment = async(req,res)=>{
+const createOnlinePayment = async (req, res) => {
   try {
-      const amount = req.body.amount*100
-      const options = {
+    const email = req.body.iemail;
+    const mobile = req.body.mobile;
+
+    const amount = req.body.amount * 100;
+    const options = {
+      amount: amount,
+      currency: "INR",
+      receipt: "razorUser@gmail.com",
+    };
+
+    razorpayInstance.orders.create(options, (err, order) => {
+      if (!err) {
+        res.status(200).send({
+          success: true,
+          msg: "Order Created",
+          order_id: order.id,
           amount: amount,
-          currency: 'INR',
-          receipt: 'razorUser@gmail.com'
+          key_id: RAZORPAY_ID_KEY,
+          product_name: req.body.name,
+          description: req.body.description,
+          contact: mobile,
+          name: req.body.nameUser,
+          email: email,
+        });
+      } else {
+        res.status(400).send({ success: false, msg: "Something went wrong!" });
       }
-
-      razorpayInstance.orders.create(options, 
-          (err, order)=>{
-              if(!err){
-                  res.status(200).send({
-                      success:true,
-                      msg:'Order Created',
-                      order_id:order.id,
-                      amount:amount,
-                      key_id:RAZORPAY_ID_KEY,
-                      product_name:req.body.name,
-                      description:req.body.description,
-                      contact:"8567345632",
-                      name: "Sandeep Sharma",
-                      email: "sandeep@gmail.com"
-                  });
-              }
-              else{
-                  res.status(400).send({success:false,msg:'Something went wrong!'});
-              }
-          }
-      );
-
+    });
   } catch (error) {
-      console.log(error.message);
+    console.log(error.message);
   }
-}
+};
 
 const createOrder = asyncHandler(async (req, res) => {
-  const { COD, couponApplied, addressId, paymentMethod } = req.body;
+  const { COD, couponApplied, addressId, paymentMethod, orderTotal } = req.body;
   const { _id } = req.user;
 
   try {
@@ -651,7 +648,7 @@ const createOrder = asyncHandler(async (req, res) => {
     if (couponApplied && userCart.totalAfterDiscount) {
       finalAmount = userCart.totalAfterDiscount;
     } else {
-      finalAmount = userCart.cartTotal;
+      finalAmount = Number(userCart.cartTotal);
     }
 
     let newOrder = await new Order({
@@ -663,11 +660,11 @@ const createOrder = asyncHandler(async (req, res) => {
         status: "Pending",
         created: Date.now(),
       },
-      OrderId:orderid.generate(),
+      orderId: orderid.generate(),
       address: addressId,
       orderby: user._id,
       orderStatus: "Processing",
-      expectedDelivery: Date.now() + 5 * 24 * 60 * 60 * 1000
+      expectedDelivery: Date.now() + 7 * 24 * 60 * 60 * 1000,
     }).save();
 
     // Update product quantities
@@ -686,7 +683,6 @@ const createOrder = asyncHandler(async (req, res) => {
     });
 
     const updated = await Product.bulkWrite(update, {});
-    
 
     res.redirect("/thankyou");
   } catch (error) {
@@ -714,7 +710,7 @@ const getOrdersDetails = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDbId(_id);
   try {
-    const userorders = await Order.findById({ _id:id })
+    const userorders = await Order.findById({ _id: id })
       .populate("products.product")
       .populate("orderby")
       .populate("address")
@@ -788,7 +784,7 @@ const addAddress = asyncHandler(async (req, res) => {
 // const removeItem = asyncHandler(async (req, res) => {
 //   try {
 //     const { _id } = req.user;
-//     const { productId } = req.body; 
+//     const { productId } = req.body;
 
 //     const cart = await Cart.findOne({ orderby: _id });
 //     const quantity = cart.products.quantity
@@ -865,7 +861,9 @@ const updateQuantity = asyncHandler(async (req, res) => {
 
     // Find the cart and the product in the cart
     const cart = await Cart.findOne({ orderby: req.user._id });
-    const product = cart.products.find(productItem => productItem.product.toString() === productId);
+    const product = cart.products.find(
+      (productItem) => productItem.product.toString() === productId
+    );
 
     if (!product) {
       return res.status(404).json({ error: "Product not found in the cart" });
@@ -883,13 +881,17 @@ const updateQuantity = asyncHandler(async (req, res) => {
     // Save the changes to the cart
     await cart.save();
 
-    res.status(200).json({ message: 'Quantity updated successfully', cartTotal: cart.cartTotal });
+    res
+      .status(200)
+      .json({
+        message: "Quantity updated successfully",
+        cartTotal: cart.cartTotal,
+      });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 // Add the route to your Express application
 
@@ -980,8 +982,6 @@ const resetPassword = asyncHandler(async (req, res) => {
   }
 });
 
-
-
 module.exports = {
   errorPage,
   createUser,
@@ -1023,5 +1023,5 @@ module.exports = {
   resendMail,
   updateQuantity,
   getOrdersDetails,
-  createOnlinePayment
+  createOnlinePayment,
 };

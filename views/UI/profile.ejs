@@ -3,7 +3,9 @@
 <!-- Start Contact Form -->
 <div class="untree_co-section">
     <div class="container">
+        <h3>Personal Information</h3>
         <div class="block">
+            
             <div class="row justify-content-center">
                 <div class="col-md-8 col-lg-8 pb-4">
                     <form action="/profile" method="post" id="mainForm">
@@ -25,7 +27,7 @@
                             <label class="text-black" for="fname">Phone Number</label>
                             <input type="text" class="form-control" id="fname" value="<%=profile.mobile%>"readonly>
                           </div>
-                      </div>
+                      </div><br><br><br><br>
                         <label class="text-black" for="fname">Saved Address </label>
                         <div class="row">
                           <% addresses.forEach((address, index) => { %>

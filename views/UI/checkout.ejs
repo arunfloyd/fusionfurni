@@ -1,5 +1,4 @@
 <%- include('../layout/header.ejs') %>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <!-- Start Hero Section -->
 <div class="hero">
     <div class="container">
@@ -42,9 +41,9 @@
                                                 name="addressSelection"
                                                 id="<%= 'address' + index %>"
                                                 class="form-check-input"
-                                                value="<%= address.id %>"  <!-- Include the address ID as the value -->
+                                                value="<%= address.id %>" 
                                                 required
-                                            >
+                                    >
                                             <label for="<%= 'address' + index %>" class="form-check-label"><%= address.name %></label>
                                             <p class="card-text">
                                                 <%= address.mobile %>
@@ -101,8 +100,8 @@
                                     <div class="pay-form">
                                         <input class="form-check-input" type="radio" name="paymentMethod" id="codRadio2" value="OnlinePayment" required>
                                         <label class="form-check-label" for="codRadio2">
-                                            Online Payment
-                                            <button class="btn btn-primary" id="pay-button">Pay Now</button>
+                                            Online Payment<br><br>
+                                            <button class="btn btn-primary" id="pay-button" disabled>Pay Now</button>
                                              
                                         </label>
                                        
@@ -181,7 +180,7 @@
                                     <% } else { %>
                                         <!-- Handle the case where cart or products are null or empty -->
                                         <tr>
-                                            <td colspan="5">
+                                            <td colspan="5">colum
                                                 <h4>Your Fushion Furni Cart is empty. <a href="/shop">Continue Shopping</a></h4>
                                             </td>
                                         </tr>
@@ -192,10 +191,11 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <input type="hidden" id="amount" placeholder="Amount" value="<%=cart.cartTotal%>">
-                            <input type="text" id="productName" placeholder="Product Name" >
-   
-    <input type="text" id="email" placeholder="Email" >
+                            <input type="hidden" id="amount" placeholder="Amount" name="orderTotal" value="<%=cart.cartTotal%>">
+                            <input type="hidden" id="productName" placeholder="Product Name" name="nameUser" value="<%=user.name%>">
+                            <input type="hidden" id="email" placeholder="Email" name="iemail" value="<%=user.email%>" >
+                            <input type="hidden" id="mobile" placeholder="Email" name="mobile" value="<%=user.email%>" >
+
                         </div>
                     </div>
                 </div>
@@ -222,6 +222,14 @@
                 $("#addressForm").hide();
             }
         });
+       $('#codRadio2').change(function () {
+                if ($(this).is(':checked')) {
+                    $("#pay-button").prop("disabled", false);
+                } else {
+                    $("#pay-button").prop("disabled", true);
+                }
+            });
+
         $('#pay-button').click(function(e){
         e.preventDefault();
 
@@ -229,6 +237,8 @@
         var productName = $('#productName').val();
         var amount = $('#amount').val();
         var email = $('#email').val();
+        var mobile = $('#mobile').val();
+
 
         // Placeholder for other values you might need (contact, description, etc.)
         // var contact = ...
