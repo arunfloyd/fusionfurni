@@ -13,35 +13,7 @@
 </footer>
 </main>
 
-<script>function deleteSelectedImages() {
-    const selectedCheckboxes = document.querySelectorAll('input[name="selectedImages"]:checked');
-    const selectedImageValues = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
-  
-    if (selectedImageValues.length > 0) {
-      if (confirm('Are you sure you want to delete the selected images?')) {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', '/admin/product/delete/images', true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.onload = function () {
-          if (xhr.status === 200) {
-            // Refresh the page or update UI with a success message
-            location.reload();
-          } else {
-            // Display an informative error message to the user
-            alert('Failed to delete images. Please try again.');
-          }
-        };
-        xhr.onerror = function () {
-          // Handle network errors
-          console.error('Network error during image deletion');
-        };
-        xhr.send(JSON.stringify({ selectedImages: selectedImageValues }));
-      }
-    } else {
-      alert('Please select images to delete.');
-    }
-  }
-  </script>
+
 
 
 <script src="/javascripts/vendors/jquery-3.6.0.min.js"></script>

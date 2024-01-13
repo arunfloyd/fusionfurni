@@ -1,164 +1,262 @@
 <%- include('header.ejs') %>
 
-    <body>
-        <div class="screen-overlay"></div>
-        <%- include('navbar-aside') %>
-        <main class="main-wrap">
-            
-            <section class="content-main">
-                <div class="row">
-                    <div class="col-9">
-                        <div class="content-header">
-                            <h2 class="content-title">Update the  Product</h2>
-                            
-                        </div>
+<body>
+    <div class="screen-overlay"></div>
+    <%- include('navbar-aside') %>
+    <main class="main-wrap">
+        <section class="content-main">
+            <div class="row">
+                <div class="col-9">
+                    <div class="content-header">
+                        <h2 class="content-title">Update the Product</h2>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h4>Basic</h4>
-                            </div>
-                            <div class="card-body">
-                                <form action="" method="post">
-                                    <div class="mb-4">
-                                        <label for="product_name" class="form-label">Product title</label>
-                                        <input type="text" placeholder="Type here" name="title" class="form-control" id="product_name" value="<%= updateProduct.title %> "required/>
-                                    </div>
-                                  
-                                    <div class="mb-4">
-                                        <label class="form-label">Full description</label>
-                                        <input placeholder="Type here" name="description" class="form-control" rows="4" value="<%= updateProduct.description %>" required>
-                                    </div>
-                                    <div class="col-lg-4">
-                                        <div class="mb-4">
-                                            <label class="form-label">Quantity </label>
-                                            <div class="row gx-2">
-                                            <input placeholder="" type="text" name="quantity" class="form-control" value="<%= updateProduct.quantity %>" pattern="\d+(\.\d{1,2})?" title="Please enter a non-negative number" required />
-
-                
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row gx-2">
-                                        <div class="col-sm-6 mb-3">
-                                            <label class="form-label">Category</label>
-                                            <% if (category.length > 0) { %>
-                                                <select class="form-select" name="category">
-                                                    <% for (let i = 0; i < category.length; i++) { %>
-                                                        <option value="<%= category[i].title %>" <%= category[i].title === updateProduct.category ? 'selected' : '' %>>
-                                                            <%= category[i].title %>
-                                                        </option>
-                                                    <% } %>
-                                                </select>
-                                            <% } else { %>
-                                                <p>Category Not Found</p>
-                                            <% } %>
-                                        </div>
-                                        
-                                        
-                                       
-                                    </div>
-                                   
-                                    <div class="row">
-                                        <div class="col-lg-4">
-                                            <div class="mb-4">
-                                                <label class="form-label">Regular price</label>
-                                                <div class="row gx-2">
-                                            <input placeholder="₹" type="text" name="price" class="form-control" value="<%= updateProduct.price %>" pattern="\d+(\.\d{1,2})?" title="Please enter a non-negative number" required />
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="form-label">Product Details</label>
-                                            <textarea placeholder="" name="productDetails" class="form-control" rows="4" required><%= updateProduct.productDetails %></textarea>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="form-label">Specification</label>
-                                            <textarea placeholder="Type here" name="specification" class="form-control" rows="4" required><%= updateProduct.specification %></textarea>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="form-label">Warranty</label>
-                                            <textarea placeholder="Type here" name="warranty" class="form-control" rows="4" required><%= updateProduct.warranty %></textarea>
-                                        </div>
-                                    </div>
-                               
-                                    <div class="col-lg-4">
-                                        <div class="card mb-4">
-                                            <div class="card-header">
-                                                <h4>Images</h4>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="input-upload">
-                                                    <% if (updateProduct.images && updateProduct.images.length > 0) { %>
-                                                        <% for (let i = 0; i < updateProduct.images.length; i++) { %>
-                                                            <div class="image-container">
-                                                                <img src="/productImage/<%= updateProduct.images[i] %>" alt="Image" />
-                                                                <input type="checkbox" name="selectedImages" value="<%= updateProduct.images[i] %>">
-                                                                <!-- <button class="delete-button" data-image="<%= updateProduct.images[i] %>">Delete</button> -->
-                                                            </div>
-                                                        <% } %>
-                                                    <% } %>
-                                                    <input class="form-control" type="file" name="images" multiple />
-                                                    <br>
-
-                                                    <button type="button" class="btn btn-info" onclick="deleteSelectedImages()">Delete Selected Images</button>
-                                                </div>
-                                            </div>
-                                            
-                                            
-                                        </div>
-                                    </div>
-                                    <h4>Make the Product List or Unlist</h4>
-                                    <br>
-                                            <div class="radio-group">
-                                                <label>
-                                                    <input type="radio" name="list" value="true" <%= updateProduct.list ? 'checked' : '' %> />
-                                                    List
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="list" value="false" <%= !updateProduct.list ? 'checked' : '' %> />
-                                                    Unlist
-                                                </label>
-                                            </div>  
-                                    <thead>
-                                    <br>
-
-                                        <tr>
-                                            <th>
-                                                <button type="button" class="btn btn-danger" onclick="confirmDelete('<%= updateProduct._id %>')">
-                                                    Delete
-                                                </button>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    
-                                        <button type="submit" class="btn btn-success">Submit</button>
-
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <!-- card end// -->
-                       
-                        <!-- card end// -->
-                    </div>
-                    
                 </div>
-            </section>
-           
-            <!-- content-main end// -->
-            <%- include('footer.ejs') %>
+                <div class="col-lg-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4>Basic</h4>
+                        </div>
+                        <div class="card-body">
+                            <form action="" method="post" onsubmit="return validateForm()">
+                                <div class="mb-4">
+                                    <label for="product_name" class="form-label">Product title</label>
+                                    <input type="text" placeholder="Type here" name="title" class="form-control" id="product_name" minlength="10" maxlength="50" value="<%= updateProduct.title %>" required/>
+                                    <p class="validation-message" style="color: red " id="titleValidation"></p>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label"> Description</label>
+                                    <textarea placeholder="Type here" name="description" class="form-control" rows="4" oninput="checkWordCount(this)" required><%= updateProduct.description %></textarea>
+                                    <p class="validation-message" id="wordCountMessageDescription" style="color: rgb(8, 17, 198);"></p>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-4">
+                                        <label class="form-label">Quantity </label>
+                                        <div class="row gx-2">
+                                            <input placeholder="" type="text" name="quantity" class="form-control" value="<%= updateProduct.quantity %>" pattern="\d+(\.\d{1,2})?" title="Please enter a non-negative number" required />
+                                            <p class="validation-message" style="color: rgb(55, 255, 0) " id="quantityValidation"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row gx-2">
+                                    <div class="col-sm-6 mb-3">
+                                        <label class="form-label">Category</label>
+                                        <% if (category.length > 0) { %>
+                                            <select class="form-select" name="category">
+                                                <% for (let i = 0; i < category.length; i++) { %>
+                                                    <option value="<%= category[i].title %>" <%= category[i].title === updateProduct.category ? 'selected' : '' %>>
+                                                        <%= category[i].title %>
+                                                    </option>
+                                                <% } %>
+                                            </select>
+                                        <% } else { %>
+                                            <p>Category Not Found</p>
+                                        <% } %>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="mb-4">
+                                            <label class="form-label">Regular price</label>
+                                            <div class="row gx-2">
+                                                <input placeholder="₹" type="text" name="price" class="form-control" value="<%= updateProduct.price %>" pattern="\d+(\.\d{1,2})?" title="Please enter a non-negative number" required />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label">Product Details</label>
+                                        <textarea placeholder="Type here" name="productDetails" class="form-control" rows="4" oninput="checkWordCount(this, 50)" required><%= updateProduct.productDetails %></textarea>
+                                        <p class="validation-message" id="productDetailsValidation" style="color: rgb(8, 17, 198);"></p>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label">Specification</label>
+                                        <textarea placeholder="Type here" name="specification" class="form-control" rows="4" oninput="checkWordCount(this, 50)" required><%= updateProduct.specification %></textarea>
+                                        <p class="validation-message" id="specificationValidation" style="color: rgb(8, 17, 198);"></p>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label">Warranty</label>
+                                        <textarea placeholder="Type here" name="warranty" class="form-control" rows="4" oninput="checkWordCount(this, 50)" required><%= updateProduct.warranty %></textarea>
+                                        <p class="validation-message" id="warrantyValidation" style="color: rgb(8, 17, 198);"></p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="card mb-4">
+                                        <div class="card-header">
+                                            <h4>Images</h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="input-upload">
+                                                <% if (updateProduct.images && updateProduct.images.length > 0) { %>
+                                                    <% for (let i = 0; i < updateProduct.images.length; i++) { %>
+                                                        <div class="image-container">
+                                                            <img src="/productImage/<%= updateProduct.images[i] %>" alt="Image" />
+                                                            <input type="checkbox" name="selectedImages" value="<%= updateProduct.images[i] %>">
+                                                        </div>
+                                                    <% } %>
+                                                <% } %>
+                                                <input class="form-control" type="file" name="images" multiple />
+                                                <br>
+                                                <button type="button" class="btn btn-info" onclick="deleteSelectedImages()">Delete Selected Images</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h4>Make the Product List or Unlist</h4>
+                                <br>
+                                <div class="radio-group">
+                                    <label>
+                                        <input type="radio" name="list" value="true" <%= updateProduct.list ? 'checked' : '' %> />
+                                        List
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="list" value="false" <%= !updateProduct.list ? 'checked' : '' %> />
+                                        Unlist
+                                    </label>
+                                </div>
+                                <thead>
+                                    <br>
+                                    <tr>
+                                        <th>
+                                            <button type="button" class="btn btn-danger" onclick="confirmDelete('<%= updateProduct._id %>')">
+                                                Delete
+                                            </button>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <button type="submit" class="btn btn-success">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- ... (remaining code) ... -->
+    </main>
+    <%- include('footer.ejs') %>
 
-            <script>
-                function confirmDelete(productId) {
-                    var confirmation = confirm("Are you sure you want to delete?");
-                    
-                    if (confirmation) {
-                        // If the user confirms, redirect to the delete URL
-                        window.location.href = "/admin/product/delete/" + productId;
-                    }
-                    // If the user cancels, do nothing
+    <script>
+        function confirmDelete(productId) {
+            var confirmation = confirm("Are you sure you want to delete?");
+            if (confirmation) {
+                // If the user confirms, redirect to the delete URL
+                window.location.href = "/admin/product/delete/" + productId;
+            }
+            // If the user cancels, do nothing
+        }
+
+        function deleteSelectedImages() {
+            const selectedCheckboxes = document.querySelectorAll('input[name="selectedImages"]:checked');
+            const selectedImageValues = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+          
+            if (selectedImageValues.length > 0) {
+                if (confirm('Are you sure you want to delete the selected images?')) {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/admin/product/delete/images', true);
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                    xhr.onload = function () {
+                        if (xhr.status === 200) {
+                            // Refresh the page or update UI with a success message
+                            location.reload();
+                        } else {
+                            // Display an informative error message to the user
+                            alert('Failed to delete images. Please try again.');
+                        }
+                    };
+                    xhr.onerror = function () {
+                        // Handle network errors
+                        console.error('Network error during image deletion');
+                    };
+                    xhr.send(JSON.stringify({ selectedImages: selectedImageValues }));
                 }
-            </script>
-            
+            } else {
+                alert('Please select images to delete.');
+            }
+        }
+
+        function checkTextArea(textarea, minWords, validationMessageId) {
+            const text = textarea.value.trim();
+            const words = text.split(/\s+/).filter(word => word !== '').length;
+
+            if (text.startsWith(' ')) {
+                document.getElementById(validationMessageId).textContent = 'Text should not start with a space.';
+            } else if (words < minWords) {
+                document.getElementById(validationMessageId).textContent = `Minimum ${minWords} words required.`;
+            } else {
+                document.getElementById(validationMessageId).textContent = '';
+            }
+        }
+
+        function checkWordCount(textarea, minWords, validationMessageId) {
+            const text = textarea.value.trim();
+            const words = text.split(/\s+/).filter(word => word !== '').length;
+
+            if (words < minWords) {
+                document.getElementById(validationMessageId).textContent = `Minimum ${minWords} words required.`;
+            } else {
+                document.getElementById(validationMessageId).textContent = '';
+            }
+        }
+
+        function validateForm() {
+            // Validation logic for title
+            const title = document.getElementById('product_name').value;
+            const titleValidation = document.getElementById('titleValidation');
+
+            // Check if the title has leading spaces
+            if (title.trim() === '' || title.length < 10 || title.length > 50) {
+                titleValidation.textContent = 'Please enter a valid product title between 10 and 50 characters without leading spaces.';
+                return false;
+            } else {
+                titleValidation.textContent = '';
+            }
+
+            // Validation logic for quantity
+            const quantity = document.getElementsByName('quantity')[0].value;
+            const quantityValidation = document.getElementById('quantityValidation');
+            if (isNaN(quantity) || quantity < 0) {
+                quantityValidation.textContent = 'Please enter a valid quantity.';
+                return false;
+            } else {
+                quantityValidation.textContent = '';
+            }
+
+            // Validation logic for price
+            const price = document.getElementsByName('price')[0].value;
+            const priceValidation = document.getElementById('priceValidation');
+            if (isNaN(price) || price < 0) {
+                priceValidation.textContent = 'Please enter a valid price.';
+                return false;
+            } else {
+                priceValidation.textContent = '';
+            }
+
+            // Validation logic for images
+            const images = document.getElementsByName('images')[0].value;
+            const imagesValidation = document.getElementById('imagesValidation');
+            if (images === '') {
+                imagesValidation.textContent = 'Please select at least one image.';
+                return false;
+            } else {
+                imagesValidation.textContent = '';
+            }
+
+            // Validation logic for other fields if needed
+
+            // Validation logic for product details
+            const productDetailsTextArea = document.getElementsByName('productDetails')[0];
+            const productDetailsValidation = document.getElementById('productDetailsValidation');
+            checkTextArea(productDetailsTextArea, 50, 'productDetailsValidation');
+
+            // Validation logic for specification
+            const specificationTextArea = document.getElementsByName('specification')[0];
+            const specificationValidation = document.getElementById('specificationValidation');
+            checkTextArea(specificationTextArea, 50, 'specificationValidation');
+
+            // Validation logic for warranty
+            const warrantyTextArea = document.getElementsByName('warranty')[0];
+            const warrantyValidation = document.getElementById('warrantyValidation');
+            checkTextArea(warrantyTextArea, 50, 'warrantyValidation');
+
+            return true; // Return false if form is not valid
+        }
+    </script>
+</body>

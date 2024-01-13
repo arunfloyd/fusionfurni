@@ -3,9 +3,14 @@
 <!-- Start Hero Section -->
 <div class="hero">
   <div class="container">
+    <% if(message && message.length > 0) { %>
+      <h4 style="color: #fd0b3b;"><%= message %></h4>
+  <% } %>
     <div class="row justify-content-between">
+    
       <div class="col-lg-5">
         <div class="intro-excerpt">
+         
           <h1>Modern Interior <span clsas="d-block">Design Studio</span></h1>
           <p class="mb-4">
             Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet

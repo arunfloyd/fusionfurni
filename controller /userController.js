@@ -97,10 +97,19 @@ const createUser = asyncHandler(async (req, res) => {
         user: newUser._id,
       });
       await otps.save();
-      const resetURL = `To authenticate, please use the following One Time Password (OTP):
-      ${otp}
-      Don't share this OTP with anyone. Our customer service team will never ask you for your password, OTP, credit card, or banking info.
-      We hope to see you again soon.`;
+      const resetURL = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+      <h2 style="color: #007BFF;">Verify Your Email</h2>
+      <p>Hi, To authenticate, please use the following One Time Password (OTP)</p>
+      <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+          <h3 style="margin: 0; color: #007BFF;"> ${otp}</h3>
+      </div>
+      <p>Don't share this OTP with anyone. Our customer service team will never ask you for your password, OTP, credit card, or banking info.</p>
+      <p>If you did not request this verification, Please ignore this email.</p>
+      <p> We hope to see you again soon.</p>
+
+      <P style="color: #007BFF;">From Fushion Furni </p>
+  </div>`;
+
       const data = {
         to: email,
         text: "Hey User",
@@ -186,10 +195,18 @@ const resendMail = asyncHandler(async (req, res) => {
       { otp: encryptedOtp, expiresAt: new Date(Date.now() + 1 * 60 * 1000) }
     );
 
-    const resetURL = `To authenticate, please use the following One Time Password (OTP):
-      ${otp}
-      Don't share this OTP with anyone. Our customer service team will never ask you for your password, OTP, credit card, or banking info.
-      We hope to see you again soon.`;
+    const resetURL = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+      <h2 style="color: #007BFF;">Verify Your Email</h2>
+      <p>Hi, To authenticate, please use the following One Time Password (OTP)</p>
+      <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+          <h3 style="margin: 0; color: #007BFF;"> ${otp}</h3>
+      </div>
+      <p>Don't share this OTP with anyone. Our customer service team will never ask you for your password, OTP, credit card, or banking info.</p>
+      <p>If you did not request this verification, Please ignore this email.</p>
+      <p> We hope to see you again soon.</p>
+
+      <P style="color: #007BFF;">From Fushion Furni </p>
+  </div>`;
 
     const data = {
       to: email,
@@ -248,16 +265,62 @@ const updateaUser = asyncHandler(async (req, res) => {
 
 const home = asyncHandler(async (req, res) => {
   try {
-   
     const getallProduct = await Product.find({ list: true });
-    res.render("index", { getallProduct: getallProduct });
+    res.render("index", {
+      getallProduct: getallProduct,
+      message: req.flash("message"),
+    });
   } catch (error) {
     // throw new Error("Home Can't Access")
     res.send(error);
     res.render("error");
   }
 });
+const getAllProduct = asyncHandler(async (req, res) => {
+  try {
+    // Filtering
+    const queryObj = { ...req.query };
+    const excludeFields = ["page", "sort", "limit", "fields"];
+    excludeFields.forEach((el) => delete queryObj[el]);
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
+    let query = Product.find(JSON.parse(queryStr));
+
+    // Sorting
+
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(",").join(" ");
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort("-createdAt");
+    }
+
+    // limiting the fields
+
+    if (req.query.fields) {
+      const fields = req.query.fields.split(",").join(" ");
+      query = query.select(fields);
+    } else {
+      query = query.select("-__v");
+    }
+
+    // pagination
+
+    const page = req.query.page;
+    const limit = req.query.limit;
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+    if (req.query.page) {
+      const productCount = await Product.countDocuments();
+      if (skip >= productCount) throw new Error("This Page does not exists");
+    }
+    const product = await query;
+    res.json(product);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 const shop = asyncHandler(async (req, res) => {
   try {
     const getallProduct = await Product.find({ list: true });
@@ -268,6 +331,39 @@ const shop = asyncHandler(async (req, res) => {
     res.render("error");
   }
 });
+const shopFilter = asyncHandler(async (req, res) => {
+  try {
+    // Extract query parameters from the request
+    const { page, sort, limit, fields, search } = req.query;
+
+    // Filtering
+    const queryObj = { list: true, ...req.query, search: undefined };
+    const excludeFields = ["page", "sort", "limit", "fields"];
+    excludeFields.forEach((el) => delete queryObj[el]);
+
+    // If there's a search query, add it to the filtering
+    if (search) {
+      queryObj.$text = { $search: search };
+    }
+
+    // Use the modified queryObj to find products
+    const getallProduct = await Product.find(queryObj);
+
+    // Set the content type to JSON
+    // res.setHeader('Content-Type', 'application/json');
+    // res.render("UI/shop", { getallProduct: getallProduct });
+    // Send a JSON response
+    res.json({ getallProduct });
+  } catch (error) {
+    console.error('Error filtering products:', error);
+    // Set the content type to JSON
+    res.setHeader('Content-Type', 'application/json');
+    // Send a JSON error response
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 const about = asyncHandler(async (req, res) => {
   try {
     res.render("UI/about");
@@ -881,12 +977,10 @@ const updateQuantity = asyncHandler(async (req, res) => {
     // Save the changes to the cart
     await cart.save();
 
-    res
-      .status(200)
-      .json({
-        message: "Quantity updated successfully",
-        cartTotal: cart.cartTotal,
-      });
+    res.status(200).json({
+      message: "Quantity updated successfully",
+      cartTotal: cart.cartTotal,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -935,7 +1029,16 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
     } else {
       const token = await user.createPasswordResetToken();
       await user.save();
-      const resetURL = `Hi, Please follow this link to reset Your Password. This link is valid till 10 minutes from now. <a href='http://localhost:3002/reset-password/${token}'>Click Here</>`;
+      const resetURL = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+      <h2 style="color: #007BFF;">Verify Your Email</h2>
+      <p>Hi, Please follow this link to reset Your Password.:</p>
+      <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+          <h3 style="margin: 0; color: #007BFF;"> <a href='http://localhost:3000/reset-password/${token}'>Click Here</></h3>
+      </div>
+      <p>This link is valid till 10 minutes from now</p>
+      <p>If you did not request this verification, Please ignore this email.</p>
+      <P style="color: #007BFF;">From Fushion Furni </p>
+  </div>`;
       const data = {
         to: email,
         text: "Hey User",
@@ -1024,4 +1127,5 @@ module.exports = {
   updateQuantity,
   getOrdersDetails,
   createOnlinePayment,
+  shopFilter
 };

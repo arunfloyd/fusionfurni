@@ -12,6 +12,7 @@ const categoryRouter = require("./routes/categoryRoute");
 const cors = require("cors");
 const sessions = require("express-session");
 const flash = require("express-flash");
+const { v4: uuidv4 } = require('uuid');
 const app = express();
 
 dbConnect();
@@ -28,7 +29,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   sessions({
-    secret: "your-secret-key",
+    secret: uuidv4(),
     resave: false,
     saveUninitialized: true,
   })

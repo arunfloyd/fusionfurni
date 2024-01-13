@@ -1,4 +1,3 @@
-
 const User = require("../models/userModel");
 const asyncHandler = require("express-async-handler");
 const validateMongoDbId = require("../utils/validateMongodbid");
@@ -102,27 +101,35 @@ const dashboard = asyncHandler(async (req, res) => {
       {
         $group: {
           _id: null,
-          totalCount: { $sum: 1 }
-        }
-      }
+          totalCount: { $sum: 1 },
+        },
+      },
     ]);
-    const productCount = await Product.aggregate([{$match:{
-      list:true}},
+    const productCount = await Product.aggregate([
+      {
+        $match: {
+          list: true,
+        },
+      },
       {
         $group: {
           _id: null,
-          totalCount: { $sum: 1 }
-        }
-      }
+          totalCount: { $sum: 1 },
+        },
+      },
     ]);
-    const catCount = await Category.aggregate([{$match:{
-      list:true}},
+    const catCount = await Category.aggregate([
+      {
+        $match: {
+          list: true,
+        },
+      },
       {
         $group: {
           _id: null,
-          totalCount: { $sum: 1 }
-        }
-      }
+          totalCount: { $sum: 1 },
+        },
+      },
     ]);
     const cancel = await Order.aggregate([
       {
@@ -150,30 +157,131 @@ const dashboard = asyncHandler(async (req, res) => {
         },
       },
     ]);
-    const newOrders = await User.aggregate([
+    const userorders = await Order.find()
+      .populate("products.product")
+      .populate("orderby")
+      .exec();
+    const currentYear = new Date().getFullYear();
+
+    const ordersByMonth = await Order.aggregate([
+      // Match orders within the specified year
       {
-        $sort: { createdAt: -1 } // Assuming 'createdAt' is the timestamp field
+        $match: {
+          createdAt: {
+            $gte: new Date(currentYear, 0, 1),
+            $lt: new Date(currentYear + 1, 0, 1),
+          },
+        },
+      },
+      // Group orders by month
+      {
+        $group: {
+          _id: { month: { $month: "$createdAt" } },
+          count: { $sum: 1 }, // Count the number of orders in each month
+        },
+      },
+      // Sort results by month in ascending order
+      { $sort: { "_id.month": 1 } },
+    ]);
+    const currentMonth = new Date().getMonth();
+    const ordersByDay = await Order.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(currentYear, currentMonth, 1), // Start of this month
+            $lt: new Date(currentYear, currentMonth + 1, 1), // Start of next month
+          },
+        },
       },
       {
         $group: {
-          _id: null,
-          orders: { $push: "$$ROOT" } // Use $$ROOT to include the whole document
-        }
-      }
+          _id: {
+            day: { $dayOfMonth: "$createdAt" }, // Group by day of the month
+          },
+          count: { $sum: 1 }, // Count orders for each day
+        },
+      },
+      {
+        $sort: { "_id.day": 1 }, // Sort results chronologically by day
+      },
     ]);
-    const categoryCount =catCount[0].totalCount
-    const totalCount= orderCount[0].totalCount
-    const revenue=revenue1[0].totalRevenue
-    const productsCount= productCount[0].totalCount
-    const returnCount = returns[0].totalCount
-    const cancelCount = cancel[0].totalCount
-    const completeCount = revenue1[0].totalCount
-//Calculate the Percentage    
-    const returnPercentage = (returnCount / totalCount) * 100
+    const userByMonth = await User.aggregate([
+      // Match users within the specified year
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(currentYear, 0, 1),
+            $lt: new Date(currentYear + 1, 0, 1),
+          },
+        },
+      },
+      // Group users by month
+      {
+        $group: {
+          _id: { month: { $month: "$createdAt" } },
+          count: { $sum: 1 }, // Count the number of users in each month
+        },
+      },
+      // Sort results by month in ascending order
+      { $sort: { "_id.month": 1 } },
+    ]);
+    
+    const userCounts = Array(20).fill(0);
+ // Initialize an array with 12 zeros
+    
+    userByMonth.forEach((monthlyCount) => {
+      const month = monthlyCount._id.month - 1; // Access the month of the year (subtract 1 to make it zero-based)
+      userCounts[month] = monthlyCount.count; // Access the number of users for that month
+    });
+   
+    
+    
+    const dailyCounts = [
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0,
+    ];
+    ordersByDay.forEach((dailyCount) => {
+      const day = dailyCount._id.day; // Access the day of the month
+      dailyCounts[day] = dailyCount.count; // Access the number of orders for that day
+    });
+
+    const monthlyCounts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; // Initialize an array for each month
+
+    // Assuming cancels is the result you obtained
+    ordersByMonth.forEach((item) => {
+      const month = item._id.month - 1; // Months are zero-based in JavaScript
+      monthlyCounts[month] = item.count;
+    });
+
+    const newUsers = await User.find();
+    // Assuming userorder
+    const categoryCount = catCount[0].totalCount;
+    const totalCount = orderCount[0].totalCount;
+    const revenue = revenue1[0].totalRevenue;
+    const productsCount = productCount[0].totalCount;
+    const returnCount = returns[0].totalCount;
+    const cancelCount = cancel[0].totalCount;
+    const completeCount = revenue1[0].totalCount;
+    //Calculate the Percentage
+    const returnPercentage = (returnCount / totalCount) * 100;
     const cancelledPercentage = (cancelCount / totalCount) * 100;
     const completedPercentage = (completeCount / totalCount) * 100;
- 
-    res.render("adminDash/indexHome",{revenue,totalCount,productsCount,categoryCount,returnPercentage,cancelledPercentage,completedPercentage,newOrders});
+    res.render("adminDash/indexHome", {
+      revenue,
+      totalCount,
+      productsCount,
+      categoryCount,
+      returnPercentage,
+      cancelledPercentage,
+      completedPercentage,
+      userorders,
+      newUsers,
+      monthlyCounts,
+      dailyCounts,
+      userCounts,
+      completeCount
+      
+    });
   } catch (error) {
     res.send(error);
     res.render("error");

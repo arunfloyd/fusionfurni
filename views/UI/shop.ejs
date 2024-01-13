@@ -9,6 +9,17 @@
           <h1>Shop</h1>
         </div>
       </div>
+      <div class="input-group">
+        <input
+          id="search-input"
+          type="search"
+          class="form-control"
+          placeholder="Search anything..."
+        />
+        <button id="search-button" type="button" class="btn btn-primary">
+          <i class="fa fa-search"></i>
+        </button>
+      </div>
       <div class="col-lg-7"></div>
     </div>
   </div>
@@ -44,3 +55,33 @@
 </div>
 
 <%- include('../layout/footer.ejs') %>
+
+<script>
+  document.getElementById("search-button").addEventListener("click", () => {
+    const searchInput = document.getElementById("search-input").value;
+    filterProducts(searchInput);
+  });
+
+  async function filterProducts(searchInput) {
+    try {
+      const response = await fetch(`/shop-filter?search=${searchInput}`);
+      
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        const data = await response.json();
+        console.log(data);
+        // Process the JSON data and update the UI as needed
+      } else {
+        console.error("Error: Unexpected response format");
+        // Display an error message in the UI when the response is not in JSON format
+      }
+    } catch (error) {
+      console.error("Error filtering products:", error);
+      // Display an error message in the UI
+    }
+  }
+</script>

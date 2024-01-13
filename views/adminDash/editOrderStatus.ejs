@@ -36,7 +36,7 @@
                                     
                                     <div class="mb-4">
                                         <label for="product_slug" class="form-label">Payment id</label>
-                                        <input type="text" placeholder="Type here" class="form-control" id="product_slug" name="paymentId" value="<%= userorders.paymentIntent.id%>" readonly/>
+                                        <input type="text" placeholder="Type here" class="form-control" id="product_slug" name="paymentId" value="<%= userorders.orderId%>" readonly/>
                                         <label for="product_slug" class="form-label">Total Amount </label>
 
                                         <input type="text" placeholder="Type here" class="form-control" id="product_slug" name="amount" value=" <%= userorders.paymentIntent.amount%>" readonly/>
@@ -49,15 +49,15 @@
 
 
                                         <br>
-                                        <label class="form-label">Conform the Payment Status (if COD click choose Completed)</label>
+                                        <label class="form-label">Conform the Payment Status (if COD click choose Completed after Delivery</label>
                                         <br>
                                         <div class="radio-group">
                                             <label>
-                                                <input type="radio" name="payment" value="Completed" <%= userorders.paymentIntent.status === 'Completed' ? 'checked' : '' %> />
+                                                <input type="radio" name="payment" value="Completed" <%= userorders.paymentIntent.status == 'Completed' ? 'checked' : '' %> />
                                                 Completed
                                             </label>
                                             <label>
-                                                <input type="radio" name="payment" value="Pending" <%= userorders.paymentIntent.status === 'Pending' ? 'checked' : '' %> />
+                                                <input type="radio" name="payment" value="Pending" <%= userorders.paymentIntent.status == 'Pending' ? 'checked' : '' %> />
                                                 Pending
                                             </label>
                                         </div> 

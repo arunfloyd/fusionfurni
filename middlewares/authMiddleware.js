@@ -35,6 +35,16 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
     throw new Error("Authentication failed.");
   }
 });
+const isBlocked = asyncHandler(async(req,res,next)=>{
+  const user = req.user
+  const users = await User.findById({_id:user._id})
+  if(users.accessStatus !== true){
+    req.flash("message", "Cart Access have been Resticted..!! Please Contact Us");
+    res.redirect("/home")
+  }else{
+    next()
+  }
+})
 
 const userMiddleware = asyncHandler(async (req, res, next) => {
   const token = req.cookies.refreshToken;
@@ -72,4 +82,4 @@ const noCacheHeaders = (req, res, next) => {
     throw new Error("Can't set cache control headers");
   }
 };
-module.exports = { authMiddleware, isAdmin, userMiddleware, noCacheHeaders };
+module.exports = { authMiddleware, isAdmin, userMiddleware, noCacheHeaders,isBlocked };

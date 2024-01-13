@@ -67,68 +67,72 @@
                                 <h4>Basic</h4>
                             </div>
                             <div class="card-body">
-                                <form action="" method="post" enctype="multipart/form-data" id="signupForm">
-                        
+                                <form action="" method="post" enctype="multipart/form-data" id="signupForm" onsubmit="return validateForm()">
                                     <div class="mb-4">
                                         <label for="product_name" class="form-label">Product title</label>
-                                        <input type="text" placeholder="Type here" name="title" class="form-control" id="product_name" required/>
+                                        <input type="text" placeholder="Type here" name="title" class="form-control" id="product_name" minlength="3" maxlength="50" required />
+                                        <p class="validation-message" style="color: red " id="titleValidation"></p>
                                     </div>
+                            
                                
                                     <div class="mb-2">
-                                        <label class="form-label"> Description</label>
-                                        <input placeholder="Type here" name="description" class="form-control" rows="4" required>
+                                        <label class="form-label">Description</label>
+                                        <textarea placeholder="Type here" name="description" class="form-control" rows="4" oninput="checkWordCount(this)" required></textarea>
+                                        <p id="wordCountMessage" style="color: rgb(8, 17, 198);"></p>
                                     </div>
                                     <div class="col-lg-4">
-                                        <div class="mb-4">
-                                            <label class="form-label">Quantity </label>
-                                            <div class="row gx-2">
-                                            <input placeholder="" type="text" name="quantity" class="form-control" pattern="\d+(\.\d{1,2})?" title="Please enter a non-negative number" required />
-
-                
-                                            </div>
-                                        </div>
-                                    </div>
+        <div class="mb-4">
+            <label class="form-label">Quantity</label>
+            <div class="row gx-2">
+                <input placeholder="" type="number" name="quantity" class="form-control" min="0" required />
+                <p class="validation-message" style="color: rgb(55, 255, 0) " id="quantityValidation"></p>
+            </div>
+        </div>
+    </div>
                                     
-                                    <div class="row gx-2">
-                                        <div class="col-sm-6 mb-3">
-                                            <label class="form-label">Category</label>
-                                            <select class="form-select"  name="category">
-                                                <% if(category.length > 0) { 
-                                                    for(let i = 0; i < category.length; i++) { %>
-                                                <option><%= category[i].title %></option>
-                                                
-                                                <% } 
-                                            } else { %>
-                                                <td colspan="5">Category Not Found</td>
-                                            <% } %>
-                                            
-                                               
-                                            </select>
-                                        </div>
-                                       
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-4">
-                                            <div class="mb-4">
-                                                <label class="form-label">Regular price</label>
-                                                <div class="row gx-2">
-                                            <input placeholder="₹" type="text" name="price" class="form-control" pattern="\d+(\.\d{1,2})?" title="Please enter a non-negative number" required />
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="form-label">Product Details</label>
-                                            <textarea placeholder="Type here" name="productDetails" class="form-control" rows="4" required></textarea>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="form-label">Specification</label>
-                                            <textarea placeholder="Type here" name="specification" class="form-control" rows="4" required></textarea>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="form-label">Warranty</label>
-                                            <textarea placeholder="Type here" name="warranty" class="form-control" rows="4" required></textarea>
-                                        </div>
+    <div class="row gx-2">
+        <div class="col-sm-6 mb-3">
+            <label class="form-label">Category</label>
+            <select class="form-select" name="category" required>
+                <% if(category.length > 0) { 
+                    for(let i = 0; i < category.length; i++) { %>
+                        <option><%= category[i].title %></option>
+                <% } 
+                } else { %>
+                    <option disabled selected value="">No categories found</option>
+                <% } %>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="mb-4">
+                <label class="form-label">Regular price</label>
+                <div class="row gx-2">
+                    <input placeholder="₹" type="number" name="price" class="form-control" min="1" step="0.01" required />
+                    <p class="validation-message" id="priceValidation"></p>
+                </div>
+            </div>
+        </div>
+        <!-- Other fields ... -->
+    </div>
+    <div class="mb-4">
+        <label class="form-label">Product Details</label>
+        <textarea placeholder="Type here" name="productDetails" class="form-control" rows="4" min="50" oninput="checkWordCount(this)" required></textarea>
+        <p id="wordCountMessage" style="color: rgb(8, 17, 198);"></p>
+    </div>
+    
+    <div class="mb-4">
+        <label class="form-label">Specification</label>
+        <textarea placeholder="Type here" name="specification" class="form-control" min="50" rows="4" oninput="checkWordCount(this)" required></textarea>
+        <p id="wordCountMessage" style="color: rgb(8, 17, 198);"></p>
+    </div>
+    
+    <div class="mb-4">
+        <label class="form-label">Warranty</label>
+        <textarea placeholder="Type here" name="warranty" class="form-control" rows="4" min="50" oninput="checkWordCount(this)" required></textarea>
+        <p id="wordCountMessage" style="color: rgb(8, 17, 198);"></p>
+    </div>
                                      
                                     </div>
 
@@ -138,6 +142,7 @@
                                             <div class="card-body">
                                                 <div class="input-upload">
                                                     <input type="file" multiple="" name="images" required>
+                                                    <p class="validation-message" id="imagesValidation"></p>
                                                 </div>
                                             </div>
                                         </div>
@@ -149,7 +154,7 @@
                                         <% } %>
                                     </div>
                                    
-                                <button type="submit">Submit</button>
+                                <button type="submit" class="btn btn-secondary">Submit</button>
 
                                     </div>
                                 </form>
@@ -178,6 +183,7 @@
                 </div>
             </footer>
             </main>
+            
            
             <script src="/javascripts/vendors/jquery-3.6.0.min.js"></script>
             <script src="/javascripts/vendors/bootstrap.bundle.min.js"></script>
@@ -191,6 +197,82 @@
             <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script>
+   function checkTextArea(textarea, minWords) {
+    const text = textarea.value.trim();
+    const words = text.split(/\s+/).filter(word => word !== '').length;
+    const validationMessageId = `${textarea.name}Validation`;
+
+    if (text.startsWith(' ')) {
+        document.getElementById(validationMessageId).textContent = 'Text should not start with a space.';
+    } else if (words < minWords) {
+        document.getElementById(validationMessageId).textContent = `Minimum ${minWords} words required.`;
+    } else {
+        document.getElementById(validationMessageId).textContent = '';
+    }
+}
+
+function checkWordCount(textarea) {
+    const minimumWords = 50;
+    const words = textarea.value.trim().split(/\s+/).filter(word => word !== '').length;
+    const wordCountMessage = document.getElementById('wordCountMessage');
+
+    if (words < minimumWords) {
+        wordCountMessage.textContent = `Minimum ${minimumWords} words required.`;
+    } else {
+        wordCountMessage.textContent = '';  // Clear the error message when the condition is not met
+    }
+}
+    function validateForm() {
+// Validation logic for title
+const title = document.getElementById('product_name').value;
+
+const titleValidation = document.getElementById('titleValidation');
+
+
+// Check if the title has leading spaces
+if (title.trim() === '' || title.length < 10 || title.length > 50) {
+titleValidation.textContent = 'Please enter a valid product title between 10 and 50 characters without leading spaces.';
+return false;
+} else {
+titleValidation.textContent = '';
+}
+// Validation logic for quantity
+const quantity = document.getElementsByName('quantity')[0].value;
+const quantityValidation = document.getElementById('quantityValidation');
+if (isNaN(quantity) || quantity < 0) {
+quantityValidation.textContent = 'Please enter a valid quantity.';
+return false;
+} else {
+quantityValidation.textContent = '';
+}
+
+// Validation logic for price
+const price = document.getElementsByName('price')[0].value;
+const priceValidation = document.getElementById('priceValidation');
+if (isNaN(price) || price < 0) {
+priceValidation.textContent = 'Please enter a valid price.';
+return false;
+} else {
+priceValidation.textContent = '';
+}
+
+// Validation logic for images
+const images = document.getElementsByName('images')[0].value;
+const imagesValidation = document.getElementById('imagesValidation');
+if (images === '') {
+imagesValidation.textContent = 'Please select at least one image.';
+return false;
+} else {
+imagesValidation.textContent = '';
+}
+
+// Add validation logic for other fields if needed
+
+return true; // Return false if form is not valid
+}
+
+    </script>
             </body>
             </html>
             
