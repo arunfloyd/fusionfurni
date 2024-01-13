@@ -176,7 +176,7 @@ const getaProduct = asyncHandler(async (req, res) => {
     res.render("error");
   }
 });
-const getallProduct = asyncHandler(async (req, res) => {
+const getallProducts = asyncHandler(async (req, res) => {
   try {
     const getallProduct = await Product.find();
     res.render("adminDash/indexProductList", { getallProduct: getallProduct });
@@ -185,6 +185,57 @@ const getallProduct = asyncHandler(async (req, res) => {
     res.send(error);
     res.render("error");
   }
+});
+const getallProduct = asyncHandler(async (req, res) => {
+  
+  try {
+    const ITEMS_PER_PAGE = 8;
+    let search = '';
+    let sortOrder = ''; 
+    if (req.query.Search ||req.query.Sort ) {
+        search = req.query.Search;
+        sortOrder=req.query.Sort;
+    }
+    const sortingOptions = {
+      default: { }, // Add your default sorting option here
+      priceHigh: { price: -1 },
+      priceLow: { price: 1 }
+    };
+    const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
+    const totalProducts = await Product.countDocuments({
+      $and: [
+        {
+          $or: [
+            { title: { $regex: '.*' + search + '.*', $options: 'i' } },
+          ]
+        }
+      ]
+    });
+    const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE);
+    const skip = (page - 1) * ITEMS_PER_PAGE;
+    const usersData = await Product.find({
+      $and: [
+          {
+              $or: [
+                  { title: { $regex: '.*' + search + '.*', $options: 'i' } },
+              ]
+          }
+      ]
+  }).sort(sortingOptions[sortOrder]).skip(skip)
+  .limit(ITEMS_PER_PAGE);
+  
+  res.render('adminDash/indexProductList', {
+    getallProduct: usersData,
+    currentPage: page,
+    totalPages: totalPages,
+    search: search ,
+    sortOrder: sortOrder
+  });
+} catch (error) {
+    console.log(error.message);
+    // Handle the error appropriately, e.g., send an error response
+    res.status(500).send('Internal Server Error');
+}
 });
 const loadaUser = asyncHandler(async (req, res) => {
   try {

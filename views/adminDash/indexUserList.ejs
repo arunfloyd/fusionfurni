@@ -78,21 +78,46 @@
       </div>
 
       <!-- Pagination -->
-      <div class="pagination-area mt-30 mb-50">
-        <nav aria-label="Page navigation example">
-          <ul class="pagination justify-content-start">
-            <li class="page-item active">
-              <a class="page-link" href="#">01</a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">02</a></li>
-            <li class="page-item"><a class="page-link" href="#">03</a></li>
-            <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-            <li class="page-item"><a class="page-link" href="#">16</a></li>
+      <!-- <div class="pagination-area mt-30 mb-50">
+        
+      </div> -->
+      <div class="container text-center mt-4">
+        <nav aria-label="...">
+          <ul class="pagination justify-content-center">
+            <% if (currentPage > 1) { %>
             <li class="page-item">
-              <a class="page-link" href="#"
-                ><i class="material-icons md-chevron_right"></i
-              ></a>
+              <a
+                class="page-link"
+                href="?page=<%= currentPage - 1 %>"
+                tabindex="-1"
+                >Previous</a
+              >
             </li>
+            <% } else { %>
+            <li class="page-item disabled">
+              <span class="page-link" tabindex="-1">Previous</span>
+            </li>
+            <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
+            <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+              <a
+                class="page-link"
+                href="?page=<%= i %>"
+                ><%= i %></a
+              >
+            </li>
+            <% } %> <% if (currentPage < totalPages) { %>
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="?page=<%= currentPage + 1 %>"
+                >Next</a
+              >
+            </li>
+            <% } else { %>
+            <li class="page-item disabled">
+              <span class="page-link">Next</span>
+            </li>
+            <% } %>
           </ul>
         </nav>
       </div>

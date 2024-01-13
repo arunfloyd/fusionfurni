@@ -9,17 +9,42 @@
           <h1>Shop</h1>
         </div>
       </div>
-      <div class="input-group">
-        <input
-          id="search-input"
-          type="search"
-          class="form-control"
-          placeholder="Search anything..."
-        />
-        <button id="search-button" type="button" class="btn btn-primary">
-          <i class="fa fa-search"></i>
-        </button>
+      <div class="row">
+        <div class="input-group">
+          <form action="">
+            <div class="input-group">
+              <input
+                id="search-input"
+                type="search"
+                class="form-control"
+                placeholder="Search Your Products"
+                name="Search"
+              />
+            </div>
+            <div class="form-group mt-3">
+              <label for="sort-dropdown" style="color: aliceblue"
+                >Filter:</label
+              >
+              <select class="form-control" id="sort-dropdown" name="Sort">
+                <option value="default">Default</option>
+                <option value="priceHigh">Price High to Low</option>
+                <option value="priceLow">Price Low to High</option>
+              </select>
+            </div>
+            <div class="input-group-append">
+              <button
+                id="search-button"
+                type="submit"
+                class="btn btn-primary"
+                value="Search"
+              >
+                <i class="fa fa-search"></i>
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
+
       <div class="col-lg-7"></div>
     </div>
   </div>
@@ -54,6 +79,47 @@
   </div>
 </div>
 
+<div class="container text-center mt-4">
+  <nav aria-label="...">
+    <ul class="pagination justify-content-center">
+      <% if (currentPage > 1) { %>
+      <li class="page-item">
+        <a
+          class="page-link"
+          href="?page=<%= currentPage - 1 %>&Search=<%= search %>&Sort=<%= sortOrder %>"
+          tabindex="-1"
+          >Previous</a
+        >
+      </li>
+      <% } else { %>
+      <li class="page-item disabled">
+        <span class="page-link" tabindex="-1">Previous</span>
+      </li>
+      <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
+      <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+        <a
+          class="page-link"
+          href="?page=<%= i %>&Search=<%= search %>&Sort=<%= sortOrder %>"
+          ><%= i %></a
+        >
+      </li>
+      <% } %> <% if (currentPage < totalPages) { %>
+      <li class="page-item">
+        <a
+          class="page-link"
+          href="?page=<%= currentPage + 1 %>&Search=<%= search %>&Sort=<%= sortOrder %>"
+          >Next</a
+        >
+      </li>
+      <% } else { %>
+      <li class="page-item disabled">
+        <span class="page-link">Next</span>
+      </li>
+      <% } %>
+    </ul>
+  </nav>
+</div>
+
 <%- include('../layout/footer.ejs') %>
 
 <script>
@@ -65,7 +131,7 @@
   async function filterProducts(searchInput) {
     try {
       const response = await fetch(`/shop-filter?search=${searchInput}`);
-      
+
       if (!response.ok) {
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }

@@ -1,17 +1,57 @@
 <%- include('header.ejs') %>
 
 <body>
-  <div class="screen-overlay"></div>
+  <div class="screen-overlay">
+    
+  </div>
+  
   <%- include('navbar-aside.ejs') %>
   <main class="main-wrap">
+    
     <section class="content-main">
+      
       <div class="content-header">
         <div>
           <h2 class="content-title card-title">Products List</h2>
           <p>Here is the list of products</p>
         </div>
       </div>
-
+      <div class="card mb-4">
+        <header class="card-header">
+          <div class="row align-items-center">
+              
+              <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
+                <form action="">
+                  <div class="input-group">
+                    <input
+                      id="search-input"
+                      type="search"
+                      class="form-control"
+                      placeholder="Search  Products"
+                      name="Search"
+                    />
+                    <button id="search-button" type="submit" class="btn btn-primary" value="Search">
+                      Search
+                    </button>
+                  </div>
+              </div>
+             
+              <div class="col-md-3 col-6">
+                <div class="form-group mt-3">
+                  <label for="sort-dropdown" style="color: black">Filter:</label>
+                  <select class="form-control" id="sort-dropdown" name="Sort">
+                    <option value="default">Default</option>
+                    <option value="priceHigh">Price High to Low</option>
+                    <option value="priceLow">Price Low to High</option>
+                  </select>
+                </div>
+                <button id="search-button" type="submit" class="btn btn-primary" value="Search">
+                  Go
+                </button>
+              </div>
+          </div>
+      </header>
+    </div>
       <div class="card mb-4">
         <div class="card-body">
           <% if (getallProduct.length > 0) { for (let i = 0; i <
@@ -69,25 +109,51 @@
         <!-- card-body end// -->
       </div>
       <!-- card end// -->
-
-      <div class="pagination-area mt-30 mb-50">
-        <nav aria-label="Page navigation example">
-          <ul class="pagination justify-content-start">
-            <li class="page-item active">
-              <a class="page-link" href="#">01</a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">02</a></li>
-            <li class="page-item"><a class="page-link" href="#">03</a></li>
-            <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-            <li class="page-item"><a class="page-link" href="#">16</a></li>
+      <div class="container text-center mt-4">
+       
+      </div>
+      <div class="container text-center mt-4">
+        <nav aria-label="...">
+          <ul class="pagination justify-content-center">
+            <% if (currentPage > 1) { %>
             <li class="page-item">
-              <a class="page-link" href="#"
-                ><i class="material-icons md-chevron_right"></i
-              ></a>
+              <a
+                class="page-link"
+                href="?page=<%= currentPage - 1 %>&Search=<%= search %>&Sort=<%= sortOrder %>"
+                tabindex="-1"
+                >Previous</a
+              >
             </li>
+            <% } else { %>
+            <li class="page-item disabled">
+              <span class="page-link" tabindex="-1">Previous</span>
+            </li>
+            <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
+            <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+              <a
+                class="page-link"
+                href="?page=<%= i %>&Search=<%= search %>&Sort=<%= sortOrder %>"
+                ><%= i %></a
+              >
+            </li>
+            <% } %> <% if (currentPage < totalPages) { %>
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="?page=<%= currentPage + 1 %>&Search=<%= search %>&Sort=<%= sortOrder %>"
+                >Next</a
+              >
+            </li>
+            <% } else { %>
+            <li class="page-item disabled">
+              <span class="page-link">Next</span>
+            </li>
+            <% } %>
           </ul>
         </nav>
       </div>
+
+      
     </section>
     <!-- content-main end// -->
     <%- include('footer.ejs') %>

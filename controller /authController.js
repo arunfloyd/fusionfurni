@@ -225,17 +225,15 @@ const dashboard = asyncHandler(async (req, res) => {
       // Sort results by month in ascending order
       { $sort: { "_id.month": 1 } },
     ]);
-    
+
     const userCounts = Array(20).fill(0);
- // Initialize an array with 12 zeros
-    
+    // Initialize an array with 12 zeros
+
     userByMonth.forEach((monthlyCount) => {
       const month = monthlyCount._id.month - 1; // Access the month of the year (subtract 1 to make it zero-based)
       userCounts[month] = monthlyCount.count; // Access the number of users for that month
     });
-   
-    
-    
+
     const dailyCounts = [
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0,
@@ -279,8 +277,7 @@ const dashboard = asyncHandler(async (req, res) => {
       monthlyCounts,
       dailyCounts,
       userCounts,
-      completeCount
-      
+      completeCount,
     });
   } catch (error) {
     res.send(error);
@@ -289,13 +286,63 @@ const dashboard = asyncHandler(async (req, res) => {
 });
 //Product List
 
+// const product = asyncHandler(async (req, res) => {
+//  const ITEMS_PER_PAGE = 8;
+//   try {
+//     var search = '';
+//     var sortOrder = '';
+//     if (req.query.Search ||req.query.Sort ) {
+//         search = req.query.Search;
+//         sortOrder=req.query.Sort;
+//     }
+//     const sortingOptions = {
+//       default: { }, // Add your default sorting option here
+//       priceHigh: { price: -1 },
+//       priceLow: { price: 1 }
+//     };
+//     const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
+//     const totalProducts = await Product.countDocuments({
+//       $and: [
+//         {
+//           $or: [
+//             { title: { $regex: '.*' + search + '.*', $options: 'i' } },
+//           ]
+//         }
+//       ]
+//     });
+//     const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE);
+//     const skip = (page - 1) * ITEMS_PER_PAGE;
+//     const usersData = await Product.find({
+//       $and: [
+//           {
+//               $or: [
+//                   { title: { $regex: '.*' + search + '.*', $options: 'i' } },
+//               ]
+//           }
+//       ]
+//   }).sort(sortingOptions[sortOrder]).skip(skip)
+//   .limit(ITEMS_PER_PAGE);
+
+//   res.render('adminDash/indexProductList', {
+//     currentPage: page,
+//     getallProduct: usersData,
+
+//     totalPages: totalPages,
+//     search: search ,
+//     sortOrder: sortOrder,
+
+//   });
+//   } catch (error) {
+//     console.error(error);
+//     res.render("error");
+//   }
+// });
+
 const product = asyncHandler(async (req, res) => {
   try {
-    res.render("adminDash/indexProductList");
+    res.render("admin/indexProductList");
   } catch (error) {
-    res.send(error);
-    res.render("error");
-    // throw new Error("Product list can not Access")
+    throw new Error(error);
   }
 });
 //Add Product
@@ -334,17 +381,28 @@ const getallUser = asyncHandler(async (req, res) => {
 });
 const userList = asyncHandler(async (req, res) => {
   try {
-    const getUsers = await User.find();
+    const ITEMS_PER_PAGE = 8;
+
+    const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
+    const totalProducts = await Product.countDocuments();
+    const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE);
+    const skip = (page - 1) * ITEMS_PER_PAGE;
+    const usersData = await User.find()
+      .skip(skip)
+      .limit(ITEMS_PER_PAGE);
+    // const getUsers = await User.find();
     res.render("adminDash/indexUserList", {
-      users: getUsers,
+      users: usersData, currentPage: page,
+      totalPages: totalPages,
+      
       message: req.flash("message"),
     });
-    console.log(getUsers.name);
+    console.log(usersData.name);
     // res.json(getUsers);
-  } catch (err) {
-    // throw new Error(error)
-    res.send(error);
-    res.render("error");
+  } catch (error) {
+    throw new Error(error)
+  
+    // res.render("error");
   }
 });
 const loadaUser = asyncHandler(async (req, res) => {
@@ -538,22 +596,38 @@ const logout = asyncHandler(async (req, res) => {
 
 const getAllOrders = asyncHandler(async (req, res) => {
   try {
+    const ITEMS_PER_PAGE = 8;
+
+    const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
+    const totalOrders = await Order.countDocuments();
+    const totalPages = Math.ceil(totalOrders / ITEMS_PER_PAGE);
+    const skip = (page - 1) * ITEMS_PER_PAGE;
+
     const userorders = await Order.find({})
       .populate({
         path: "products.product",
-        select: "title images price", // Select the fields you want to populate
+        select: "title images price",
       })
       .populate({
         path: "orderby",
-        select: "name", // Assuming user has a "name" field
+        select: "name",
       })
+      .skip(skip)
+      .limit(ITEMS_PER_PAGE)
       .exec();
 
-    res.render("adminDash/indexOrders", { userorders: userorders });
+    res.render("adminDash/indexOrders", {
+      userorders: userorders,
+      currentPage: page,
+      totalPages: totalPages,
+    });
   } catch (error) {
-    throw new Error(error);
+    console.error(error);
+    res.render("error");
   }
 });
+
+
 const updateOrderStatus = asyncHandler(async (req, res) => {
   const { payment, orderStatus, paymentId, amount, method, created } = req.body;
   const { id } = req.params;

@@ -322,46 +322,63 @@ const getAllProduct = asyncHandler(async (req, res) => {
   }
 });
 const shop = asyncHandler(async (req, res) => {
+  
   try {
-    const getallProduct = await Product.find({ list: true });
-    res.render("UI/shop", { getallProduct: getallProduct });
-  } catch (error) {
-    // throw new Error("Shop Can't Access")
-    res.send(error);
-    res.render("error");
-  }
-});
-const shopFilter = asyncHandler(async (req, res) => {
-  try {
-    // Extract query parameters from the request
-    const { page, sort, limit, fields, search } = req.query;
-
-    // Filtering
-    const queryObj = { list: true, ...req.query, search: undefined };
-    const excludeFields = ["page", "sort", "limit", "fields"];
-    excludeFields.forEach((el) => delete queryObj[el]);
-
-    // If there's a search query, add it to the filtering
-    if (search) {
-      queryObj.$text = { $search: search };
+    const ITEMS_PER_PAGE = 8;
+    let search = '';
+    let sortOrder = ''; 
+    if (req.query.Search ||req.query.Sort ) {
+        search = req.query.Search;
+        sortOrder=req.query.Sort;
     }
-
-    // Use the modified queryObj to find products
-    const getallProduct = await Product.find(queryObj);
-
-    // Set the content type to JSON
-    // res.setHeader('Content-Type', 'application/json');
-    // res.render("UI/shop", { getallProduct: getallProduct });
-    // Send a JSON response
-    res.json({ getallProduct });
-  } catch (error) {
-    console.error('Error filtering products:', error);
-    // Set the content type to JSON
-    res.setHeader('Content-Type', 'application/json');
-    // Send a JSON error response
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
+    const sortingOptions = {
+      default: { }, // Add your default sorting option here
+      priceHigh: { price: -1 },
+      priceLow: { price: 1 }
+    };
+    const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
+    const totalProducts = await Product.countDocuments({
+      $and: [
+        {
+          $or: [
+            { title: { $regex: '.*' + search + '.*', $options: 'i' } },
+          ]
+        },
+        {
+          list: true 
+        }
+      ]
+    });
+    const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE);
+    const skip = (page - 1) * ITEMS_PER_PAGE;
+    const usersData = await Product.find({
+      $and: [
+          {
+              $or: [
+                  { title: { $regex: '.*' + search + '.*', $options: 'i' } },
+              ]
+          },
+          {
+              list:true 
+          }
+      ]
+  }).sort(sortingOptions[sortOrder]).skip(skip)
+  .limit(ITEMS_PER_PAGE);
+  
+  res.render('UI/shop', {
+    getallProduct: usersData,
+    currentPage: page,
+    totalPages: totalPages,
+    search: search ,
+    sortOrder: sortOrder
+  });
+} catch (error) {
+    console.log(error.message);
+    // Handle the error appropriately, e.g., send an error response
+    res.status(500).send('Internal Server Error');
+}
 });
+
 
 
 const about = asyncHandler(async (req, res) => {
@@ -619,51 +636,7 @@ const userCart = asyncHandler(async (req, res) => {
   }
 });
 
-// const userCart = asyncHandler(async (req, res) => {
-//   const { productId, quantity, price } = req.body;
-//   const { _id } = req.user;
-//   validateMongoDbId(_id);
 
-//   try {
-//     let products = [];
-//     const user = await User.findById(_id);
-//     const alreadyExistCart = await Cart.findOne({ orderby: user._id });
-//     let updatedCart;
-
-//     if (alreadyExistCart) {
-//       // Update existing cart
-//       alreadyExistCart.products.push({
-//         product: productId,
-//         quantity: quantity,
-//         price: price,
-//       });
-
-//       alreadyExistCart.cartTotal += price * quantity;
-
-//       updatedCart = await alreadyExistCart.save();
-//     } else {
-//       // Create a new cart
-//       let newCart = await new Cart({
-//         products: [
-//           {
-//             product: productId,
-//             quantity: quantity,
-//             price: price,
-//           },
-//         ],
-//         cartTotal: price * quantity,
-//         orderby: user?._id,
-//       }).save();
-
-//       updatedCart = newCart;
-//     }
-
-//     res.json(updatedCart);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
 
 const checkout = asyncHandler(async (req, res) => {
   try {
@@ -1126,6 +1099,5 @@ module.exports = {
   resendMail,
   updateQuantity,
   getOrdersDetails,
-  createOnlinePayment,
-  shopFilter
+  createOnlinePayment
 };
