@@ -703,7 +703,6 @@ const createOnlinePayment = async (req, res) => {
     console.log(error.message);
   }
 };
-
 const createOrder = asyncHandler(async (req, res) => {
   const { COD, couponApplied, addressId, paymentMethod, orderTotal } = req.body;
   const { _id } = req.user;
@@ -737,21 +736,31 @@ const createOrder = asyncHandler(async (req, res) => {
     }).save();
 
     // Update product quantities
-    let update = userCart.products.map((item) => {
-      const count = typeof item.count === "number" ? item.count : 0;
-      const updatedQuantity = isNaN(count) ? 0 : +count;
+  // Update product quantities
+for (const item of userCart.products) {
+  console.log("Product ID:", item.product._id);
+  console.log("Original Quantity:", item.product.quantity);
+  console.log("Count in Cart:", item.quantity); // Assuming quantity is stored in item.quantity
 
-      return {
-        updateOne: {
-          filter: { _id: item.product._id },
-          update: {
-            $inc: { quantity: -updatedQuantity, sold: updatedQuantity },
-          },
-        },
-      };
-    });
+  const count = typeof item.quantity === "number" ? item.quantity : 0;
+  const updatedQuantity = isNaN(count) ? 0 : +count;
 
-    const updated = await Product.bulkWrite(update, {});
+  console.log("Updating product:", item.product._id);
+  console.log("Updated Quantity:", updatedQuantity);
+
+  // Update the product quantity in the database
+  await Product.updateOne(
+    { _id: item.product._id },
+    { $inc: { quantity: -updatedQuantity, sold: updatedQuantity } }
+  );
+}
+
+// Remove the user's cart after a successful order
+await Cart.deleteOne({ orderby: user._id });
+
+
+    // Remove the user's cart after a successful order
+    await Cart.deleteOne({ orderby: user._id });
 
     res.redirect("/thankyou");
   } catch (error) {
@@ -759,6 +768,63 @@ const createOrder = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+
+// const createOrder = asyncHandler(async (req, res) => {
+//   const { COD, couponApplied, addressId, paymentMethod, orderTotal } = req.body;
+//   const { _id } = req.user;
+
+//   try {
+//     const user = await User.findById(_id);
+//     const addresses = await Address.find({ user: _id }).exec();
+//     let userCart = await Cart.findOne({ orderby: user._id });
+//     let finalAmount = 0;
+
+//     if (couponApplied && userCart.totalAfterDiscount) {
+//       finalAmount = userCart.totalAfterDiscount;
+//     } else {
+//       finalAmount = Number(userCart.cartTotal);
+//     }
+
+//     let newOrder = await new Order({
+//       products: userCart.products,
+//       paymentIntent: {
+//         id: uniqid(),
+//         method: paymentMethod,
+//         amount: finalAmount,
+//         status: "Pending",
+//         created: Date.now(),
+//       },
+//       orderId: orderid.generate(),
+//       address: addressId,
+//       orderby: user._id,
+//       orderStatus: "Processing",
+//       expectedDelivery: Date.now() + 7 * 24 * 60 * 60 * 1000,
+//     }).save();
+
+//     // Update product quantities
+//     let update = userCart.products.map((item) => {
+//       const count = typeof item.count === "number" ? item.count : 0;
+//       const updatedQuantity = isNaN(count) ? 0 : +count;
+
+//       return {
+//         updateOne: {
+//           filter: { _id: item.product._id },
+//           update: {
+//             $inc: { quantity: -updatedQuantity, sold: updatedQuantity },
+//           },
+//         },
+//       };
+//     });
+
+//     const updated = await Product.bulkWrite(update, {});
+
+//     res.redirect("/thankyou");
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// });
 
 const getOrders = asyncHandler(async (req, res) => {
   const { _id } = req.user;
@@ -806,7 +872,7 @@ const loadProfile = asyncHandler(async (req, res) => {
 
     // Query all addresses associated with the user
     const addresses = await Address.find({ user: _id }).exec();
-    console.log(addresses);
+   
     // Query the user's profile
     const profile = await User.findById(_id);
 
@@ -816,6 +882,26 @@ const loadProfile = asyncHandler(async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+const loadEditProfile = asyncHandler(async(req,res)=>{
+  try{
+    const { _id } = req.user;
+    const profile = await User.findById(_id);
+    res.render("UI/editProfile", { profile });
+
+  }catch(error){throw new Error(Error)}
+})
+const editProfile = asyncHandler(async(req,res)=>{
+  try{
+    const { _id } = req.user;
+    const {name, phone }=req.body
+    const profile = await User.findByIdAndUpdate(
+      _id,
+      { $set: { name: name, mobile: phone } },
+      { new: true } // This option returns the modified document instead of the original
+    );    res.redirect("/profile");
+
+  }catch(error){throw new Error(Error)}
+})
 const addAddress = asyncHandler(async (req, res) => {
   try {
     const { _id } = req.user;
@@ -849,6 +935,28 @@ const addAddress = asyncHandler(async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+const removeAddress = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+   
+    // Assuming Address is a Mongoose model
+    const address = await Address.findByIdAndDelete({_id:id});
+    console.log('Address ID:', id);
+    if (!address) {
+      // Address not found
+      return res.status(404).json({ error: "Address not found" });
+    }
+
+    // Successful deletion, redirect back to the same page
+    res.redirect('back');
+  } catch (error) {
+    console.error(error);
+    throw new Error(error);
+  }
+});
+
+
 
 // const removeItem = asyncHandler(async (req, res) => {
 //   try {
@@ -1151,5 +1259,8 @@ module.exports = {
   createOnlinePayment,
   requestReturn,
   requestCancel,
-  loadRequestReturn
+  loadRequestReturn,
+  removeAddress,
+  loadEditProfile,
+  editProfile
 };

@@ -629,7 +629,7 @@ const getAllOrders = asyncHandler(async (req, res) => {
 
 
 const updateOrderStatus = asyncHandler(async (req, res) => {
-  const { payment, orderStatus, paymentId, amount, method, created } = req.body;
+  const { payment, orderStatus, paymentId, amount, method, created ,request} = req.body;
   const { id } = req.params;
   validateMongoDbId(id);
   try {
@@ -637,6 +637,7 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
       id,
       {
         id: paymentId,
+        request:request,
         orderStatus: orderStatus,
         paymentIntent: {
           status: payment,

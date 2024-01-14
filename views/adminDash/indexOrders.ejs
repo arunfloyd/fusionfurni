@@ -35,7 +35,10 @@
                                                     </div>
                                                 </a>
                                             </div>
-                                            
+                                            <div class="col-lg-2 col-sm-2 col-4 col-price">
+                                              <h6>Users Name:</h6>
+                                              <span> <%= order.orderby.name %></span>
+                                          </div>
                                             <div class="col-lg-2 col-sm-2 col-4 col-price">
                                                 <h6>Order Status:</h6>
                                                 <span> <%= order.orderStatus %></span>
@@ -46,9 +49,10 @@
                                                 <span>  <%= order.paymentIntent.status %></span>
                                             </div>
                                             <div class="col-lg-2 col-sm-2 col-4 col-price">
-                                                <h6>Users Name:</h6>
-                                                <span> <%= order.orderby.name %></span>
-                                            </div>
+                                              <h6>Request:</h6>
+                                              <span> <%= order.request %></span>
+                                          </div>
+                                           
                                             
                                             
                                             

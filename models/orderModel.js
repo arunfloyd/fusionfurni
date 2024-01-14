@@ -20,7 +20,7 @@ var orderSchema = new mongoose.Schema(
     request: {
       type: String,
       default: "No Request",
-      enum: ["No Request", "Request Cancellation", "Request Return"],
+      enum: ["No Request", "Request Cancellation", "Request Return", "Accept Cancellation", "Accept Return"],
     },
     orderStatus: {
       type: String,

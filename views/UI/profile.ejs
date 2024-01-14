@@ -45,9 +45,12 @@
                                               <%= address.landmark %><br>
                                               <%= address.pincode %><br>
                                               <%= address.addressType %>
+                                            
+                                              
+
                                           </p>
-                                          <a href="#" class="card-link">Edit</a>
-                                          <a href="#" class="card-link">Remove</a>
+                                          
+                                          <a href="/remove-address/<%=address._id%>" class="card-link">Remove</a>
                                       </div>
                                   </div>
                               </div>
@@ -108,8 +111,8 @@
                     </form>
                      
                      
-
-                    <button type="submit" class="btn btn-primary-hover-outline">Edit Profile</button>
+<a href="/edit-profile"><button type="button" class="btn btn-primary-hover-outline">Edit Profile</button>
+</a>
                 </div>
             </div>
         </div>

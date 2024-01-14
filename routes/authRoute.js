@@ -34,15 +34,16 @@ const {
   updateQuantity,
   getOrdersDetails,
   createOnlinePayment,
-  requestCancel,
   requestReturn,
   loadRequestReturn,
- 
+  removeAddress,
+  loadEditProfile,
+  editProfile,
 } = require("../controller /userController");
 const {
   userMiddleware,
   noCacheHeaders,
-  isBlocked
+  isBlocked,
 } = require("../middlewares/authMiddleware");
 const router = express.Router();
 router.get("/login", noCacheHeaders, loadlogin);
@@ -64,27 +65,31 @@ router.get("/blog", blog);
 router.get("/services", services);
 router.get("/cart", cart);
 router.get("/about", about);
-router.post("/cart", userMiddleware, isBlocked,userCart);
-router.get("/view-cart", userMiddleware, isBlocked,getUserCart);
+router.post("/cart", userMiddleware, isBlocked, userCart);
+router.get("/view-cart", userMiddleware, isBlocked, getUserCart);
 router.post("/remove-item", userMiddleware, removeItem);
 router.post("/update-quantity/:productId", userMiddleware, updateQuantity);
-router.get("/checkout", userMiddleware, isBlocked,checkout);
+router.get("/checkout", userMiddleware, isBlocked, checkout);
 router.post("/create-order", userMiddleware, createOrder);
-router.post("/create-online-payment", userMiddleware, isBlocked,createOnlinePayment);
-router.get("/thankyou", userMiddleware, isBlocked,thankyou);
+router.post(
+  "/create-online-payment",
+  userMiddleware,
+  isBlocked,
+  createOnlinePayment
+);
+router.get("/thankyou", userMiddleware, isBlocked, thankyou);
 router.get("/all-user", getallUser);
 router.get("/orders", userMiddleware, getOrders);
 router.get("/orders-details/:id", userMiddleware, getOrdersDetails);
 router.get("/profile", userMiddleware, loadProfile);
 router.post("/profile", userMiddleware, addAddress);
+router.get("/edit-profile", userMiddleware, loadEditProfile);
+router.post("/edit-profile", userMiddleware, editProfile);
+router.get("/remove-address/:id", userMiddleware, removeAddress);
 router.get("/logout", logout);
 router.get("/login", loadlogin);
 router.get("/refresh", handleRefreshToken);
 router.get("/error", errorPage);
 router.get("/request-return/:id", loadRequestReturn);
 router.post("/request-return", requestReturn);
-
-
-
-  
 module.exports = router;

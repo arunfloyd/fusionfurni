@@ -1,0 +1,48 @@
+<%- include('../layout/header.ejs') %>
+
+<!-- Start Contact Form -->
+<div class="untree_co-section">
+    <div class="container">
+        <h3>Make Changes </h3>
+        <div class="block">
+            
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-8 pb-4">
+                    <form action="/edit-profile" method="post">
+                      <div class="row">
+                        <div class="col-6">
+                          <div class="form-group">
+                            <label class="text-black" for="fname">Name</label>
+                            <input type="text" class="form-control" name="name"  value="<%=profile.name%>" >
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="form-group">
+                              <label class="text-black" for="email">Email address</label>
+                              <input type="email" class="form-control" id="email" value="<%=profile.email%>"readonly>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="form-group">
+                            <label class="text-black" for="fname">Phone Number</label>
+                            <input type="text" class="form-control" name="phone" value="<%=profile.mobile%>">
+                          </div>
+                      <br>
+                      <br>
+
+                      <br>
+
+                     
+<button type="submit" class="btn btn-primary-hover-outline">Submit</button>
+</form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Contact Form -->
+
+
+
+<%- include('../layout/footer.ejs') %>
