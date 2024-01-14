@@ -1057,6 +1057,55 @@ const resetPassword = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+const requestCancel = asyncHandler(async(req,res)=>{
+ try{
+  const { _id } = req.user;
+  const cancel = await Order.findOneAndUpdate({ orderby: _id }, { $set: { request: "Request Cancellation" } });
+  console.log(cancel)
+ }catch(error){
+  throw new Error(error)
+ }
+})
+const loadRequestReturn = asyncHandler(async(req,res)=>{
+  try{
+   const { id } = req.params;
+   console.log(id)
+   const returns = await Order.findById(id)
+  //  console.log(_id)
+   res.render('UI/requestReturn',{id})
+  }catch(error){
+   throw new Error(error)
+  }
+ })
+ const requestReturn = asyncHandler(async (req, res) => {
+  try {
+    // const { id } = req.params;
+    const { selectedRequest ,id} = req.body;
+   
+    // Update the request field based on the selected option
+    let updateField;
+    if (selectedRequest === "Request Cancellation Product") {
+      updateField = { request: "Request Cancel" };
+    } else if (selectedRequest === "Request Return Product") {
+      updateField = { request: "Request Return" };
+    } else {
+      return res.status(400).json({ error: "Invalid request type" });
+    }
+
+    // Update the order with the specified field
+    const updatedOrder = await Order.findByIdAndUpdate(id, { $set: updateField }, { new: true });
+
+    if (!updatedOrder) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+    res.redirect('/orders')
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 module.exports = {
   errorPage,
@@ -1099,5 +1148,8 @@ module.exports = {
   resendMail,
   updateQuantity,
   getOrdersDetails,
-  createOnlinePayment
+  createOnlinePayment,
+  requestReturn,
+  requestCancel,
+  loadRequestReturn
 };

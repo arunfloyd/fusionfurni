@@ -35,7 +35,7 @@
                                     
                                     
                                     <div class="mb-4">
-                                        <label for="product_slug" class="form-label">Payment id</label>
+                                        <label for="product_slug" class="form-label">Order Id</label>
                                         <input type="text" placeholder="Type here" class="form-control" id="product_slug" name="paymentId" value="<%= userorders.orderId%>" readonly/>
                                         <label for="product_slug" class="form-label">Total Amount </label>
 
@@ -43,14 +43,11 @@
                                         <label for="product_slug" class="form-label">Payment Method </label>
 
                                         <input type="text" placeholder="Type here" class="form-control" id="product_slug" name="method" value="<%= userorders.paymentIntent.method%>" readonly/>
-                                        <label for="product_slug" class="form-label">Transaction Time </label>
-
-                                        <input type="text" placeholder="Type here" class="form-control" id="product_slug" name="created" value=" <%= userorders.paymentIntent.created%>" readonly/>
-
-
+                           
                                         <br>
                                         <label class="form-label">Conform the Payment Status (if COD click choose Completed after Delivery</label>
                                         <br>
+                                       
                                         <div class="radio-group">
                                             <label>
                                                 <input type="radio" name="payment" value="Completed" <%= userorders.paymentIntent.status == 'Completed' ? 'checked' : '' %> />

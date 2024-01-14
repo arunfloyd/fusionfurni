@@ -637,9 +637,9 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
       id,
       {
         id: paymentId,
-        orderStatus: payment,
+        orderStatus: orderStatus,
         paymentIntent: {
-          status: orderStatus,
+          status: payment,
           amount: amount,
           method: method,
           created: created,

@@ -15,7 +15,6 @@ const {
   about,
   home,
   product,
-  sendMail,
   resendMail,
   verifyMail,
   errorPage,
@@ -35,7 +34,10 @@ const {
   updateQuantity,
   getOrdersDetails,
   createOnlinePayment,
-  shopFilter
+  requestCancel,
+  requestReturn,
+  loadRequestReturn,
+ 
 } = require("../controller /userController");
 const {
   userMiddleware,
@@ -65,7 +67,7 @@ router.get("/about", about);
 router.post("/cart", userMiddleware, isBlocked,userCart);
 router.get("/view-cart", userMiddleware, isBlocked,getUserCart);
 router.post("/remove-item", userMiddleware, removeItem);
-router.post("/update-quantity/:productId",isBlocked, userMiddleware, updateQuantity);
+router.post("/update-quantity/:productId", userMiddleware, updateQuantity);
 router.get("/checkout", userMiddleware, isBlocked,checkout);
 router.post("/create-order", userMiddleware, createOrder);
 router.post("/create-online-payment", userMiddleware, isBlocked,createOnlinePayment);
@@ -79,5 +81,10 @@ router.get("/logout", logout);
 router.get("/login", loadlogin);
 router.get("/refresh", handleRefreshToken);
 router.get("/error", errorPage);
+router.get("/request-return/:id", loadRequestReturn);
+router.post("/request-return", requestReturn);
 
+
+
+  
 module.exports = router;

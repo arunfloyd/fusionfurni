@@ -1,0 +1,65 @@
+<%- include('../layout/header.ejs') %>
+<!-- Bootstrap CSS -->
+
+<!-- Start Hero Section -->
+<div class="hero">
+  <div class="container">
+    <div class="row justify-content-between">
+      <div class="col-lg-5">
+        <div class="intro-excerpt">
+          <h1>Request Form</h1>
+          <p class="mb-4">
+            Here You Can Submit the Reqquest For Return & Cancel Your Order by the Feedback    
+          </p> 
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Hero Section -->
+<div class="container">
+    <div class="row justify-content-center">
+        <form action="/request-return" method="post" >
+            <h3>Requestion Form</h3>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="inputEmail4">Name</label>
+                <input type="text" class="form-control" id="inputEmail4" placeholder="Enter Your Name" required>
+              </div>
+             
+              <div class="form-group col-md-4">
+                <label for="inputState">Select the Request </label>
+                <select name="selectedRequest" class="form-control">
+                  <option selected>Choose...</option>
+                  <option>Request Cancellation Product</option>
+                  <option>Request Return Product</option>
+
+                </select>
+              </div>
+            <div class="form-group">
+              <label for="inputAddress2">Bank Details - A/C Number</label>
+              <input type="text" class="form-control" id="inputAddress2" placeholder="Enter your Account Number"required>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="inputCity">IFCC</label>
+                <input type="text" class="form-control" id="inputCity"required>
+              </div>
+              <div class="form-group col-md-6">
+                <label for="inputCity">Branch Name</label>
+                <input type="text" class="form-control" id="inputCity"required>
+              </div>
+            </div>
+            <input type="hidden" class="form-control" name="id" value="<%=id%>">
+
+            <button type="submit" class="btn btn-primary">Sign in</button>
+          </form>
+        </div>
+    </div>
+</div>
+<!-- Start Why Choose Us Section -->
+
+    
+
+<!-- End Testimonial Slider -->
+<%- include('../layout/footer.ejs') %>

@@ -5,74 +5,86 @@
     <div class="row justify-content-between">
       <div class="col-lg-5">
         <div class="intro-excerpt">
-          <h1>Your Orders</h1>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="card text-center">
-  <% userorders.forEach(order => { %>
-  <div class="card-header">
-    <h2>Order ID: <%= order._id %></h2>
-  </div>
-  <% order.products.forEach(productItem => { %>
-  <div class="card-body">
-    <h5 class="card-title"><%= productItem.product.title %></h5>
-    <p class="card-text"><%= order.paymentIntent.status %></p>
-    <img
-                    src="/productImage/<%= productItem.product.images[0] %>"
-                    alt="Product Image"
-                    width="50px"
-                    height="50px"
-                  />
-    <a href="#" class="btn btn-primary">Go somewhere</a>
-  </div>
-  <div class="card-footer text-body-secondary">
-    <p>Expected Delivery Date: <%= new Date(parseInt(order.expectedDelivery)).toLocaleDateString("en-US") %></p>
-    
-  </div>
-</div>
-<% } %>
-<% }); %>
-<% }); %>
-<div class="untree_co-section before-footer-section">
-  <div class="container">
-    <div class="row mb-5">
-      <div class="col-md-12">
-        <div class="site-blocks-table">
-          <% userorders.forEach(order => { %>
-            <h2>Order ID: <%= order._id %></h2>
-            <p>Order Date: <%= order.createdAt.toLocaleString("en-US") %></p>
-            <p>Expected Delivery Date: <%= new Date(parseInt(order.expectedDelivery)).toLocaleDateString("en-US") %></p>
-            
-            <ul>
-              <% order.products.forEach(productItem => { %>
-                <li>
-                  <strong>Product Title:</strong> <%= productItem.product.title %><br>
-                  <strong>Order Status:</strong> <%= order.paymentIntent.status %><br>
-                  <strong>Image:</strong>
-                  <img
-                    src="/productImage/<%= productItem.product.images[0] %>"
-                    alt="Product Image"
-                    width="100px"
-                    height="100px"
-                  /><br>
-                  <strong>Price:</strong> <%= productItem.product.price %><br>
-                  <strong>Actions:</strong>
-                  <% if (order.paymentIntent.status === 'Delivered') { %>
-                    <button type="button" class="btn btn-warning">Return</button>
-                  <% } else { %>
-                    <button type="button" class="btn btn-danger">Cancel</button>
-                  <% } %>
-                </li>
-              <% }); %>
-            </ul>
-          <% }); %>
+          <h1>Your Order Details</h1>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<%- include('../layout/footer.ejs') %>  
+<div class="card text-center">
+  <div class="card-header"></div>
+  <div class="card" style="width: 18rem;">
+    <div class="card-body">
+      <h5 class="card-title">
+        <strong><p class="mb-2">Delivery Address:</p></strong>
+      </h5>
+      <div class="address-details border border-dark p-3 mb-3">
+        <p class="mb-1"><strong>Name:</strong> <%= userorder.address.name %></p>
+        <p class="mb-1"><strong>Mobile:</strong> <%= userorder.address.mobile %></p>
+        <p class="mb-1"><strong>Street:</strong> <%= userorder.address.street %></p>
+        <p class="mb-1"><strong>Area:</strong> <%= userorder.address.area %></p>
+        <p class="mb-1"><strong>Landmark:</strong> <%= userorder.address.landmark %></p>
+        <p class="mb-1"><strong>Pincode:</strong> <%= userorder.address.pincode %></p>
+      </div>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">
+        <strong><p class="mb-2">Order Status:</p></strong>
+      </h5>
+      <div class="address-details border border-dark p-3 mb-3">
+        <p class="mb-1"><strong>Date:</strong> <%= new Date(parseInt(userorder.expectedDelivery)).toLocaleDateString("en-US") %></p>
+        <p class="mb-1"><strong>Ordered Date:</strong> <%= new Date(userorder.createdAt).toLocaleDateString("en-US") %></p>
+      </div>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">
+        <strong><p class="mb-2">Expected Delivery:</p></strong>
+      </h5>
+      <div class="address-details border border-dark p-3 mb-3">
+        <p class="mb-1"><strong>Status:</strong> <%= userorder.paymentIntent.status %></p>
+      </div>
+    </div>
+
+    <% userorder.products.forEach((productItem, index, array) => { %>
+      <div class="card">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-2 offset-md-1">
+              <img
+                src="/productImage/<%= productItem.product.images[0] %>"
+                alt="Product Image"
+                width="100px"
+                height="100px"
+              />
+            </div>
+            <div class="col-md-7">
+              <h5 class="card-title">
+                <strong>Product Title:</strong> <%= productItem.product.title %>
+              </h5>
+              <h6 class="card-text">
+                <strong>Product Price:</strong> <%= productItem.product.price %>
+              </h6>
+
+              <% if (index === array.length - 1) { %>
+                <strong>
+                  <p>
+                    Expected Delivery Date: <%= new Date(parseInt(userorder.expectedDelivery)).toLocaleDateString("en-US") %>
+                  </p>
+                </strong>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+  <% console.log("Status"+userorder.orderStatus) %>
+  <%if (userorder.orderStatus.toLowerCase() === "delivered") { %>
+    <a href="/request-return">Request Return</a>
+  <% } else { %>
+    <a href="/request-cance">Request Cancellation</a>
+  <% } %>
+</div>
+
+<%- include('../layout/footer.ejs') %>
