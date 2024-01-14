@@ -7,7 +7,7 @@ const {
   getallCategory,
   loadUpdate,
 } = require("../controller /categoryController");
-const { authMiddleware} = require("../middlewares/authMiddleware");
+const { authMiddleware } = require("../middlewares/authMiddleware");
 const router = express.Router();
 router.post("/", authMiddleware, createCategory);
 router.put("/:id", authMiddleware, updateCategory);

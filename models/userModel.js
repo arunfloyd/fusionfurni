@@ -1,7 +1,6 @@
-const mongoose = require("mongoose"); // Erase if already required
+const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
-// Declare the Schema of the Mongo model
 var userSchema = new mongoose.Schema(
   {
     name: {
@@ -72,5 +71,4 @@ userSchema.methods.createPasswordResetToken = async function () {
   this.passwordResetExpires = Date.now() + 30 * 60 * 1000; // 10 minutes
   return resettoken;
 };
-//Export the model
 module.exports = mongoose.model("User", userSchema);

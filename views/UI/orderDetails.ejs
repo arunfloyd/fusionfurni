@@ -83,7 +83,9 @@
           <strong><p class="mb-2">Order Status:</p></strong>
         </h5>
         <div class="address-details border border-dark p-3 mb-3">
-          <p class="mb-1"><strong>Status:</strong> <%= userorder.paymentIntent.status %></p>
+          <p class="mb-1"><strong>Status:</strong> <%= userorder.orderStatus %></p>
+
+          <p class="mb-1"><strong>Payment Status:</strong> <%= userorder.paymentIntent.status %></p>
         </div>
       </div>
     </div>

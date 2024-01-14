@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-// Create a separate schema for the address
 const addressSchema = new mongoose.Schema({
   name: {
     type: String,

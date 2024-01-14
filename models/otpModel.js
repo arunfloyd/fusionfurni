@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const otpSchema = new mongoose.Schema({
   otp: {
@@ -12,8 +12,8 @@ const otpSchema = new mongoose.Schema({
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
   },
 });
 
-module.exports = mongoose.model('Otp', otpSchema);
+module.exports = mongoose.model("Otp", otpSchema);

@@ -71,6 +71,7 @@
                                         <label class="form-label">Order Status</label>
                                         <select class="form-select" name="orderStatus">
                                             <option value="Processing" <%= userorders.orderStatus === 'Processing' ? 'selected' : '' %>>Processing</option>
+                                            <option value="Returned " <%= userorders.orderStatus === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
                                             <option value="Shipped" <%= userorders.orderStatus === 'Shipped' ? 'selected' : '' %>>Shipped</option>
                                             <option value="Delivered" <%= userorders.orderStatus === 'Delivered' ? 'selected' : '' %>>Delivered</option>
                                             <option value="Returning" <%= userorders.orderStatus === 'Delivered' ? 'selected' : '' %>>Returning</option>
@@ -82,6 +83,7 @@
                                         <select class="form-select" name="request">
                                             <option value="No Request" <%= userorders.request === 'No Request' ? 'selected' : '' %>>No Request</option>
                                             <option value="Request Cancellation" <%= userorders.request === 'Request Cancellation' ? 'selected' : '' %>>Request Cancellation</option>
+                                    
                                             <option value="Request Return" <%= userorders.request === 'Request Return' ? 'selected' : '' %>>Request Return</option>
                                             <option value="Accept Cancellation" <%= userorders.request === 'Accept Cancellation' ? 'selected' : '' %>>Accept Cancellation</option>
                                             <option value="Accept Return" <%= userorders.request === 'Accept Return' ? 'selected' : '' %>>Accept Return</option>

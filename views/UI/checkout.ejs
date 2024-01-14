@@ -117,7 +117,7 @@
                         </div>
                     </form>
 
-                    <form action="/profile" method="post" id="addressForm" style="display: none;">
+                    <form action="/add-address" method="post" id="addressForm" style="display: none;">
                         <div class="form-group mb-3">
                             <label class="text-black" for="name">Name </label>
                             <input type="text" name="name" class="form-control" id="name">
@@ -172,6 +172,7 @@
                                         <% cart.products.forEach(productItem => { %>
                                             <tr>
                                                 <td><%= productItem.product.title %></td>
+
                                                 <td> <strong class="mx-2">x</strong> <%= productItem.quantity %></td>
                                                 <td><%= productItem.product.price %> <strong class="mx-2">x</strong> <%= productItem.quantity %> = <%= productItem.product.price * productItem.quantity %></td>
                                             </tr>
@@ -187,7 +188,7 @@
                                     <% } %>
                                     <tr>
                                         <td class="text-black font-weight-bold"><strong>Order Total</strong></td>
-                                        <td class="text-black font-weight-bold"><strong>₹ <%=cart.cartTotal%></strong></td>
+                                        <td class="text-black font-weight-bold"><strong>₹ <%=c.cartTotal%></strong></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -195,12 +196,13 @@
                             <input type="hidden" id="productName" placeholder="Product Name" name="nameUser" value="<%=user.name%>">
                             <input type="hidden" id="email" placeholder="Email" name="iemail" value="<%=user.email%>" >
                             <input type="hidden" id="mobile" placeholder="Email" name="mobile" value="<%=user.email%>" >
+                            <input type="hidden" id="title" placeholder="title" name="title" value="<%= cart.products[0].title %>">
 
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </div>art
     </div>
 </div>
 </div>
@@ -238,13 +240,8 @@
         var amount = $('#amount').val();
         var email = $('#email').val();
         var mobile = $('#mobile').val();
+        var product = $('#title').val();
 
-
-        // Placeholder for other values you might need (contact, description, etc.)
-        // var contact = ...
-        // var description = ...
-
-        // Send data to server for order creation
         $.ajax({
             url: "/create-online-payment",
             type: "POST",
@@ -252,7 +249,7 @@
                 productName: productName,
                 amount: amount,
                 email: email,
-                // Add other fields as needed
+                product:product
             },
             success: function(res){
                 if(res.success){
@@ -260,13 +257,12 @@
                         "key": res.key_id, // No need for extra quotes around variables
                         "amount": res.amount,
                         "currency": "INR",
-                        "name": res.product_name,
+                        "name": res.product,
                         "description": res.description,
                         "image": "https://dummyimage.com/600x400/000/fff",
                         "order_id": res.order_id,
                         "handler": function (response){
                             alert("Payment Succeeded");
-                            // window.open("/","_self")
                         },
                         "prefill": {
                             "contact": res.contact,
@@ -294,11 +290,9 @@
     });
 
         $("#placeOrderBtn").click(function () {
-    // Get the selected address and payment method
     const selectedAddressId = $("input[name='addressSelection']:checked").val();
     const selectedPaymentMethod = $("input[name='paymentMethod']:checked").val();
 
-    // Validate whether both address and payment method are selected
     if (selectedAddressId && selectedPaymentMethod) {
         // You can now use Axios to send these values to a specified route
         axios.post('/create-order', {

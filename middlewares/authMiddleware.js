@@ -11,12 +11,10 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
       const user = await User.findById(decoded?.id);
 
       if (user) {
-        // Check if the user is an admin
         if (user.role === "admin") {
           req.user = user;
           next();
         } else {
-          // Redirect or handle the case where the user is not an admin
           res.redirect("/admin/login");
           throw new Error("Access denied. User is not an admin.");
         }
@@ -30,21 +28,23 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
     }
   } catch (error) {
     console.error(error);
-    // Redirect or handle the case where authentication fails
     res.redirect("/admin/login");
     throw new Error("Authentication failed.");
   }
 });
-const isBlocked = asyncHandler(async(req,res,next)=>{
-  const user = req.user
-  const users = await User.findById({_id:user._id})
-  if(users.accessStatus !== true){
-    req.flash("message", "Cart Access have been Resticted..!! Please Contact Us");
-    res.redirect("/home")
-  }else{
-    next()
+const isBlocked = asyncHandler(async (req, res, next) => {
+  const user = req.user;
+  const users = await User.findById({ _id: user._id });
+  if (users.accessStatus !== true) {
+    req.flash(
+      "message",
+      "Cart Access have been Resticted..!! Please Contact Us"
+    );
+    res.redirect("/home");
+  } else {
+    next();
   }
-})
+});
 
 const userMiddleware = asyncHandler(async (req, res, next) => {
   const token = req.cookies.refreshToken;
@@ -64,15 +64,6 @@ const userMiddleware = asyncHandler(async (req, res, next) => {
   }
 });
 
-const isAdmin = asyncHandler(async (req, res, next) => {
-  const { email } = req.user;
-  const adminUser = await User.findOne({ email });
-  if (adminUser.role !== "admin") {
-    throw new Error("You are not an admin");
-  } else {
-    next();
-  }
-});
 const noCacheHeaders = (req, res, next) => {
   try {
     res.set("Cache-Control", "no-store, no-cache");
@@ -82,4 +73,9 @@ const noCacheHeaders = (req, res, next) => {
     throw new Error("Can't set cache control headers");
   }
 };
-module.exports = { authMiddleware, isAdmin, userMiddleware, noCacheHeaders,isBlocked };
+module.exports = {
+  authMiddleware,
+  userMiddleware,
+  noCacheHeaders,
+  isBlocked,
+};

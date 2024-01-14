@@ -1,6 +1,5 @@
 const Product = require("../models/productModel");
 const Category = require("../models/categoryModel");
-
 const asyncHandler = require("express-async-handler");
 const addProduct = asyncHandler(async (req, res) => {
   try {
@@ -27,7 +26,7 @@ const createProduct = asyncHandler(async (req, res) => {
       warranty,
     } = req.body;
 
-    const images = req.files.map((file) => file.originalname);  
+    const images = req.files.map((file) => file.originalname);
 
     const newProduct = await Product.create({
       title,
@@ -41,12 +40,9 @@ const createProduct = asyncHandler(async (req, res) => {
       quantity,
     });
 
-    console.log("Product created successfully");
-
     res.redirect("/admin/product/list");
   } catch (error) {
     req.flash("message", "Error creating product");
-    console.error(error);
   }
 });
 
@@ -54,7 +50,6 @@ const updateImages = async function (req, res) {
   try {
     const { selectedImages } = req.body;
 
-    // Perform deletion in the database (example using Mongoose)
     await Product.updateMany(
       { images: { $in: selectedImages } },
       { $pull: { images: { $in: selectedImages } } }
@@ -63,7 +58,6 @@ const updateImages = async function (req, res) {
     res.redirect("/admin/product/list");
     res.status(200).json({ message: "Images deleted successfully" });
   } catch (error) {
-    console.error("Error deleting images:", error);
     res.status(500).json({ error: "Failed to delete images" }); // More informative error message
   }
 };
@@ -83,10 +77,8 @@ const updateProduct = asyncHandler(async (req, res) => {
       warranty,
       quantity,
       list,
-      // Add other fields as needed
     } = req.body;
 
-    // Check if the 'images' field is present and not empty
     const updateFields = {
       $set: {
         title,
@@ -98,16 +90,13 @@ const updateProduct = asyncHandler(async (req, res) => {
         warranty,
         quantity,
         list,
-        // Add other fields as needed
       },
     };
 
     if (images) {
       if (Array.isArray(images)) {
-        // If images is an array, use $push with $each
         updateFields.$push = { images: { $each: images } };
       } else {
-        // If images is a string, use $push without $each
         updateFields.$push = { images };
       }
     }
@@ -120,12 +109,11 @@ const updateProduct = asyncHandler(async (req, res) => {
 
     res.redirect("/admin/product/list");
   } catch (error) {
-    console.error("Error updating product:", error);
     res.status(500).render("error", { error: "Failed to update product" });
   }
 });
 
-const   loadUpdateProduct = asyncHandler(async (req, res) => {
+const loadUpdateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   try {
     const category = await Category.find({ list: true });
@@ -135,8 +123,7 @@ const   loadUpdateProduct = asyncHandler(async (req, res) => {
       category: category,
     });
   } catch (error) {
-    // throw new Error(error)
-    res.send(error);
+    throw new Error(error);
     res.render("error");
   }
 });
@@ -147,7 +134,6 @@ const loadUpdate = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const productData = await Product.findById(id);
   } catch (error) {
-    // console.log(error.message)
     res.send(error);
     res.render("error");
   }
@@ -159,7 +145,6 @@ const deleteProduct = asyncHandler(async (req, res) => {
     const deletedProduct = await Product.deleteOne({ _id: id });
     res.redirect("/admin/product/list");
   } catch (error) {
-    // console.log(error.message)
     res.send(error);
     res.render("error");
   }
@@ -187,55 +172,50 @@ const getallProducts = asyncHandler(async (req, res) => {
   }
 });
 const getallProduct = asyncHandler(async (req, res) => {
-  
   try {
     const ITEMS_PER_PAGE = 8;
-    let search = '';
-    let sortOrder = ''; 
-    if (req.query.Search ||req.query.Sort ) {
-        search = req.query.Search;
-        sortOrder=req.query.Sort;
+    let search = "";
+    let sortOrder = "";
+    if (req.query.Search || req.query.Sort) {
+      search = req.query.Search;
+      sortOrder = req.query.Sort;
     }
     const sortingOptions = {
-      default: { }, // Add your default sorting option here
+      default: {}, // Add your default sorting option here
       priceHigh: { price: -1 },
-      priceLow: { price: 1 }
+      priceLow: { price: 1 },
     };
     const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
     const totalProducts = await Product.countDocuments({
       $and: [
         {
-          $or: [
-            { title: { $regex: '.*' + search + '.*', $options: 'i' } },
-          ]
-        }
-      ]
+          $or: [{ title: { $regex: ".*" + search + ".*", $options: "i" } }],
+        },
+      ],
     });
     const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE);
     const skip = (page - 1) * ITEMS_PER_PAGE;
     const usersData = await Product.find({
       $and: [
-          {
-              $or: [
-                  { title: { $regex: '.*' + search + '.*', $options: 'i' } },
-              ]
-          }
-      ]
-  }).sort(sortingOptions[sortOrder]).skip(skip)
-  .limit(ITEMS_PER_PAGE);
-  
-  res.render('adminDash/indexProductList', {
-    getallProduct: usersData,
-    currentPage: page,
-    totalPages: totalPages,
-    search: search ,
-    sortOrder: sortOrder
-  });
-} catch (error) {
-    console.log(error.message);
-    // Handle the error appropriately, e.g., send an error response
-    res.status(500).send('Internal Server Error');
-}
+        {
+          $or: [{ title: { $regex: ".*" + search + ".*", $options: "i" } }],
+        },
+      ],
+    })
+      .sort(sortingOptions[sortOrder])
+      .skip(skip)
+      .limit(ITEMS_PER_PAGE);
+
+    res.render("adminDash/indexProductList", {
+      getallProduct: usersData,
+      currentPage: page,
+      totalPages: totalPages,
+      search: search,
+      sortOrder: sortOrder,
+    });
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
 });
 const loadaUser = asyncHandler(async (req, res) => {
   try {
@@ -247,7 +227,6 @@ const loadaUser = asyncHandler(async (req, res) => {
       res.redirect("/admin/dash");
     }
   } catch (error) {
-    // console.log(error.message)
     res.send(error);
     res.render("error");
   }

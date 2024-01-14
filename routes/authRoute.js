@@ -39,6 +39,7 @@ const {
   removeAddress,
   loadEditProfile,
   editProfile,
+  addAddressOnProfile,
 } = require("../controller /userController");
 const {
   userMiddleware,
@@ -82,7 +83,8 @@ router.get("/all-user", getallUser);
 router.get("/orders", userMiddleware, getOrders);
 router.get("/orders-details/:id", userMiddleware, getOrdersDetails);
 router.get("/profile", userMiddleware, loadProfile);
-router.post("/profile", userMiddleware, addAddress);
+router.post("/profile", userMiddleware, addAddressOnProfile);
+router.post("/add-address", userMiddleware, addAddress);
 router.get("/edit-profile", userMiddleware, loadEditProfile);
 router.post("/edit-profile", userMiddleware, editProfile);
 router.get("/remove-address/:id", userMiddleware, removeAddress);

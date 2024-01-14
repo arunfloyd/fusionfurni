@@ -95,7 +95,7 @@
               <div class="text">
                 <h6 class="mb-1 card-title">Orders</h6>
                 <span><%=totalCount%></span>
-                <span class="text-sm"> Excluding orders in transit </span>
+                <span class="text-sm"> No.of orders in transit </span>
               </div>
             </article>
           </div>
@@ -122,72 +122,92 @@
               ></span>
               <div class="text">
                 <h6 class="mb-1 card-title">Monthly Earning</h6>
-                <span>$6,982</span>
-                <span class="text-sm"> Based in your local time. </span>
+                <span><%=totalEarning%></span>
+                <span class="text-sm"> Total Monthly Earning Revenue </span>
               </div>
             </article>
           </div>
         </div>
       </div>
+  <!-- Actual -->
+  <div class="row">
+    <div class="col-xl-8 col-lg-12">
+        <div class="card mb-4">
+            <article class="card-body">
+                <h5 class="card-title">Sale statistics</h5>
+                <canvas id="myChart" height="120px"></canvas>
+            </article>
+        </div>
+        <div class="row">
+          <div class="col-lg-5">
+            <div class="card mb-4">
+                <article class="card-body">
+                    <h5 class="card-title">New Members</h5>
+                   
+                    <div class="new-member-list">
+                      <% if (newUsers.length > 0) { %> <% for (let i = 5 - 1; i >=
+                        0; i--) { %>
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <div class="d-flex align-items-center">
+                              
+                                  <div>
+                                    <h6><%= newUsers[i].name %></h6>
+                                  </div>
+                                 
+                            </div>
+                            <p><%= newUsers[i].email %></p>
+                        </div>
+                        <% } %> <% } else { %>
+                          <p>User Not Found</p>
+                          <% } %>
+                    </div>
+                </article>
+            </div>
+        </div>
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <article class="card-body">
+                        <h5 class="card-title">Order Statistics</h5>      
+                          <canvas id="myCharts"  height="100" </canvas>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-lg-12">
+          <div class="card mb-4">
+              <article class="card-body">
+                <h5 class="card-title">Monthly Order Statistics</h5>
+                <canvas id="myCharter" height="200"> </canvas>
+                    
+              </article>
+          </div>
+        <div class="card mb-4">
+            <article class="card-body">
+              <h5 class="card-title">Daily Order Statistics</h5>
+              <canvas id="myChartdaily" style="width: 100%; height: 400px;"></canvas>
+            </article>
+        </div>
+    </div>
+</div>
       <div class="row">
         <div class="col-xl-8 col-lg-12">
           <div class="card mb-4">
-            <article class="card-body">
-              <h5 class="card-title">Sale statistics</h5>
-              <canvas id="myChart" height="120px"></canvas>
-            </article>
+            
           </div>
           <div class="row">
             <div class="col-xl-6">
               <div class="card mb-4">
-                <article class="card-body">
-                  <h5 class="card-title">New Members</h5>
-                  <div class="new-member-list">
-                    <% if (newUsers.length > 0) { %> <% for (let i = 5 - 1; i >=
-                    0; i--) { %>
-                    <div
-                      class="d-flex align-items-center justify-content-between mb-4"
-                    >
-                      <div class="d-flex align-items-center">
-                        <div>
-                          <h6><%= newUsers[i].name %></h6>
-                        </div>
-                      </div>
-                      <p><%= newUsers[i].email %></p>
-                      <strong>
-                        <p>
-                          <%= new
-                          Date(newUsers[i].createdAt).toLocaleString("en-US", {
-                          year: 'numeric', month: '2-digit', day: '2-digit',
-                          hour: '2-digit', minute: '2-digit', second: '2-digit'
-                          }) %>
-                        </p>
-                      </strong>
-                    </div>
-                    <% } %> <% } else { %>
-                    <p>User Not Found</p>
-                    <% } %>
-                  </div>
-                </article>
+                
               </div>
             </div>
             <div class="col-xl-4 col-lg-12">
-              <div class="card mb-4">
-                <article class="card-body">
-                  <h5 class="card-title"> Order Statistics</h5>
-                  <canvas id="myCharts" width="520" height="500" </canvas>
-                </article>
-              </div>
+             
             </div>
           </div>
         </div>
         <div class="col-xl-4 col-lg-12">
-          <div class="card mb-4">
-            <article class="card-body">
-              <h5 class="card-title">Monthly Order Statistics</h5>
-              <canvas id="myCharter" height="200"> </canvas>
-            </article>
-          </div>
+          
         </div>
        
       </div>
@@ -255,10 +275,7 @@
           </div>
           <div class="col-xl-4 col-lg-12">
             <div class="card mb-4">
-              <article class="card-body">
-                <h5 class="card-title">Daily Order Statistics</h5>
-                <canvas id="myChartdaily" style="width: 100%; height: 400px;"></canvas>
-              </article>
+             
             </div>
           </div>
           <span id="hiddenSpan1" style="display: none"
@@ -291,22 +308,7 @@
         </div>
       </div>
       <div class="pagination-area mt-30 mb-50">
-        <nav aria-label="Page navigation example">
-          <ul class="pagination justify-content-start">
-            <li class="page-item active">
-              <a class="page-link" href="#">01</a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">02</a></li>
-            <li class="page-item"><a class="page-link" href="#">03</a></li>
-            <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-            <li class="page-item"><a class="page-link" href="#">16</a></li>
-            <li class="page-item">
-              <a class="page-link" href="#"
-                ><i class="material-icons md-chevron_right"></i
-              ></a>
-            </li>
-          </ul>
-        </nav>
+        
       </div>
     </section>
     <!-- content-main end// -->

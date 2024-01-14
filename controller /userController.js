@@ -80,7 +80,6 @@ const createUser = asyncHandler(async (req, res) => {
     const mobile = req.body.mobile;
     const mob = await User.findOne({ mobile: mobile });
     const findUser = await User.findOne({ email: email });
-    console.log(findUser);
     if (!findUser && !mob) {
       const newUser = await User.create(req.body);
       const otp = otpGenerator.generate(6, {
@@ -124,7 +123,6 @@ const createUser = asyncHandler(async (req, res) => {
       res.redirect("/login");
     }
   } catch (error) {
-    console.error(error);
     res.render("user/errorLoginAndSignUp", { message: "An error occurred" });
   }
 });
@@ -167,17 +165,14 @@ const verifyMail = asyncHandler(async (req, res) => {
       res.redirect("/verify-mail");
     }
   } catch (error) {
-    console.error(error);
     req.flash("message", "An error occurred during OTP verification");
     res.redirect("/verify-mail");
   }
 });
 const resendMail = asyncHandler(async (req, res) => {
-  console.log("Resend mail route triggered");
   try {
     const email = req.body.email;
     const user = await User.findOne({ email });
-    // Generate a new OTP
     const otp = otpGenerator.generate(6, {
       digits: true,
       lowerCaseAlphabets: false,
@@ -187,9 +182,6 @@ const resendMail = asyncHandler(async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     const encryptedOtp = await bcrypt.hash(otp, salt);
-
-    // Update the existing OTP in the database
-    // Assuming the Otp model has a field 'email' to match the user
     await Otp.findOneAndUpdate(
       { user: user._id },
       { otp: encryptedOtp, expiresAt: new Date(Date.now() + 1 * 60 * 1000) }
@@ -215,16 +207,13 @@ const resendMail = asyncHandler(async (req, res) => {
       htm: resetURL,
     };
 
-    // Send the email with the new OTP
     await sendEmail(data);
 
-    // Render the same page with a success message
     res.render("user/verifyEmail", {
       email,
       message: "Resent OTP successfully",
     });
   } catch (error) {
-    console.error(error);
     throw new Error(error);
   }
 });
@@ -322,64 +311,58 @@ const getAllProduct = asyncHandler(async (req, res) => {
   }
 });
 const shop = asyncHandler(async (req, res) => {
-  
   try {
     const ITEMS_PER_PAGE = 8;
-    let search = '';
-    let sortOrder = ''; 
-    if (req.query.Search ||req.query.Sort ) {
-        search = req.query.Search;
-        sortOrder=req.query.Sort;
+    let search = "";
+    let sortOrder = "";
+    if (req.query.Search || req.query.Sort) {
+      search = req.query.Search;
+      sortOrder = req.query.Sort;
     }
     const sortingOptions = {
-      default: { }, // Add your default sorting option here
+      default: {}, // Add your default sorting option here
       priceHigh: { price: -1 },
-      priceLow: { price: 1 }
+      priceLow: { price: 1 },
     };
     const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
     const totalProducts = await Product.countDocuments({
       $and: [
         {
-          $or: [
-            { title: { $regex: '.*' + search + '.*', $options: 'i' } },
-          ]
+          $or: [{ title: { $regex: ".*" + search + ".*", $options: "i" } }],
         },
         {
-          list: true 
-        }
-      ]
+          list: true,
+        },
+      ],
     });
     const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE);
     const skip = (page - 1) * ITEMS_PER_PAGE;
     const usersData = await Product.find({
       $and: [
-          {
-              $or: [
-                  { title: { $regex: '.*' + search + '.*', $options: 'i' } },
-              ]
-          },
-          {
-              list:true 
-          }
-      ]
-  }).sort(sortingOptions[sortOrder]).skip(skip)
-  .limit(ITEMS_PER_PAGE);
-  
-  res.render('UI/shop', {
-    getallProduct: usersData,
-    currentPage: page,
-    totalPages: totalPages,
-    search: search ,
-    sortOrder: sortOrder
-  });
-} catch (error) {
-    console.log(error.message);
+        {
+          $or: [{ title: { $regex: ".*" + search + ".*", $options: "i" } }],
+        },
+        {
+          list: true,
+        },
+      ],
+    })
+      .sort(sortingOptions[sortOrder])
+      .skip(skip)
+      .limit(ITEMS_PER_PAGE);
+
+    res.render("UI/shop", {
+      getallProduct: usersData,
+      currentPage: page,
+      totalPages: totalPages,
+      search: search,
+      sortOrder: sortOrder,
+    });
+  } catch (error) {
     // Handle the error appropriately, e.g., send an error response
-    res.status(500).send('Internal Server Error');
-}
+    res.status(500).send("Internal Server Error");
+  }
 });
-
-
 
 const about = asyncHandler(async (req, res) => {
   try {
@@ -479,7 +462,6 @@ const getaUser = asyncHandler(async (req, res) => {
 //Delete a User
 const deleteaUser = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  console.log(id);
   try {
     const deleteaUser = await User.findByIdAndDelete({ _id: id });
     res.json({
@@ -497,7 +479,6 @@ const handleRefreshToken = asyncHandler(async (req, res) => {
   const cookie = req.cookies;
   if (!cookie?.refreshToken) throw new Error("No Refresh Token in Cookies");
   const refreshToken = cookie.refreshToken;
-  console.log(refreshToken);
   const user = await User.findOne({ refreshToken });
   if (!user) throw new Error("No Refresh present in db or not matched");
   jwt.verify(refreshToken, process.env.JWT_SECRET, (err, decoded) => {
@@ -631,12 +612,9 @@ const userCart = asyncHandler(async (req, res) => {
       res.json(newCart);
     }
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
 
 const checkout = asyncHandler(async (req, res) => {
   try {
@@ -662,19 +640,19 @@ const getUserCart = asyncHandler(async (req, res) => {
       "products.product"
     );
 
-    //  console.log(id)
     res.render("UI/cart", { cart: cart });
   } catch (error) {
-    console.error(error); // Log the error for further investigation
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 const createOnlinePayment = async (req, res) => {
   try {
-    const email = req.body.iemail;
-    const mobile = req.body.mobile;
+    const { email, product,mobile, amount: originalAmount, name, description, productName } = req.body;
+console.log(email);
+console.log(product);
 
-    const amount = req.body.amount * 100;
+    const amount = originalAmount * 100;
+
     const options = {
       amount: amount,
       currency: "INR",
@@ -689,10 +667,10 @@ const createOnlinePayment = async (req, res) => {
           order_id: order.id,
           amount: amount,
           key_id: RAZORPAY_ID_KEY,
-          product_name: req.body.name,
-          description: req.body.description,
+          product_name: productName,
+          description: description,
           contact: mobile,
-          name: req.body.nameUser,
+          name: productName,
           email: email,
         });
       } else {
@@ -700,9 +678,42 @@ const createOnlinePayment = async (req, res) => {
       }
     });
   } catch (error) {
-    console.log(error.message);
+    res.status(500).send({ success: false, msg: "Internal Server Error" });
   }
 };
+
+// const createOnlinePayment = async (req, res) => {
+//   try {
+//     const email = req.body.iemail;
+//     const mobile = req.body.mobile;
+
+//     const amount = req.body.amount * 100;
+//     const options = {
+//       amount: amount,
+//       currency: "INR",
+//       receipt: "razorUser@gmail.com",
+//     };
+
+//     razorpayInstance.orders.create(options, (err, order) => {
+//       if (!err) {
+//         res.status(200).send({
+//           success: true,
+//           msg: "Order Created",
+//           order_id: order.id,
+//           amount: amount,
+//           key_id: RAZORPAY_ID_KEY,
+//           product_name: req.body.name,
+//           description: req.body.description,
+//           contact: mobile,
+//           name: req.body.nameUser,
+//           email: email,
+//         });
+//       } else {
+//         res.status(400).send({ success: false, msg: "Something went wrong!" });
+//       }
+//     });
+//   } catch (error) {}
+// };
 const createOrder = asyncHandler(async (req, res) => {
   const { COD, couponApplied, addressId, paymentMethod, orderTotal } = req.body;
   const { _id } = req.user;
@@ -736,95 +747,25 @@ const createOrder = asyncHandler(async (req, res) => {
     }).save();
 
     // Update product quantities
-  // Update product quantities
-for (const item of userCart.products) {
-  console.log("Product ID:", item.product._id);
-  console.log("Original Quantity:", item.product.quantity);
-  console.log("Count in Cart:", item.quantity); // Assuming quantity is stored in item.quantity
+    for (const item of userCart.products) {
+      const count = typeof item.quantity === "number" ? item.quantity : 0;
+      const updatedQuantity = isNaN(count) ? 0 : +count;
 
-  const count = typeof item.quantity === "number" ? item.quantity : 0;
-  const updatedQuantity = isNaN(count) ? 0 : +count;
+      await Product.updateOne(
+        { _id: item.product._id },
+        { $inc: { quantity: -updatedQuantity, sold: updatedQuantity } }
+      );
+    }
 
-  console.log("Updating product:", item.product._id);
-  console.log("Updated Quantity:", updatedQuantity);
+    await Cart.deleteOne({ orderby: user._id });
 
-  // Update the product quantity in the database
-  await Product.updateOne(
-    { _id: item.product._id },
-    { $inc: { quantity: -updatedQuantity, sold: updatedQuantity } }
-  );
-}
-
-// Remove the user's cart after a successful order
-await Cart.deleteOne({ orderby: user._id });
-
-
-    // Remove the user's cart after a successful order
     await Cart.deleteOne({ orderby: user._id });
 
     res.redirect("/thankyou");
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
-
-// const createOrder = asyncHandler(async (req, res) => {
-//   const { COD, couponApplied, addressId, paymentMethod, orderTotal } = req.body;
-//   const { _id } = req.user;
-
-//   try {
-//     const user = await User.findById(_id);
-//     const addresses = await Address.find({ user: _id }).exec();
-//     let userCart = await Cart.findOne({ orderby: user._id });
-//     let finalAmount = 0;
-
-//     if (couponApplied && userCart.totalAfterDiscount) {
-//       finalAmount = userCart.totalAfterDiscount;
-//     } else {
-//       finalAmount = Number(userCart.cartTotal);
-//     }
-
-//     let newOrder = await new Order({
-//       products: userCart.products,
-//       paymentIntent: {
-//         id: uniqid(),
-//         method: paymentMethod,
-//         amount: finalAmount,
-//         status: "Pending",
-//         created: Date.now(),
-//       },
-//       orderId: orderid.generate(),
-//       address: addressId,
-//       orderby: user._id,
-//       orderStatus: "Processing",
-//       expectedDelivery: Date.now() + 7 * 24 * 60 * 60 * 1000,
-//     }).save();
-
-//     // Update product quantities
-//     let update = userCart.products.map((item) => {
-//       const count = typeof item.count === "number" ? item.count : 0;
-//       const updatedQuantity = isNaN(count) ? 0 : +count;
-
-//       return {
-//         updateOne: {
-//           filter: { _id: item.product._id },
-//           update: {
-//             $inc: { quantity: -updatedQuantity, sold: updatedQuantity },
-//           },
-//         },
-//       };
-//     });
-
-//     const updated = await Product.bulkWrite(update, {});
-
-//     res.redirect("/thankyou");
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: "Internal Server Error" });
-//   }
-// });
 
 const getOrders = asyncHandler(async (req, res) => {
   const { _id } = req.user;
@@ -851,7 +792,6 @@ const getOrdersDetails = asyncHandler(async (req, res) => {
       .populate("address")
       .exec();
 
-    console.log(userorders);
     res.render("UI/orderDetails", { userorder: userorders });
   } catch (error) {
     throw new Error(error);
@@ -870,38 +810,38 @@ const loadProfile = asyncHandler(async (req, res) => {
   try {
     const { _id } = req.user;
 
-    // Query all addresses associated with the user
     const addresses = await Address.find({ user: _id }).exec();
-   
-    // Query the user's profile
+
     const profile = await User.findById(_id);
 
     res.render("UI/profile", { profile, addresses });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-const loadEditProfile = asyncHandler(async(req,res)=>{
-  try{
+const loadEditProfile = asyncHandler(async (req, res) => {
+  try {
     const { _id } = req.user;
     const profile = await User.findById(_id);
     res.render("UI/editProfile", { profile });
-
-  }catch(error){throw new Error(Error)}
-})
-const editProfile = asyncHandler(async(req,res)=>{
-  try{
+  } catch (error) {
+    throw new Error(Error);
+  }
+});
+const editProfile = asyncHandler(async (req, res) => {
+  try {
     const { _id } = req.user;
-    const {name, phone }=req.body
+    const { name, phone } = req.body;
     const profile = await User.findByIdAndUpdate(
       _id,
       { $set: { name: name, mobile: phone } },
       { new: true } // This option returns the modified document instead of the original
-    );    res.redirect("/profile");
-
-  }catch(error){throw new Error(Error)}
-})
+    );
+    res.redirect("/profile");
+  } catch (error) {
+    throw new Error(Error);
+  }
+});
 const addAddress = asyncHandler(async (req, res) => {
   try {
     const { _id } = req.user;
@@ -917,21 +857,46 @@ const addAddress = asyncHandler(async (req, res) => {
       pincode,
       addressType,
     });
-    console.log("New Address:", newAddress);
 
     await newAddress.save();
-    console.log("Address Saved");
 
     const updatedUser = await User.findByIdAndUpdate(
       _id,
       { $push: { addresses: newAddress._id } },
       { new: true }
     );
-    console.log("User Updated:", updatedUser);
 
     res.redirect("/checkout");
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+const addAddressOnProfile = asyncHandler(async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const { name, mobile, street, area, landmark, pincode, addressType } =
+      req.body;
+    const newAddress = new Address({
+      user: _id,
+      name,
+      mobile,
+      street,
+      area,
+      landmark,
+      pincode,
+      addressType,
+    });
+
+    await newAddress.save();
+
+    const updatedUser = await User.findByIdAndUpdate(
+      _id,
+      { $push: { addresses: newAddress._id } },
+      { new: true }
+    );
+
+    res.redirect("/profile");
+  } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -939,62 +904,18 @@ const addAddress = asyncHandler(async (req, res) => {
 const removeAddress = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
-   
-    // Assuming Address is a Mongoose model
-    const address = await Address.findByIdAndDelete({_id:id});
-    console.log('Address ID:', id);
+
+    const address = await Address.findByIdAndDelete({ _id: id });
     if (!address) {
-      // Address not found
       return res.status(404).json({ error: "Address not found" });
     }
 
-    // Successful deletion, redirect back to the same page
-    res.redirect('back');
+    res.redirect("back");
   } catch (error) {
-    console.error(error);
     throw new Error(error);
   }
 });
 
-
-
-// const removeItem = asyncHandler(async (req, res) => {
-//   try {
-//     const { _id } = req.user;
-//     const { productId } = req.body;
-
-//     const cart = await Cart.findOne({ orderby: _id });
-//     const quantity = cart.products.quantity
-
-//     if (!cart) {
-//       return res.status(404).json({ error: "Cart not found" });
-//     }
-
-//     // Find the product to be removed
-//     const removedProduct = cart.products.find((productItem) => {
-//       return productItem.product.toString() === productId;
-//     });
-
-//     if (!removedProduct) {
-//       return res.status(404).json({ error: "Product not found in the cart" });
-//     }
-
-//     // Decrease the cartTotal by the price of the removed product
-//     cart.cartTotal -= removedProduct.price*quantity;
-
-//     // Remove the product from the products array
-//     cart.products = cart.products.filter((productItem) => {
-//       return productItem.product.toString() !== productId;
-//     });
-
-//     // Update the cart with the modified data
-//     await cart.save();
-
-//     res.redirect("/view-cart");
-//   } catch (error) {
-//     throw new Error(error);
-//   }
-// });
 const removeItem = asyncHandler(async (req, res) => {
   try {
     const { _id } = req.user;
@@ -1015,15 +936,12 @@ const removeItem = asyncHandler(async (req, res) => {
       return res.status(404).json({ error: "Product not found in the cart" });
     }
 
-    // Decrease the cartTotal by the total price of the removed product(s)
     cart.cartTotal -= removedProduct.price * removedProduct.quantity;
 
-    // Remove the product from the products array
     cart.products = cart.products.filter((productItem) => {
       return productItem.product.toString() !== productId;
     });
 
-    // Update the cart with the modified data
     await cart.save();
 
     res.redirect("/view-cart");
@@ -1036,7 +954,6 @@ const updateQuantity = asyncHandler(async (req, res) => {
     const { productId } = req.params;
     const { newQuantity } = req.body;
 
-    // Find the cart and the product in the cart
     const cart = await Cart.findOne({ orderby: req.user._id });
     const product = cart.products.find(
       (productItem) => productItem.product.toString() === productId
@@ -1046,16 +963,12 @@ const updateQuantity = asyncHandler(async (req, res) => {
       return res.status(404).json({ error: "Product not found in the cart" });
     }
 
-    // Calculate the difference in quantity
     const quantityDiff = newQuantity - product.quantity;
 
-    // Update the product quantity
     product.quantity = newQuantity;
 
-    // Update the cart total
     cart.cartTotal += product.price * quantityDiff;
 
-    // Save the changes to the cart
     await cart.save();
 
     res.status(200).json({
@@ -1063,12 +976,9 @@ const updateQuantity = asyncHandler(async (req, res) => {
       cartTotal: cart.cartTotal,
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-// Add the route to your Express application
 
 const updatePassword = asyncHandler(async (req, res) => {
   const { _id } = req.user;
@@ -1101,7 +1011,6 @@ const loadChangePassword = asyncHandler(async (req, res) => {
 });
 const forgotPasswordToken = asyncHandler(async (req, res) => {
   const { email } = req.body;
-  console.log(email);
   try {
     const user = await User.findOne({ email });
     if (!user) {
@@ -1133,7 +1042,6 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
       res.redirect("/forget-password");
     }
   } catch (error) {
-    console.error("Error in forgotPasswordToken:", error);
     req.flash("message", "An error occurred. Please try again later.");
     res.redirect("/forget-password");
   }
@@ -1165,32 +1073,30 @@ const resetPassword = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
-const requestCancel = asyncHandler(async(req,res)=>{
- try{
-  const { _id } = req.user;
-  const cancel = await Order.findOneAndUpdate({ orderby: _id }, { $set: { request: "Request Cancellation" } });
-  console.log(cancel)
- }catch(error){
-  throw new Error(error)
- }
-})
-const loadRequestReturn = asyncHandler(async(req,res)=>{
-  try{
-   const { id } = req.params;
-   console.log(id)
-   const returns = await Order.findById(id)
-  //  console.log(_id)
-   res.render('UI/requestReturn',{id})
-  }catch(error){
-   throw new Error(error)
-  }
- })
- const requestReturn = asyncHandler(async (req, res) => {
+const requestCancel = asyncHandler(async (req, res) => {
   try {
-    // const { id } = req.params;
-    const { selectedRequest ,id} = req.body;
-   
-    // Update the request field based on the selected option
+    const { _id } = req.user;
+    const cancel = await Order.findOneAndUpdate(
+      { orderby: _id },
+      { $set: { request: "Request Cancellation" } }
+    );
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+const loadRequestReturn = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const returns = await Order.findById(id);
+    res.render("UI/requestReturn", { id });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+const requestReturn = asyncHandler(async (req, res) => {
+  try {
+    const { selectedRequest, id } = req.body;
+
     let updateField;
     if (selectedRequest === "Request Cancellation Product") {
       updateField = { request: "Request Cancel" };
@@ -1200,20 +1106,20 @@ const loadRequestReturn = asyncHandler(async(req,res)=>{
       return res.status(400).json({ error: "Invalid request type" });
     }
 
-    // Update the order with the specified field
-    const updatedOrder = await Order.findByIdAndUpdate(id, { $set: updateField }, { new: true });
+    const updatedOrder = await Order.findByIdAndUpdate(
+      id,
+      { $set: updateField },
+      { new: true }
+    );
 
     if (!updatedOrder) {
       return res.status(404).json({ error: "Order not found" });
     }
-    res.redirect('/orders')
-
+    res.redirect("/orders");
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 module.exports = {
   errorPage,
@@ -1262,5 +1168,6 @@ module.exports = {
   loadRequestReturn,
   removeAddress,
   loadEditProfile,
-  editProfile
+  editProfile,
+  addAddressOnProfile,
 };
