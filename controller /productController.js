@@ -1,4 +1,6 @@
 const Product = require("../models/productModel");
+const path = require('path');
+const sharp = require('sharp');
 const Category = require("../models/categoryModel");
 const asyncHandler = require("express-async-handler");
 const addProduct = asyncHandler(async (req, res) => {
@@ -13,38 +15,57 @@ const addProduct = asyncHandler(async (req, res) => {
   }
 });
 
-const createProduct = asyncHandler(async (req, res) => {
+const createProduct = async (req, res) => {
   try {
-    const {
-      title,
-      description,
-      price,
-      category,
-      productDetails,
-      specification,
-      quantity,
-      warranty,
-    } = req.body;
+    const { title ,description,productDetails,specification,warranty,price,quantity,category}=req.body
+    const resizedImages = [];
 
-    const images = req.files.map((file) => file.originalname);
+    for (let i = 0; i < req.files.length; i++) {
+      const originalPath = req.files[i].path;
+      // 1100 × 1210 px 840 is origina
+      const resizedPath = path.join(__dirname, "../public/resize", req.files[i].filename);
+      await sharp(originalPath).resize(1100, 1210, { fit: "fill" }).toFile(resizedPath);
+      console.log('Resized path:', resizedPath);
+      resizedImages[i] = req.files[i].filename;
 
-    const newProduct = await Product.create({
-      title,
-      description,
-      price,
-      images,
-      category,
-      productDetails,
-      specification,
-      warranty,
-      quantity,
-    });
+    }
+    if (req.files.length !== 5 || req.files.length > 5) {
 
-    res.redirect("/admin/product/list");
+      // req.session.message = 'only 5 images allowed'
+      req.flash('message','only 5 images allowed')
+      res.redirect('/admin/product/list',)
+
+
+
+    } else {
+      const product = new Product({
+        title: title,
+        description: description,
+        productDetails:productDetails,
+        specification:specification,
+        warranty:warranty,
+        images: resizedImages,
+        price: price,
+        category: category,
+        quantity:quantity,
+        list: true
+
+      })
+      let productData = await product.save()
+      req.flash('message','Product Created Sucess')
+      if (!productData) {
+        res.render('addProduct', { message: 'Invalid input' })
+      } else {
+        res.json({ success: true })
+      }
+
+    }
   } catch (error) {
-    req.flash("message", "Error creating product");
+    console.log(error.message);
+    throw new Error(error)
   }
-});
+}
+
 
 const updateImages = async function (req, res) {
   try {
@@ -211,7 +232,7 @@ const getallProduct = asyncHandler(async (req, res) => {
       currentPage: page,
       totalPages: totalPages,
       search: search,
-      sortOrder: sortOrder,
+      sortOrder: sortOrder, message: req.flash("message")
     });
   } catch (error) {
     res.status(500).send("Internal Server Error");

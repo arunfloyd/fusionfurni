@@ -11,7 +11,20 @@ body {
   .quantity-dropdown-container {
     position: relative;
 }
+.wishlist-button {
+  background-color: #4caf50; /* Green background color */
+  color: white; /* White text color */
+  padding: 10px 20px; /* Padding for better appearance */
+  font-size: 16px; /* Font size */
+  border: none; /* Remove border */
+  border-radius: 5px; /* Add border-radius for rounded corners */
+  cursor: pointer; /* Add pointer cursor on hover */
+  transition: background-color 0.3s ease; /* Smooth transition on hover */
+}
 
+.wishlist-button:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
 /* Dropdown container */
 .quantity-dropdown-container {
   position: relative;

@@ -8,12 +8,15 @@
             
             <div class="row justify-content-center">
                 <div class="col-md-8 col-lg-8 pb-4">
-                    <form action="/edit-profile" method="post">
+                    <form action="/edit-profile" method="post" id="signupForm">
                       <div class="row">
+                        
                         <div class="col-6">
                           <div class="form-group">
-                            <label class="text-black" for="fname">Name</label>
-                            <input type="text" class="form-control" name="name"  value="<%=profile.name%>" >
+                            <label class="text-black" for="text">Name</label>
+                            <input type="text" class="form-control" placeholder="Name" id="userName" name="name" value="<%=profile.name%>" required/>
+                            <span id="userNameError" style="color: red;"></span>
+                           
                           </div>
                         </div>
                         <div class="col-6">
@@ -24,19 +27,21 @@
                         </div>
                         <div class="col-6">
                           <div class="form-group">
-                            <label class="text-black" for="fname">Phone Number</label>
-                            <input type="text" class="form-control" name="phone" value="<%=profile.mobile%>">
+                            <label class="text-black" for="text">Mobile Number</label>
+
+                            <input type="tel" placeholder="Mobile Number" class="form-control" id="mobileNumber" name="mobile" value="<%=profile.mobile%>" required/>
+                            <span id="mobileNumberError" style="color: red;"></span>
                           </div>
                       <br>
                       <br>
 
                       <br>
 
-                     
-<button type="submit" class="btn btn-primary-hover-outline">Submit</button>
+                      <button type="button" class="btn btn-outline-black btn-sm btn-block" onclick="registerButton()">Submit</button>                     
 </form>
 
                 </div>
+              </div>
             </div>
         </div>
     </div>
@@ -46,3 +51,26 @@
 
 
 <%- include('../layout/footer.ejs') %>
+
+<script>
+  async function registerButton(event) {
+  let userName = document.getElementById('userName').value;
+  let mobileNumber = document.getElementById('mobileNumber').value;
+  const nameRegex = /^[a-zA-Z][a-zA-Z0-9\s]*[a-zA-Z0-9]$/;
+  if (!nameRegex.test(userName)) {
+      document.getElementById('userNameError').innerHTML = 'Name should start with an alphabet ';
+      return false;
+  } else {
+      document.getElementById('userNameError').innerHTML = '';
+  }
+  const mobileRegex = /^\d{10}$/;
+  if (!mobileRegex.test(mobileNumber)) {
+      document.getElementById('mobileNumberError').innerHTML = 'Mobile number should contain only numbers should have exactly 10 ';
+      return false;
+  } else {
+      document.getElementById('mobileNumberError').innerHTML = '';
+  }
+document.getElementById('signupForm').submit();}
+
+
+</script> 

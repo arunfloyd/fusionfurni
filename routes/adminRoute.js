@@ -14,7 +14,7 @@ const {
   updateOrderStatus,
   getAllOrders,
   loadUpdateOrderStatus,
-} = require("../controller /authController");
+} = require("../controller /adminController");
 const {
   authMiddleware,
   noCacheHeaders,

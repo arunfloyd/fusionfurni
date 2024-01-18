@@ -14,9 +14,7 @@
 
 <div class="card text-center">
   <% 
-    // Sort the userorders array in descending order based on createdAt timestamp
     userorders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
     userorders.forEach(order => { %>
       <div class="card-header">
         <h4>Order ID: <%= order.orderId %></h4>

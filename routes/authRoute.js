@@ -40,6 +40,11 @@ const {
   loadEditProfile,
   editProfile,
   addAddressOnProfile,
+  loadWishlist,
+  createWishlist,
+  removeWish,
+  editAddress,
+  updateAddress,
 } = require("../controller /userController");
 const {
   userMiddleware,
@@ -66,6 +71,9 @@ router.get("/blog", blog);
 router.get("/services", services);
 router.get("/cart", cart);
 router.get("/about", about);
+router.get("/wishlist", userMiddleware, isBlocked, loadWishlist);
+router.post("/add-wishlist", userMiddleware, isBlocked, createWishlist);
+router.post("/remove-wish", userMiddleware, isBlocked, removeWish);
 router.post("/cart", userMiddleware, isBlocked, userCart);
 router.get("/view-cart", userMiddleware, isBlocked, getUserCart);
 router.post("/remove-item", userMiddleware, removeItem);
@@ -85,6 +93,9 @@ router.get("/orders-details/:id", userMiddleware, getOrdersDetails);
 router.get("/profile", userMiddleware, loadProfile);
 router.post("/profile", userMiddleware, addAddressOnProfile);
 router.post("/add-address", userMiddleware, addAddress);
+router.get("/edit-address/:id", userMiddleware, editAddress);
+router.post("/edit-address/:id", userMiddleware, updateAddress);
+
 router.get("/edit-profile", userMiddleware, loadEditProfile);
 router.post("/edit-profile", userMiddleware, editProfile);
 router.get("/remove-address/:id", userMiddleware, removeAddress);

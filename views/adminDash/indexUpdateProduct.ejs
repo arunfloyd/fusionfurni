@@ -202,8 +202,8 @@
             const titleValidation = document.getElementById('titleValidation');
 
             // Check if the title has leading spaces
-            if (title.trim() === '' || title.length < 10 || title.length > 50) {
-                titleValidation.textContent = 'Please enter a valid product title between 10 and 50 characters without leading spaces.';
+            if (title.trim() === '' || title.length < 10 || title.length > 100) {
+                titleValidation.textContent = 'Please enter a valid product title between 10 and 100 characters without leading spaces.';
                 return false;
             } else {
                 titleValidation.textContent = '';
@@ -222,7 +222,7 @@
             // Validation logic for price
             const price = document.getElementsByName('price')[0].value;
             const priceValidation = document.getElementById('priceValidation');
-            if (isNaN(price) || price < 0) {
+            if (isNaN(price) || price <= 1000) {
                 priceValidation.textContent = 'Please enter a valid price.';
                 return false;
             } else {

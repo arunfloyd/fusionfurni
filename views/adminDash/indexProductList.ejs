@@ -9,7 +9,9 @@
   <main class="main-wrap">
     
     <section class="content-main">
-      
+      <% if(message && message.length > 0) { %>
+        <p style="color: green;"><%= message %></p>
+    <% } %>
       <div class="content-header">
         <div>
           <h2 class="content-title card-title">Products List</h2>

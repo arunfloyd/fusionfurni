@@ -1,0 +1,96 @@
+<%- include('../layout/header.ejs') %>
+
+
+		<!-- Start Hero Section -->
+        <div class="hero">
+            <div class="container">
+                <div class="row justify-content-between">
+                    <div class="col-lg-5">
+                        <div class="intro-excerpt">
+                            <h1>Edit Address</h1>
+                            <p class="mb-4">Edit address with correct Information which makes us to track the correct details</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!-- End Hero Section -->
+<h1>Edit Your Address Here</h1>
+<form action="" method="post" class="mx-auto mt-4" style="max-width: 800px;">
+    <div class="form-group mb-3">
+        <label class="text-black" for="name">Name</label>
+        <input type="text" name="name" class="form-control" value="<%=address.name%>" id="name">
+    </div>
+    <div class="form-group mb-3">
+        <label class="text-black" for="mobile">Phone Number</label>
+        <input type="text" name="mobile" class="form-control" id="mobile" value="<%=address.mobile%>">
+    </div>
+    <!-- Add other form fields as needed -->
+
+    <div class="form-group mb-3">
+        <label class="text-black" for="addressType">Address Type</label>
+        <select name="addressType" class="form-control" id="addressType">
+            <option value="home" <% if (address.addressType === 'home') { %>selected<% } %>>Home - 9:00 AM to 5:00 PM Delivery</option>
+            <option value="work" <% if (address.addressType === 'work') { %>selected<% } %>>Work - 9:00 AM to 9:00 PM Delivery</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block">Submit</button>
+</form>
+        
+
+<%- include('../layout/footer.ejs') %>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function (event) {
+            // Validate Name
+            const nameInput = document.getElementById('name');
+            if (!validateName(nameInput.value)) {
+                event.preventDefault();
+                displayError(nameInput, 'Name should be valid');
+            } else {
+                clearError(nameInput);
+            }
+
+            // Validate Phone Number
+            const mobileInput = document.getElementById('mobile');
+            if (!validateMobile(mobileInput.value)) {
+                event.preventDefault();
+                displayError(mobileInput, 'Phone number should be 10 digits');
+            } else {
+                clearError(mobileInput);
+            }
+
+            // Validate other fields similarly
+        });
+
+        // Function to validate name
+        function validateName(name) {
+            return name.trim() !== '' && name.length >= 3;
+        }
+
+        // Function to validate phone number
+        function validateMobile(mobile) {
+            return /^\d{10}$/.test(mobile);
+        }
+
+        // Function to display error message
+        function displayError(input, message) {
+            const errorElement = document.createElement('div');
+            errorElement.className = 'text-danger';
+            errorElement.textContent = message;
+            input.parentNode.appendChild(errorElement);
+        }
+
+        // Function to clear error message
+        function clearError(input) {
+            const parent = input.parentNode;
+            const errorElement = parent.querySelector('.text-danger');
+            if (errorElement) {
+                parent.removeChild(errorElement);
+            }
+        }
+    });
+</script>

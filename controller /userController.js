@@ -18,6 +18,7 @@ const crypto = require("crypto");
 const otpGenerator = require("otp-generator");
 const orderid = require("order-id")("key");
 const Razorpay = require("razorpay");
+const WishList = require("../models/wishListModel");
 const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
 
 const razorpayInstance = new Razorpay({
@@ -633,8 +634,6 @@ const checkout = asyncHandler(async (req, res) => {
 });
 const getUserCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-
-  // validateMongoDbId(_id);
   try {
     const cart = await Cart.findOne({ orderby: _id }).populate(
       "products.product"
@@ -647,9 +646,17 @@ const getUserCart = asyncHandler(async (req, res) => {
 });
 const createOnlinePayment = async (req, res) => {
   try {
-    const { email, product,mobile, amount: originalAmount, name, description, productName } = req.body;
-console.log(email);
-console.log(product);
+    const {
+      email,
+      product,
+      mobile,
+      amount: originalAmount,
+      name,
+      description,
+      productName,
+    } = req.body;
+    console.log(email);
+    console.log(product);
 
     const amount = originalAmount * 100;
 
@@ -657,6 +664,11 @@ console.log(product);
       amount: amount,
       currency: "INR",
       receipt: "razorUser@gmail.com",
+      notes: {
+        username: productName,
+        userEmail: email,
+        productTitle: product,
+      },
     };
 
     razorpayInstance.orders.create(options, (err, order) => {
@@ -668,7 +680,7 @@ console.log(product);
           amount: amount,
           key_id: RAZORPAY_ID_KEY,
           product_name: productName,
-          description: description,
+          description: product,
           contact: mobile,
           name: productName,
           email: email,
@@ -682,38 +694,6 @@ console.log(product);
   }
 };
 
-// const createOnlinePayment = async (req, res) => {
-//   try {
-//     const email = req.body.iemail;
-//     const mobile = req.body.mobile;
-
-//     const amount = req.body.amount * 100;
-//     const options = {
-//       amount: amount,
-//       currency: "INR",
-//       receipt: "razorUser@gmail.com",
-//     };
-
-//     razorpayInstance.orders.create(options, (err, order) => {
-//       if (!err) {
-//         res.status(200).send({
-//           success: true,
-//           msg: "Order Created",
-//           order_id: order.id,
-//           amount: amount,
-//           key_id: RAZORPAY_ID_KEY,
-//           product_name: req.body.name,
-//           description: req.body.description,
-//           contact: mobile,
-//           name: req.body.nameUser,
-//           email: email,
-//         });
-//       } else {
-//         res.status(400).send({ success: false, msg: "Something went wrong!" });
-//       }
-//     });
-//   } catch (error) {}
-// };
 const createOrder = asyncHandler(async (req, res) => {
   const { COD, couponApplied, addressId, paymentMethod, orderTotal } = req.body;
   const { _id } = req.user;
@@ -871,6 +851,29 @@ const addAddress = asyncHandler(async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+const editAddress = asyncHandler(async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const { id } = req.params;
+    const address = await Address.findById(id);
+    console.log(address);
+    res.render("UI/editAddress", { address });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+const updateAddress = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    // Use req.body directly in the update operation
+    const address = await Address.findOneAndUpdate({ _id: id }, req.body);
+    console.log(address);
+    res.redirect("/profile");
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 const addAddressOnProfile = asyncHandler(async (req, res) => {
   try {
     const { _id } = req.user;
@@ -1120,6 +1123,91 @@ const requestReturn = asyncHandler(async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+const loadWishlist = asyncHandler(async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const wishList = await WishList.findOne({ orderby: _id }).populate(
+      "products.product"
+    );
+    res.render("UI/wishlist", { wishList });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render("UI/error", { error: "Internal Server Error" });
+  }
+});
+
+const createWishlist = asyncHandler(async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const user = await User.findById(_id);
+
+    // Check if a wishlist already exists for the user
+    const alreadyExists = await WishList.findOne({ orderby: user._id });
+
+    const { productId } = req.body;
+
+    if (alreadyExists) {
+      // Check if the product already exists in the wishlist
+      const existingProduct = alreadyExists.products.find(
+        (product) => product.product.toString() === productId
+      );
+
+      if (!existingProduct) {
+        // Add the product to the wishlist if it doesn't exist
+        alreadyExists.products.push({
+          product: productId,
+        });
+        // Save the updated wishlist
+        await alreadyExists.save();
+      }
+
+      res.json(alreadyExists);
+    } else {
+      // Create a new wishlist
+      const newWishlist = await new WishList({
+        products: [
+          {
+            product: productId,
+          },
+        ],
+        orderby: user._id,
+      }).save();
+
+      res.json(newWishlist);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+const removeWish = asyncHandler(async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const { wishlist } = req.body;
+    const wishlists = await WishList.findOne({ orderby: _id });
+    if (!wishlists) {
+      return res.status(404).json({ error: "Wishlist not found" });
+    }
+
+    const removedProduct = wishlists.products.find((productItem) => {
+      return productItem.product.toString() === wishlist;
+    });
+
+    if (!removedProduct) {
+      return res
+        .status(404)
+        .json({ error: "Product not found in the wishlist" });
+    }
+
+    wishlists.products = wishlists.products.filter((productItem) => {
+      return productItem.product.toString() !== wishlist;
+    });
+    await wishlists.save();
+    res.redirect("/wishlist");
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 
 module.exports = {
   errorPage,
@@ -1170,4 +1258,9 @@ module.exports = {
   loadEditProfile,
   editProfile,
   addAddressOnProfile,
+  loadWishlist,
+  createWishlist,
+  removeWish,
+  editAddress,
+  updateAddress,
 };

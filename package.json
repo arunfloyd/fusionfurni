@@ -35,7 +35,7 @@
     "order-id": "^2.1.2",
     "otp-generator": "^4.0.1",
     "razorpay": "^2.9.2",
-    "sharp": "^0.33.1",
+    "sharp": "^0.33.2",
     "slugify": "^1.6.6",
     "uniqid": "^5.4.0"
   }

@@ -22,7 +22,7 @@
         <div class="card-body">
           <div class="row">
             <div class="col-md-3">
-              <form action="" method="post">
+              <form action="" id="categoryForm" method="post">
                 <div class="mb-4">
                   <label for="product_name" class="form-label"
                     >Category Title</label
@@ -33,8 +33,11 @@
                     class="form-control"
                     id="product_name"
                     name="title"
+                    minlength="3"
+                    maxlength="50"
                     value="<%= getallCategory.title %>"
                   />
+                  <div id="nameError" class="text-danger"></div>
                 </div>
                 <div class="mb-4">
                   <label for="product_slug" class="form-label">Slug</label>
@@ -44,18 +47,22 @@
                     class="form-control"
                     id="product_slug"
                     name="slug"
+                    minlength="3"
+                    maxlength="50"
                     value="<%= getallCategory.slug %>"
                   />
+                  <div id="slugError" class="text-danger"></div>
                 </div>
-
                 <div class="mb-4">
                   <label class="form-label">Description</label>
                   <input
                     placeholder="Type here"
                     class="form-control"
+                    id="product_description"
                     name="description"
                     value="<%= getallCategory.description %>"
                   />
+                  <div id="descriptionError" class="text-danger"></div>
                 </div>
 
                 <div class="mb-4">
@@ -73,10 +80,17 @@
                 </div>
 
                 <div class="d-grid">
-                  <button type="submit" class="btn btn-primary">
-                    Update category
+                  <button
+                    type="button"
+                    onclick="validateForm()"
+                    class="btn btn-primary"
+                  >
+                    Create category
                   </button>
                 </div>
+                <% if(message && message.length > 0) { %>
+                <p style="color: rgb(208, 6, 6)"><%= message %></p>
+                <% } %>
               </form>
             </div>
 
@@ -88,7 +102,68 @@
       </div>
       <!-- card .// -->
     </section>
+    <script>
+      function validateForm() {
+        var isValid = true;
+
+        // Validate Category Title
+        var titleInput = $("#product_name");
+        var titleError = $("#nameError");
+        var titleValue = titleInput.val().trim();
+        if (
+          titleValue.length < 3 ||
+          titleValue.length > 20 ||
+          /^\s/.test(titleValue)
+        ) {
+          titleError.text(
+            " Title should be between 3 and 20 characters and should not start with a space."
+          );
+          isValid = false;
+        } else {
+          titleError.text("");
+        }
+
+        // Validate Slug
+        var slugInput = $("#product_slug");
+        var slugError = $("#slugError");
+        var slugValue = slugInput.val().trim();
+        if (
+          slugValue.length < 3 ||
+          slugValue.length > 20 ||
+          /^\s/.test(slugValue)
+        ) {
+          slugError.text(
+            "Slug should be between 3 and 20 characters and should not start with a space."
+          );
+          isValid = false;
+        } else {
+          slugError.text("");
+        }
+
+        // Validate Description
+        var descriptionInput = $("#product_description");
+        var descriptionError = $("#descriptionError");
+        var descriptionValue = descriptionInput.val().trim();
+        var wordCount = descriptionValue.split(/\s+/).filter(function (word) {
+          return word.length > 0;
+        }).length;
+        if (wordCount < 5) {
+          descriptionError.text("Description should have at least 5 words.");
+          isValid = false;
+        } else {
+          descriptionError.text("");
+        }
+
+        // Perform additional validations for other fields if needed
+
+        if (isValid) {
+          // If all validations pass, submit the form
+          $("#categoryForm").submit();
+        }
+      }
+    </script>
     <!-- content-main end// -->
     <%- include('footer.ejs') %>
   </main>
 </body>
+

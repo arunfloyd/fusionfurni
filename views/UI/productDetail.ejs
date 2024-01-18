@@ -60,32 +60,46 @@
         <select class="quantity custom-select" name="quantity" id="quantity">
           <% for (let i = 1; i <= getallProduct.quantity; i++) { %>
             <option value="<%= i %>"><%= i %></option>
-        <% } %>
+          <% } %>
+          <% if(getallProduct.quantity ===0) { %>
+          <option value="0">Sorry !! Out of Stock</option>
+          <% } %>
         </select>
+        
     </div>
     <input type="hidden" name="cart" id="cart" value="<%= JSON.stringify(cart) %>">
 
-      <!-- Submit button -->
+    <% if(getallProduct.quantity ===0) { %>
+      <button type="button" class="custom-btn">Notify Me <i class="fas fa-angle-right"></i></button>
+      <% }else{ %>
       <button type="submit" id="addToCartLink" class="custom-btn">Add To Cart <i class="fas fa-angle-right"></i></button>
+      <%}%>
   </form>
 </div>
 
 <!-- ... (rest of your code) ... -->
-
+<% if(getallProduct.quantity ===0) { %>
+  <% }else{ %>
                             <div class="col-md-6"> 
                                 <a href="#" class="custom-btn">Buy Now <i class="fas fa-angle-right"></i></a>
-                            </div>
+                            </div>   <%}%>
                         </div>
+                        
                     </div>
+                    
                     <div id="product" class="product-inf">
                        
                       <% } else { %>
                         <p>Product not found</p>
                     <% } %>
                    
-                </div>
+                </div><br><br> <a href="/add-wishlist"></a>
+                <button type="submit" id="addTowishList" class="wishlist-button">❤️ Add To Wish List</button>
+               </a>
+
             </div>
-            
+        
+
         </div>
         
     </div>
@@ -169,6 +183,24 @@
 
     // Your Axios code to send a request to the server with the data in the request body
     axios.post('/cart', data)
+      .then(response => {
+        // Handle the response from the server if needed
+        console.log(response.data);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  });
+  document.getElementById('addTowishList').addEventListener('click', function (event) {
+    event.preventDefault(); // Prevent the default navigation behavior
+    const productId = document.getElementById('productId').value;
+    // Create a data object containing the quantity and productId
+    const data = {
+      productId: productId,
+    };
+
+    // Your Axios code to send a request to the server with the data in the request body
+    axios.post('/add-wishlist', data)
       .then(response => {
         // Handle the response from the server if needed
         console.log(response.data);

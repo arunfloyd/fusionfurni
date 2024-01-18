@@ -41,7 +41,13 @@
                                         <% } %>
                                     </td>
                                     <td class="product-name">
+                                        <% if(productItem.product.quantity ===0) { %>
+                                            <h2 class="h5 text-black" style="text-decoration: line-through; color: red;"><%= productItem.product.title %></h2>
+                                            <h2 style="color: red;"> Out Of Stock</h2>
+                                            <% }else{ %>
                                         <h2 class="h5 text-black"><%= productItem.product.title %></h2>
+                                        <% } %>
+
                                     </td>
                                     <td class="product-price">
                                         <%= productItem.product.price %>
@@ -52,6 +58,9 @@
                                                 <% for (let i = 1; i <= productItem.product.quantity; i++) { %>
                                                     <option value="<%= i %>" <%= i === productItem.quantity ? 'selected' : '' %>><%= i %></option>
                                                 <% } %>
+                                                <% if(productItem.product.quantity ===0) { %>
+                                                    <option value="0">Sorry !! Out of Stock</option>
+                                                    <% } %>
                                             </select>
                                         </div>
                                     </td>
@@ -138,7 +147,9 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <a href="/checkout">
-                                        <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location='checkout.html'">Proceed To Checkout</button>
+                                        <!-- <button class="btn btn-black btn-lg py-3 btn-block" >Proceed To Checkout</button> -->
+                                        <button class="btn btn-black btn-lg py-3 btn-block checkout-button">Proceed To Checkout</button>
+
                                     </a>
                                 </div>
                             </div>
@@ -152,6 +163,23 @@
         <% } %>
     </div>
 </div>
+    <div class="modal fade" id="outOfStockModal" tabindex="-1" aria-labelledby="outOfStockModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="outOfStockModalLabel">Product Out of Stock</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Delete out-of-stock products from your cart to proceed.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const quantityDropdowns = document.querySelectorAll('.quantity');
@@ -162,22 +190,61 @@
                 const currentQuantity = event.target.dataset.currentQuantity;
                 const newQuantity = event.target.value;
 
-                if (newQuantity !== currentQuantity) {
+                if (newQuantity !== currentQuantity && newQuantity !== '0') {
                     try {
                         const response = await axios.post(`/update-quantity/${productId}`, { newQuantity });
 
                         // Handle the response if needed
                         console.log(response.data);
 
-                        // Refresh the window after successful update
+                        // Refresh the window after a successful update
                         window.location.reload();
                     } catch (error) {
                         console.error('Error:', error);
                     }
+                } else {
+                    // If new quantity is 0 (out of stock), remove the product from the cart
+                    const confirmed = confirm('This product is out of stock. Do you want to remove it from the cart?');
+                    if (confirmed) {
+                        try {
+                            const response = await axios.post(`/remove-item`, { productId });
+
+                            // Handle the response if needed
+                            console.log(response.data);
+
+                            // Refresh the window after successful removal
+                            window.location.reload();
+                        } catch (error) {
+                            console.error('Error:', error);
+                        }
+                    } else {
+                        // Reset the dropdown to the previous valid quantity
+                        event.target.value = currentQuantity;
+                    }
                 }
             });
         });
+
+        // Add an event listener to the checkout button
+        // Add an event listener to the checkout button
+const checkoutButton = document.querySelector('.checkout-button');
+if (checkoutButton) {
+    checkoutButton.addEventListener('click', (event) => {
+        // Check if any product is out of stock
+        const outOfStockProducts = document.querySelectorAll('.quantity option[value="0"]:checked');
+        if (outOfStockProducts.length > 0) {
+            event.preventDefault(); // Prevent the default action (going to the checkout page)
+
+            // Show a Bootstrap modal with a message
+            const modal = new bootstrap.Modal(document.getElementById('outOfStockModal'));
+            modal.show();
+        }
     });
+}
+
+    });
+</script>
+
 </script>
 
 
