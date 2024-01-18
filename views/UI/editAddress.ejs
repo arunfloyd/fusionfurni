@@ -20,12 +20,38 @@
     <div class="form-group mb-3">
         <label class="text-black" for="name">Name</label>
         <input type="text" name="name" class="form-control" value="<%=address.name%>" id="name">
+        <span id="nameError" class="text-danger"></span>
     </div>
+
     <div class="form-group mb-3">
         <label class="text-black" for="mobile">Phone Number</label>
         <input type="text" name="mobile" class="form-control" id="mobile" value="<%=address.mobile%>">
+        <span id="mobileError" class="text-danger"></span>
     </div>
-    <!-- Add other form fields as needed -->
+
+    <div class="form-group mb-3">
+        <label class="text-black" for="street">Flat, House no., Building, Company, Apartment</label>
+        <input type="text" name="street" class="form-control" id="street" value="<%=address.street%>">
+        <span id="streetError" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label class="text-black" for="area">Area, Street, Sector, Village</label>
+        <input type="text" name="area" class="form-control" id="area" value="<%=address.area%>">
+        <span id="areaError" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label class="text-black" for="landmark">Landmark</label>
+        <input type="text" name="landmark" class="form-control" id="landmark" value="<%=address.landmark%>">
+        <span id="landmarkError" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label class="text-black" for="pincode">Pincode</label>
+        <input type="text" name="pincode" class="form-control" id="pincode" value="<%=address.pincode%>">
+        <span id="pincodeError" class="text-danger"></span>
+    </div>
 
     <div class="form-group mb-3">
         <label class="text-black" for="addressType">Address Type</label>
@@ -33,11 +59,16 @@
             <option value="home" <% if (address.addressType === 'home') { %>selected<% } %>>Home - 9:00 AM to 5:00 PM Delivery</option>
             <option value="work" <% if (address.addressType === 'work') { %>selected<% } %>>Work - 9:00 AM to 9:00 PM Delivery</option>
         </select>
+        <span id="addressTypeError" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-primary btn-block">Submit</button>
 </form>
-        
+    
+ 
+
+<!-- End Contact Form -->
+
 
 <%- include('../layout/footer.ejs') %>
 
@@ -54,7 +85,6 @@
                 clearError(nameInput);
             }
 
-            // Validate Phone Number
             const mobileInput = document.getElementById('mobile');
             if (!validateMobile(mobileInput.value)) {
                 event.preventDefault();
@@ -62,35 +92,62 @@
             } else {
                 clearError(mobileInput);
             }
+            const pincodeInput = document.getElementById('pincode');
+            if (!validatePincode(pincodeInput.value)) {
+                event.preventDefault();
+                displayError(pincodeInput, 'Pincode should be 6 digits');
+            } else {
+                clearError(pincodeInput);
+            }
+            const streetInput = document.getElementById('street');
+            const areaInput = document.getElementById('area');
+            const landmarkInput = document.getElementById('landmark');
 
-            // Validate other fields similarly
+            if (!validateLength(streetInput.value, 10)) {
+                event.preventDefault();
+                displayError(streetInput, 'Should be more than 10 characters');
+            } else {
+                clearError(streetInput);
+            }
+
+            if (!validateLength(areaInput.value, 10)) {
+                event.preventDefault();
+                displayError(areaInput, 'Should be more than 10 characters');
+            } else {
+                clearError(areaInput);
+            }
+
+            if (!validateLength(landmarkInput.value, 10)) {
+                event.preventDefault();
+                displayError(landmarkInput, 'Should be more than 10 characters');
+            } else {
+                clearError(landmarkInput);
+            }
+
         });
-
-        // Function to validate name
+        function validateLength(value, minLength) {
+            return value.trim().length > minLength;
+        }
         function validateName(name) {
             return name.trim() !== '' && name.length >= 3;
         }
 
-        // Function to validate phone number
         function validateMobile(mobile) {
             return /^\d{10}$/.test(mobile);
         }
 
-        // Function to display error message
         function displayError(input, message) {
-            const errorElement = document.createElement('div');
-            errorElement.className = 'text-danger';
+            const errorElement = document.getElementById(input.id + 'Error');
             errorElement.textContent = message;
-            input.parentNode.appendChild(errorElement);
         }
 
-        // Function to clear error message
         function clearError(input) {
-            const parent = input.parentNode;
-            const errorElement = parent.querySelector('.text-danger');
-            if (errorElement) {
-                parent.removeChild(errorElement);
-            }
+            const errorElement = document.getElementById(input.id + 'Error');
+            errorElement.textContent = '';
+        }
+        function validatePincode(pincode) {
+            // Add your custom validation logic here
+            return /^\d{6}$/.test(pincode);
         }
     });
 </script>

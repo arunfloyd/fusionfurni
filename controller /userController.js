@@ -1140,30 +1140,22 @@ const createWishlist = asyncHandler(async (req, res) => {
   try {
     const { _id } = req.user;
     const user = await User.findById(_id);
-
-    // Check if a wishlist already exists for the user
     const alreadyExists = await WishList.findOne({ orderby: user._id });
-
     const { productId } = req.body;
-
     if (alreadyExists) {
-      // Check if the product already exists in the wishlist
       const existingProduct = alreadyExists.products.find(
         (product) => product.product.toString() === productId
       );
 
       if (!existingProduct) {
-        // Add the product to the wishlist if it doesn't exist
         alreadyExists.products.push({
           product: productId,
         });
-        // Save the updated wishlist
         await alreadyExists.save();
       }
 
       res.json(alreadyExists);
     } else {
-      // Create a new wishlist
       const newWishlist = await new WishList({
         products: [
           {

@@ -73,38 +73,50 @@
 
                         <div id="addressFields" style="display: none;">
                             <div class="form-group mb-3">
-                                <label class="text-black" for="street">Name </label>
-                                <input type="text" name="name" class="form-control" id="name">
+                                <label class="text-black" for="name">Name</label>
+                                <input type="text" name="name" class="form-control"  id="name">
+                                <span id="nameError" class="text-danger"></span>
                             </div>
+                        
                             <div class="form-group mb-3">
-                                <label class="text-black" for="street">Phone Number</label>
-                                <input type="text" name="mobile" class="form-control" id="mobile">
+                                <label class="text-black" for="mobile">Phone Number</label>
+                                <input type="text" name="mobile" class="form-control" id="mobile" >
+                                <span id="mobileError" class="text-danger"></span>
                             </div>
+                        
                             <div class="form-group mb-3">
                                 <label class="text-black" for="street">Flat, House no., Building, Company, Apartment</label>
-                                <input type="text" name="street" class="form-control" id="street">
+                                <input type="text" name="street" class="form-control" id="street" >
+                                <span id="streetError" class="text-danger"></span>
                             </div>
+                        
                             <div class="form-group mb-3">
-                                <label class="text-black" for="street">Area, Street, Sector, Village</label>
-                                <input type="text" name="area" class="form-control" id="area">
+                                <label class="text-black" for="area">Area, Street, Sector, Village</label>
+                                <input type="text" name="area" class="form-control" id="area" >
+                                <span id="areaError" class="text-danger"></span>
                             </div>
+                        
                             <div class="form-group mb-3">
-                                <label class="text-black" for="street">Landmark</label>
-                                <input type="text" name="landmark" class="form-control" id="landmark">
+                                <label class="text-black" for="landmark">Landmark</label>
+                                <input type="text" name="landmark" class="form-control" id="landmark" >
+                                <span id="landmarkError" class="text-danger"></span>
                             </div>
-
+                        
                             <div class="form-group mb-3">
                                 <label class="text-black" for="pincode">Pincode</label>
-                                <input type="text" name="pincode" class="form-control" id="pincode">
+                                <input type="text" name="pincode" class="form-control" id="pincode" >
+                                <span id="pincodeError" class="text-danger"></span>
                             </div>
-
+                        
                             <div class="form-group mb-3">
                                 <label class="text-black" for="addressType">Address Type</label>
                                 <select name="addressType" class="form-control" id="addressType">
-                                    <option value="home">Home - 9:00 AM to 5:00 PM Delivery</option>
-                                    <option value="work">Work - 9:00 AM to 9:00 PM Delivery</option>
+                                    <option value="home" >Home - 9:00 AM to 5:00 PM Delivery</option>
+                                    <option value="work" >Work - 9:00 AM to 9:00 PM Delivery</option>
                                 </select>
-                            </div><button type="submit" class="btn btn-primary">Submit</button>
+                                <span id="addressTypeError" class="text-danger"></span>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
                             <br>
                             <br>
 
@@ -161,6 +173,83 @@
         });
       
     });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function (event) {
+            // Validate Name
+            const nameInput = document.getElementById('name');
+            if (!validateName(nameInput.value)) {
+                event.preventDefault();
+                displayError(nameInput, 'Name should be valid');
+            } else {
+                clearError(nameInput);
+            }
 
-  
+            const mobileInput = document.getElementById('mobile');
+            if (!validateMobile(mobileInput.value)) {
+                event.preventDefault();
+                displayError(mobileInput, 'Phone number should be 10 digits');
+            } else {
+                clearError(mobileInput);
+            }
+            const pincodeInput = document.getElementById('pincode');
+            if (!validatePincode(pincodeInput.value)) {
+                event.preventDefault();
+                displayError(pincodeInput, 'Pincode should be 6 digits');
+            } else {
+                clearError(pincodeInput);
+            }
+            const streetInput = document.getElementById('street');
+            const areaInput = document.getElementById('area');
+            const landmarkInput = document.getElementById('landmark');
+
+            if (!validateLength(streetInput.value, 10)) {
+                event.preventDefault();
+                displayError(streetInput, 'Should be more than 10 characters');
+            } else {
+                clearError(streetInput);
+            }
+
+            if (!validateLength(areaInput.value, 10)) {
+                event.preventDefault();
+                displayError(areaInput, 'Should be more than 10 characters');
+            } else {
+                clearError(areaInput);
+            }
+
+            if (!validateLength(landmarkInput.value, 10)) {
+                event.preventDefault();
+                displayError(landmarkInput, 'Should be more than 10 characters');
+            } else {
+                clearError(landmarkInput);
+            }
+
+        });
+        function validateLength(value, minLength) {
+            return value.trim().length > minLength;
+        }
+        function validateName(name) {
+            return name.trim() !== '' && name.length >= 3;
+        }
+
+        function validateMobile(mobile) {
+            return /^\d{10}$/.test(mobile);
+        }
+
+        function displayError(input, message) {
+            const errorElement = document.getElementById(input.id + 'Error');
+            errorElement.textContent = message;
+        }
+
+        function clearError(input) {
+            const errorElement = document.getElementById(input.id + 'Error');
+            errorElement.textContent = '';
+        }
+        function validatePincode(pincode) {
+            // Add your custom validation logic here
+            return /^\d{6}$/.test(pincode);
+        }
+    });
 </script>
