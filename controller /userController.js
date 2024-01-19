@@ -19,6 +19,7 @@ const otpGenerator = require("otp-generator");
 const orderid = require("order-id")("key");
 const Razorpay = require("razorpay");
 const WishList = require("../models/wishListModel");
+const { elements } = require("chart.js");
 const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
 
 const razorpayInstance = new Razorpay({
@@ -624,22 +625,32 @@ const checkout = asyncHandler(async (req, res) => {
     const cart = await Cart.findOne({ orderby: _id }).populate(
       "products.product"
     );
+
+    // Check if quantity is greater than 0 for each product in the cart
+    const isValidCart = cart.products.every(productItem => {
+      return productItem.quantity > 0 && productItem.quantity <= productItem.product.quantity &&productItem.product.list===true;
+    });
+    if (!isValidCart) {
+      req.flash('message',"Something Went Wrong.Please Try Again !!")
+      return res.redirect("/view-cart"); // Assuming you have a specific template for an empty cart
+    }
+
     const addresses = await Address.find({ user: _id }).exec();
     res.render("UI/checkout", { addresses, cart, user });
   } catch (error) {
-    // throw new Error("Shop Can't Access")
+    console.error(error);
     res.send(error);
     res.render("error");
   }
 });
+
 const getUserCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   try {
     const cart = await Cart.findOne({ orderby: _id }).populate(
       "products.product"
     );
-
-    res.render("UI/cart", { cart: cart });
+    res.render("UI/cart", { cart: cart , message: req.flash("message")});
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
@@ -693,74 +704,156 @@ const createOnlinePayment = async (req, res) => {
     res.status(500).send({ success: false, msg: "Internal Server Error" });
   }
 };
-
 const createOrder = asyncHandler(async (req, res) => {
   const { COD, couponApplied, addressId, paymentMethod, orderTotal } = req.body;
   const { _id } = req.user;
 
   try {
-    const user = await User.findById(_id);
-    const addresses = await Address.find({ user: _id }).exec();
-    let userCart = await Cart.findOne({ orderby: user._id });
-    let finalAmount = 0;
+    const user = await User.findOne(_id);
+    const cart = await Cart.findOne({ orderby: _id }).populate("products.product");
 
-    if (couponApplied && userCart.totalAfterDiscount) {
-      finalAmount = userCart.totalAfterDiscount;
-    } else {
-      finalAmount = Number(userCart.cartTotal);
+    // Check if the cart is valid
+    const isValidCart = cart.products.every(productItem => {
+      return productItem.quantity > 0 && productItem.quantity <= productItem.product.quantity && productItem.product.quantity===true;
+    });
+    console.log(isValidCart)
+
+    if (!isValidCart) {
+      req.flash('message', "Something Went Wrong. Please Try Again!!");
+      res.status(400).send({ success: false})
+      return res.redirect("/view-cart");
+    }else{
+      const addresses = await Address.find({ user: _id }).exec();
+      let userCart = await Cart.findOne({ orderby: user._id });
+      let finalAmount = 0;
+  
+      if (couponApplied && userCart.totalAfterDiscount) {
+        finalAmount = Number(userCart.totalAfterDiscount);
+      } else {
+        finalAmount = Number(userCart.cartTotal);
+      }
+  
+      let newOrder = await new Order({
+        products: userCart.products,
+        paymentIntent: {
+          id: uniqid(),
+          method: paymentMethod,
+          amount: finalAmount,
+          status: "Pending",
+          created: Date.now(),
+        },
+        orderId: orderid.generate(),
+        address: addressId,
+        orderby: user._id,
+        orderStatus: "Processing",
+        expectedDelivery: Date.now() + 7 * 24 * 60 * 60 * 1000,
+      }).save();
+  
+      // Update product quantities
+      for (const item of userCart.products) {
+        const count = typeof item.quantity === "number" ? item.quantity : 0;
+        const updatedQuantity = isNaN(count) ? 0 : +count;
+  
+        await Product.updateOne(
+          { _id: item.product._id },
+          { $inc: { quantity: -updatedQuantity, sold: updatedQuantity } }
+        );
+      }
+  
+      // Remove the duplicate line below
+      // await Cart.deleteOne({ orderby: user._id });
+  
+      res.redirect("/thankyou");
+      return; // Ensure the function ends after redirect
     }
 
-    let newOrder = await new Order({
-      products: userCart.products,
-      paymentIntent: {
-        id: uniqid(),
-        method: paymentMethod,
-        amount: finalAmount,
-        status: "Pending",
-        created: Date.now(),
-      },
-      orderId: orderid.generate(),
-      address: addressId,
-      orderby: user._id,
-      orderStatus: "Processing",
-      expectedDelivery: Date.now() + 7 * 24 * 60 * 60 * 1000,
-    }).save();
-
-    // Update product quantities
-    for (const item of userCart.products) {
-      const count = typeof item.quantity === "number" ? item.quantity : 0;
-      const updatedQuantity = isNaN(count) ? 0 : +count;
-
-      await Product.updateOne(
-        { _id: item.product._id },
-        { $inc: { quantity: -updatedQuantity, sold: updatedQuantity } }
-      );
-    }
-
-    await Cart.deleteOne({ orderby: user._id });
-
-    await Cart.deleteOne({ orderby: user._id });
-
-    res.redirect("/thankyou");
+    
   } catch (error) {
+    console.error("Error in createOrder:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
+
+// const createOrder = asyncHandler(async (req, res) => {
+//   const { COD, couponApplied, addressId, paymentMethod, orderTotal } = req.body;
+//   const { _id } = req.user;
+
+//   try {
+
+//     const { _id } = req.user;
+//     const user = await User.findOne(_id);
+//     const cart = await Cart.findOne({ orderby: _id }).populate(
+//       "products.product"
+//     );
+//     const isValidCart = cart.products.every(productItem => {
+//       return productItem.quantity > 0 && productItem.quantity <= productItem.product.quantity;
+//     });
+//     if (!isValidCart) {
+//       req.flash('message',"Something Went Wrong.Please Try Again !!")
+//       return res.redirect("/view-cart"); // Assuming you have a specific template for an empty cart
+//     }
+//     const addresses = await Address.find({ user: _id }).exec();
+//     let userCart = await Cart.findOne({ orderby: user._id });
+//     let finalAmount = 0;
+
+//     if (couponApplied && userCart.totalAfterDiscount) {
+//       finalAmount = Number(userCart.totalAfterDiscount);
+//     } else {
+//       finalAmount = Number(userCart.cartTotal);
+//     }
+
+//     let newOrder = await new Order({
+//       products: userCart.products,
+//       paymentIntent: {
+//         id: uniqid(),
+//         method: paymentMethod,
+//         amount: finalAmount,
+//         status: "Pending",
+//         created: Date.now(),
+//       },
+//       orderId: orderid.generate(),
+//       address: addressId,
+//       orderby: user._id,
+//       orderStatus: "Processing",
+//       expectedDelivery: Date.now() + 7 * 24 * 60 * 60 * 1000,
+//     }).save();
+
+//     // Update product quantities
+//     for (const item of userCart.products) {
+//       const count = typeof item.quantity === "number" ? item.quantity : 0;
+//       const updatedQuantity = isNaN(count) ? 0 : +count;
+
+//       await Product.updateOne(
+//         { _id: item.product._id },
+//         { $inc: { quantity: -updatedQuantity, sold: updatedQuantity } }
+//       );
+//     }
+
+//     await Cart.deleteOne({ orderby: user._id });
+
+//     await Cart.deleteOne({ orderby: user._id });
+
+//     res.redirect("/thankyou");
+//   } catch (error) {
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// });
+
 const getOrders = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  validateMongoDbId(_id);
   try {
     const userorders = await Order.find({ orderby: _id })
       .populate("products.product")
       .populate("orderby")
       .exec();
-
     res.render("UI/orders", { userorders: userorders });
   } catch (error) {
-    throw new Error(error);
+    console.error(`erroria : `,error);
+    res.status(500).json({ error: "Internal server error" ,error});
   }
 });
+
 const getOrdersDetails = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const { id } = req.params;
@@ -771,7 +864,7 @@ const getOrdersDetails = asyncHandler(async (req, res) => {
       .populate("orderby")
       .populate("address")
       .exec();
-
+console.log(userorders)
     res.render("UI/orderDetails", { userorder: userorders });
   } catch (error) {
     throw new Error(error);
@@ -952,6 +1045,8 @@ const removeItem = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+
+
 const updateQuantity = asyncHandler(async (req, res) => {
   try {
     const { productId } = req.params;

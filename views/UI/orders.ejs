@@ -13,41 +13,48 @@
 </div>
 
 <div class="card text-center">
-  <% 
-    userorders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    userorders.forEach(order => { %>
+  <% if (userorders && userorders.length > 0) { %>
+    <% userorders.forEach(order => { %>
       <div class="card-header">
         <h4>Order ID: <%= order.orderId %></h4>
       </div>
-      
-      <% order.products.forEach((productItem, index, array) => { %>
-        <div class="card-body">
-          <div class="row align-items-center">
-            <div class="col-md-2 offset-md-1">
-              <img
-                src="/productImage/<%= productItem.product.images[0] %>"
-                alt="Product Image"
-                width="100px"
-                height="100px"
-              />
-            </div>
-            <div class="col-md-7">
-              <h5 class="card-title"><strong>Product Title:</strong> <%= productItem.product.title %></h5>
-              <h5 class="card-text"><strong>Order Status:</strong> <%= order.orderStatus %></h5>
-              <h6 class="card-text"><strong>Product Price:</strong> <%= productItem.product.price %></h6>
 
-              <% if (index === array.length - 1) { %>
-                <strong> <p>Expected Delivery Date: <%= new Date(parseInt(order.expectedDelivery)).toLocaleDateString("en-US") %></p></strong>
-                <a href="/orders-details/<%= order._id %>" class="btn btn-primary">More Details</a>
-              <% } %>
-            </div>
-            <div class="col-md-2">
-      
+      <% if (order.products && order.products.length > 0) { %>
+        <% order.products.forEach((productItem, index, array) => { %>
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-md-2 offset-md-1">
+                <img
+                  src="/productImage/<%= productItem.product && productItem.product.images && productItem.product.images[0] %>"
+                  alt="Product Image"
+                  width="100px"
+                  height="100px"
+                />
+              </div>
+              <div class="col-md-7">
+                <h5 class="card-title"><strong>Product Title:</strong> <%= productItem.product && productItem.product.title %></h5>
+                <h5 class="card-text"><strong>Order Status:</strong> <%= order.orderStatus %></h5>
+                <h6 class="card-text"><strong>Product Price:</strong> <%= productItem.product && productItem.product.price %></h6>
+
+                <% if (index === array.length - 1) { %>
+                  <strong> <p>Expected Delivery Date: <%= new Date(parseInt(order.expectedDelivery)).toLocaleDateString("en-US") %></p></strong>
+                  <a href="/orders-details/<%= order._id %>" class="btn btn-primary">More Details</a>
+                <% } %>
+              </div>
+              <div class="col-md-2">
+
+              </div>
             </div>
           </div>
-        </div>
-      <% }); %>
-  <% }); %>
+        <% }); %>
+      <% } else { %>
+        <p>No products found for this order.</p>
+      <% } %>
+    <% }); %>
+  <% } else { %>
+    <p>No orders found.</p>
+  <% } %>
 </div>
+
 
 <%- include('../layout/footer.ejs') %>

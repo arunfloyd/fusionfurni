@@ -305,7 +305,8 @@
             window.location.href = '/thankyou';
         })
         .catch(function (error) {
-            console.error('Error placing order:', error);
+            window.location.href = '/view-cart';
+            
         });
     } else {
         console.error('Please select both an address and a payment method.');

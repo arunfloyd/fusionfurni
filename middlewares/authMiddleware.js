@@ -38,7 +38,7 @@ const isBlocked = asyncHandler(async (req, res, next) => {
   if (users.accessStatus !== true) {
     req.flash(
       "message",
-      "Cart Access have been Resticted..!! Please Contact Us"
+      "Access have been Resticted..!! Please Contact Us"
     );
     res.redirect("/home");
   } else {
@@ -55,6 +55,7 @@ const userMiddleware = asyncHandler(async (req, res, next) => {
       req.user = user;
       next();
     } else {
+      req.flash('message','Authorized token expired, Please Login again')
       res.redirect("/login");
 
       throw new Error("There is no token attached to header");

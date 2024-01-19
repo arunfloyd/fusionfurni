@@ -4,10 +4,39 @@ const validateMongoDbId = require("../utils/validateMongodbid");
 const { generateRefreshToken } = require("../config/refreshToken");
 const jwt = require("jsonwebtoken");
 const Product = require("../models/productModel");
-const nodemailer = require("nodemailer");
-const Cart = require("../models/cartModel");
 const Category = require("../models/categoryModel");
 const Order = require("../models/orderModel");
+// const print = require("print-js")
+const puppeteer = require('puppeteer');
+
+const printer = asyncHandler(async (req, res) => {
+  try {
+    const someJSONdata = {
+      name: 'John Doe',
+      email: 'john@example.com',
+      phone: '123-456-7890',
+    };
+
+    const htmlData = `
+      <table>
+        <tr><th>Name</th><td>${someJSONdata.name}</td></tr>
+        <tr><th>Email</th><td>${someJSONdata.email}</td></tr>
+        <tr><th>Phone</th><td>${someJSONdata.phone}</td></tr>
+        <tr><th>Phone</th><td>${someJSONdata.phone}</td></tr>
+
+      </table>
+    `;
+
+    const pdfBuffer = await generatePDF(htmlData);
+
+    // Set content type and send the PDF as a response
+    res.contentType('application/pdf');
+    res.send(pdfBuffer);
+  } catch (error) {
+    console.error('Error generating PDF:', error.message);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 // login for Admin
 const loginAdmin = asyncHandler(async (req, res) => {
@@ -281,6 +310,39 @@ const loginAdminCtrl = asyncHandler(async (req, res) => {
 //     throw new Error(error)
 //   }
 // });
+const salesReport = asyncHandler(async(req,res)=>{
+  try{
+    const userorders = await Order.aggregate([
+      {
+        $match: {
+          orderStatus: "Delivered",
+        },
+      },
+      {
+        $lookup: {
+          from: "products", 
+          localField: "products.product", 
+          foreignField: "_id", // The field from the referenced collection
+          as: "populatedProducts", // The name of the new field to store the populated data
+        },
+      },
+      {
+        $lookup: {
+          from: "users", 
+          localField: "orderby",
+          foreignField: "_id",
+          as: "populatedOrderBy",
+        },
+      },
+      
+    ]);
+    res.render('adminDash/salesReport',{userorders})
+
+  }catch(error){
+    console.error('An error occurred:', error);
+    throw new Error(error)
+  }
+})
 const dashboard = asyncHandler(async (req, res) => {
   try {
     let revenue1,
@@ -480,15 +542,17 @@ const dashboard = asyncHandler(async (req, res) => {
     // Assuming userorder
     const categoryCount = catCount[0].totalCount;
     const totalCount = orderCount[0].totalCount;
+  console.log("heelo",cancel)
     const revenue = revenue1[0]?.totalRevenue || 0;
     const productsCount = productCount[0].totalCount;
     const returnCount = returns[0].totalCount;
-
     const cancelCount = cancel[0].totalCount;
+    console.log(cancelCount)
     const completeCount =
       (revenue1 && revenue1[0] && revenue1[0].totalCount) || 0;
 
     const totalEarning = revenue1[0].totalRevenue * 0.75;
+    console.log(totalEarning)
 
     // Calculate percentages
     const returnPercentage = (returnCount / totalCount) * 100;
@@ -512,7 +576,8 @@ const dashboard = asyncHandler(async (req, res) => {
       totalEarning,
     });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error('An error occurred:', error);
+    throw new Error(error);
   }
 });
 
@@ -846,4 +911,6 @@ module.exports = {
   updateOrderStatus,
   getAllOrders,
   loadUpdateOrderStatus,
+  salesReport,
+  printer
 };

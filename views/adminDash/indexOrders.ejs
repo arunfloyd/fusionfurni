@@ -1,124 +1,112 @@
 <%- include('header.ejs') %>
 
-    <body>
-        <div class="screen-overlay"></div>
-        <%- include('navbar-aside.ejs') %>
-        <main class="main-wrap">
-            
-            <section class="content-main">
-                <div class="content-header">
-                    <div>
-                        <h2 class="content-title card-title">Order List</h2>
-                        <p>Here is the list of oders</p>
-                    </div>
-                  
+<body>
+    <div class="screen-overlay"></div>
+    <%- include('navbar-aside.ejs') %>
+    <main class="main-wrap">
+
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Order List</h2>
+                    <p>Here is the list of orders</p>
                 </div>
-                <div class="card mb-4">
-                   
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <!-- Loop through users -->
-                            <% if (userorders.length > 0) { 
-                                userorders.forEach(order => { %>
-                                    <% order.products.forEach(productItem => { %>
-                                        <article class="itemlist">  
-                                        <div class="row align-items-center">
-                                            <!-- Name -->
-                                            <div class="left">
-                                                <img src="/productImage/<%= productItem.product.images[0] %>" class="img-sm img-thumbnail" alt="Item" />
-                                            </div>  
-                                            <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                                                <h6>Product Title:</h6>
-                                                <a class="itemside" href="#">
-                                                    <div class="info">
-                                                        <h4 class="mb-0"><%= productItem.product.title %></h4>
-                                                    </div>
-                                                </a>
-                                            </div>
-                                            <div class="col-lg-2 col-sm-2 col-4 col-price">
-                                              <h6>Users Name:</h6>
-                                              <span> <%= order.orderby.name %></span>
-                                          </div>
-                                            <div class="col-lg-2 col-sm-2 col-4 col-price">
-                                                <h6>Order Status:</h6>
-                                                <span> <%= order.orderStatus %></span>
-                                            </div>
-                                            <!-- Email -->
-                                            <div class="col-lg-2 col-sm-2 col-4 col-price">
-                                                <h6>Payment Status:</h6>
-                                                <span>  <%= order.paymentIntent.status %></span>
-                                            </div>
-                                            <div class="col-lg-2 col-sm-2 col-4 col-price">
-                                              <h6>Request:</h6>
-                                              <span> <%= order.request %></span>
-                                          </div>
-                                           
-                                            
-                                            
-                                            
-                                           
-                                            
-                                            <!-- Edit Button -->
-                                            <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
-                                                <a href="/admin/update-status/<%= order._id %>" class="btn btn-sm font-sm rounded btn-brand">
-                                                    <i class="material-icons md-edit"></i> Edit
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </article>
-                                    <% }); %>
-                                    <% }); %>
-                                <% } else { %>
-                                    <tr>
-                                        <td colspan="3">Orders Not Found</td>
-                                    </tr>
-                                <% } %>
-                             
-                        </div>
-                    </div>
+            </div>
+            
+            <div class="card mb-4">
+              <div class="card-body">
+                  <% if (userorders && Array.isArray(userorders) && userorders.length > 0) { %>
+                      <% userorders.forEach(order => { %>
+                          <% if (order && order.products && Array.isArray(order.products) && order.products.length > 0) { %>
+                              <% order.products.forEach(productItem => { %>
+                                  <div class="row align-items-center">
+                                      <div class="col-lg-2 col-sm-2 col-4">
+                                          <% if (productItem.product && productItem.product.images && Array.isArray(productItem.product.images) && productItem.product.images.length > 0) { %>
+                                              <img src="/productImage/<%= productItem.product.images[0] %>" class="img-sm img-thumbnail" alt="Product Image" />
+                                          <% } else { %>
+                                              <span>No Image Available</span>
+                                          <% } %>
+                                      </div>
+                                      <div class="col-lg-4 col-sm-4 col-8">
+                                          <h6>Product Title:</h6>
+                                          <span><%= productItem.product && productItem.product.title %></span>
+                                      </div>
+                                      <div class="col-lg-2 col-sm-2 col-4">
+                                          <h6>User's Name:</h6>
+                                          <span><%= order.orderby && order.orderby.name %></span>
+                                      </div>
+                                      <div class="col-lg-2 col-sm-2 col-4">
+                                          <h6>Order Status:</h6>
+                                          <span><%= order && order.orderStatus %></span>
+                                      </div>
+                                      <div class="col-lg-2 col-sm-2 col-4">
+                                          <h6>Payment Status:</h6>
+                                          <span><%= order.paymentIntent && order.paymentIntent.status %></span>
+                                      </div>
+                                      <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
+                                        <a href="/admin/update-status/<%= order._id %>" class="btn btn-sm font-sm rounded btn-brand">
+                                            <i class="material-icons md-edit"></i> Edit
+                                        </a>
+                                    </div>
+                                  </div>
+                              <% }); %>
+                          <% } else { %>
+                              <p>No products found for this order</p>
+                          <% } %>
+                      <% }); %>
+                  <% } else { %>
+                      <p>No orders found</p>
+                  <% } %>
+              </div>
+          </div>
+
+            <!-- Pagination code goes here -->
+            <div class="container text-center mt-4">
+              <nav aria-label="...">
+                <ul class="pagination justify-content-center">
+                  <% if (currentPage > 1) { %>
+                  <li class="page-item">
+                    <a
+                      class="page-link"
+                      href="?page=<%= currentPage - 1 %>"
+                      tabindex="-1"
+                      >Previous</a
+                    >
+                  </li>
+                  <% } else { %>
+                  <li class="page-item disabled">
+                    <span class="page-link" tabindex="-1">Previous</span>
+                  </li>
+                  <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
+                  <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                    <a
+                      class="page-link"
+                      href="?page=<%= i %>"
+                      ><%= i %></a
+                    >
+                  </li>
+                  <% } %> <% if (currentPage < totalPages) { %>
+                  <li class="page-item">
+                    <a
+                      class="page-link"
+                      href="?page=<%= currentPage + 1 %>"
+                      >Next</a
+                    >
+                  </li>
+                  <% } else { %>
+                  <li class="page-item disabled">
+                    <span class="page-link">Next</span>
+                  </li>
+                  <% } %>
+                </ul>
+              </nav>
+            </div>
+
+        </section>
+        <!-- content-main end// -->
+        <%- include('footer.ejs') %>
+
                  
                    
-                    <div class="container text-center mt-4">
-                        <nav aria-label="...">
-                          <ul class="pagination justify-content-center">
-                            <% if (currentPage > 1) { %>
-                            <li class="page-item">
-                              <a
-                                class="page-link"
-                                href="?page=<%= currentPage - 1 %>"
-                                tabindex="-1"
-                                >Previous</a
-                              >
-                            </li>
-                            <% } else { %>
-                            <li class="page-item disabled">
-                              <span class="page-link" tabindex="-1">Previous</span>
-                            </li>
-                            <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
-                            <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
-                              <a
-                                class="page-link"
-                                href="?page=<%= i %>"
-                                ><%= i %></a
-                              >
-                            </li>
-                            <% } %> <% if (currentPage < totalPages) { %>
-                            <li class="page-item">
-                              <a
-                                class="page-link"
-                                href="?page=<%= currentPage + 1 %>"
-                                >Next</a
-                              >
-                            </li>
-                            <% } else { %>
-                            <li class="page-item disabled">
-                              <span class="page-link">Next</span>
-                            </li>
-                            <% } %>
-                          </ul>
-                        </nav>
-                      </div>
-            </section>
-            <!-- content-main end// -->
-            <%- include('footer.ejs') %>
-
+                    
+    

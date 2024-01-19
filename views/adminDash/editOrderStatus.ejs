@@ -66,6 +66,10 @@
                                         <label class="form-label">Date Of Order</label>
                                         <input placeholder="Type here" class="form-control" name="description" value="<%= `${userorders.createdAt.toLocaleDateString('en-GB')} ${userorders.createdAt.toLocaleTimeString('en-US')}` %>" readonly/>
                                     </div>
+                                    <div class="mb-4">
+                                        <label class="form-label">Address</label>
+                                        <input placeholder="Type here" class="form-control" name="description" value="<%= `${userorders.createdAt.toLocaleDateString('en-GB')} ${userorders.createdAt.toLocaleTimeString('en-US')}` %>" readonly/>
+                                    </div>
                                 
                                     <div class="mb-4">
                                         <label class="form-label">Order Status</label>
@@ -74,8 +78,8 @@
                                             <option value="Returned " <%= userorders.orderStatus === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
                                             <option value="Shipped" <%= userorders.orderStatus === 'Shipped' ? 'selected' : '' %>>Shipped</option>
                                             <option value="Delivered" <%= userorders.orderStatus === 'Delivered' ? 'selected' : '' %>>Delivered</option>
-                                            <option value="Returning" <%= userorders.orderStatus === 'Delivered' ? 'selected' : '' %>>Returning</option>
-                                            <option value="Returned " <%= userorders.orderStatus === 'Delivered' ? 'selected' : '' %>>Returned</option>
+                                            <option value="Returning" <%= userorders.orderStatus === 'Returning' ? 'selected' : '' %>>Returning</option>
+                                            <option value="Returned " <%= userorders.orderStatus === 'Returned' ? 'selected' : '' %>>Returned</option>
                                         </select>
                                     </div>
                                     <div class="mb-4">

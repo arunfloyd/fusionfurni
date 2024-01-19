@@ -7,6 +7,7 @@
             <div class="col-lg-5">
                 <div class="intro-excerpt">
                     <h1>Cart</h1>
+                    
                 </div>
             </div>
             <div class="col-lg-7"></div>
@@ -20,6 +21,21 @@
         <div class="row mb-5">
             <div class="site-blocks-table">
                 <table class="table">
+                    <% if(message && message.length > 0) { %>
+                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+                        <script>
+                          // Display SweetAlert message with a "wrong" icon
+                          Swal.fire({
+                            title: 'Ohh !!  &#x1F625;',
+                            text: '<%= message %>',
+                            icon: 'error', // Use 'error' for a "wrong" icon
+                            confirmButtonText: 'OK'
+                          });
+                        </script>
+                      <% } %>
+                      
+                      
+                      
                     <thead>
                         <tr>
                             <th class="product-thumbnail">Image</th>
@@ -31,8 +47,10 @@
                     </thead>
                     <tbody>
                         <% if (cart && cart.products && cart.products.length > 0) { %>
+                            <% console.log("Cart Products:", cart.products); %>
                             <% cart.products.forEach(productItem => { %>
                                 <tr>
+                                    <!-- ... Table rows ... -->
                                     <td class="product-thumbnail">
                                         <% if (productItem.product.images && productItem.product.images.length > 0) { %>
                                             <img src="/productImage/<%= productItem.product.images[0] %>" alt="Image" class="img-fluid">
@@ -41,12 +59,17 @@
                                         <% } %>
                                     </td>
                                     <td class="product-name">
-                                        <% if(productItem.product.quantity ===0) { %>
+                                        <% if ( productItem.product.list === false) { %>
+                                            
                                             <h2 class="h5 text-black" style="text-decoration: line-through; color: red;"><%= productItem.product.title %></h2>
-                                            <h2 style="color: red;"> Out Of Stock</h2>
-                                            <% }else{ %>
-                                        <h2 class="h5 text-black"><%= productItem.product.title %></h2>
-                                        <% } %>
+                                            <h2 style="color: red;"> Currently Unavailable</h2>
+                                          <% } else if(productItem.product.quantity === 0 ){ %>
+                                            <h2 class="h5 text-black" style="text-decoration: line-through; color: red;"><%= productItem.product.title %></h2>
+                                            <h2 style="color: red;">Temporarily Out Of Stock</h2>
+                                            <% } else{ %>
+                                            <h2 class="h5 text-black"><%= productItem.product.title %></h2>
+                                          <% } %>
+                                          
 
                                     </td>
                                     <td class="product-price">
@@ -77,8 +100,7 @@
                             <!-- Handle the case where cart or products are null or empty -->
                             <tr>
                                 <td colspan="5">
-                                    <h4>Your Fushion Furni Cart is empty. <a href="/shop">Continue Shopping</a>
-                                        </h4>
+                                    <h4>Your Fushion Furni Cart is empty. <a href="/shop">Continue Shopping</a></h4>
                                 </td>
                             </tr>
                         <% } %>
@@ -88,14 +110,11 @@
         </div>
 
         <% if (cart && cart.products && cart.products.length > 0) { %>
-        
             <div class="row">
                 <div class="col-md-6">
                     <div class="row mb-5">
-    
                         <div class="col-md-6">
-                            <a href="/shop"><button class="btn btn-outline-black btn-sm btn-block">Continue Shopping</button>
-                            </a>
+                            <a href="/shop"><button class="btn btn-outline-black btn-sm btn-block">Continue Shopping</button></a>
                         </div>
                     </div>
                     <div class="row">
@@ -143,24 +162,24 @@
                                     <strong class="text-black">₹<%= cart.cartTotal %></strong>
                                 </div>
                             </div>
-
+                            
                             <div class="row">
                                 <div class="col-md-12">
                                     <a href="/checkout">
-                                        <!-- <button class="btn btn-black btn-lg py-3 btn-block" >Proceed To Checkout</button> -->
-                                        <button class="btn btn-black btn-lg py-3 btn-block checkout-button">Proceed To Checkout</button>
-
+                                        <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location='checkout.html'">Proceed To Checkout</button>
                                     </a>
                                 </div>
                             </div>
+                              
+                              
                         </div>
                     </div>
                 </div>
             </div>
         <% } else { %>
             <!-- Handle the case where cart or products are null or empty -->
-        
         <% } %>
+
     </div>
 </div>
     <div class="modal fade" id="outOfStockModal" tabindex="-1" aria-labelledby="outOfStockModalLabel" aria-hidden="true">
@@ -180,6 +199,9 @@
         </div>
     </div>
 
+
+      
+      
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const quantityDropdowns = document.querySelectorAll('.quantity');
@@ -225,17 +247,14 @@
             });
         });
 
-        // Add an event listener to the checkout button
-        // Add an event listener to the checkout button
+        
 const checkoutButton = document.querySelector('.checkout-button');
 if (checkoutButton) {
     checkoutButton.addEventListener('click', (event) => {
-        // Check if any product is out of stock
         const outOfStockProducts = document.querySelectorAll('.quantity option[value="0"]:checked');
         if (outOfStockProducts.length > 0) {
             event.preventDefault(); // Prevent the default action (going to the checkout page)
 
-            // Show a Bootstrap modal with a message
             const modal = new bootstrap.Modal(document.getElementById('outOfStockModal'));
             modal.show();
         }

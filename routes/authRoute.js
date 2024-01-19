@@ -78,6 +78,7 @@ router.post("/cart", userMiddleware, isBlocked, userCart);
 router.get("/view-cart", userMiddleware, isBlocked, getUserCart);
 router.post("/remove-item", userMiddleware, removeItem);
 router.post("/update-quantity/:productId", userMiddleware, updateQuantity);
+router.get("/check-update", userMiddleware, updateQuantity);
 router.get("/checkout", userMiddleware, isBlocked, checkout);
 router.post("/create-order", userMiddleware, createOrder);
 router.post(
@@ -95,7 +96,6 @@ router.post("/profile", userMiddleware, addAddressOnProfile);
 router.post("/add-address", userMiddleware, addAddress);
 router.get("/edit-address/:id", userMiddleware, editAddress);
 router.post("/edit-address/:id", userMiddleware, updateAddress);
-
 router.get("/edit-profile", userMiddleware, loadEditProfile);
 router.post("/edit-profile", userMiddleware, editProfile);
 router.get("/remove-address/:id", userMiddleware, removeAddress);

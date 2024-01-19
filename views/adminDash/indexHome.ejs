@@ -64,7 +64,7 @@
           <p>Whole data about your business here</p>
         </div>
         <div>
-          <a href="#" class="btn btn-primary"
+          <a href="/admin/sales-report" class="btn btn-primary"
             ><i class="text-muted material-icons md-post_add"></i>Create
             report</a
           >
@@ -211,68 +211,68 @@
         </div>
        
       </div>
-      <div class="card mb-4">
-        <header class="card-header">
-          <h4 class="card-title">Latest orders</h4>
-          <div class="row align-items-center"></div>
-        </header>
-        <div class="card-body">
-          <div class="table-responsive">
+        <div class="card mb-4">
+          <header class="card-header">
+            <h4 class="card-title">Latest orders</h4>
+            <div class="row align-items-center"></div>
+          </header>
+          <div class="card-body">
             <div class="table-responsive">
-              <table class="table align-middle table-nowrap mb-0">
-                <thead class="table-light">
-                  <tr>
-                    <th scope="col" class="text-center">
-                      <div class="form-check align-middle">
-                        <label
-                          class="form-check-label"
-                          for="transactionCheck01"
-                        ></label>
-                      </div>
-                    </th>
+              <div class="table-responsive">
+                <table class="table align-middle table-nowrap mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th scope="col" class="text-center">
+                        <div class="form-check align-middle">
+                          <label
+                            class="form-check-label"
+                            for="transactionCheck01"
+                          ></label>
+                        </div>
+                      </th>
 
-                    <th class="align-middle" scope="col">Order ID</th>
-                    <th class="align-middle" scope="col">Product Name</th>
-                    <th class="align-middle" scope="col">Total</th>
-                    <th class="align-middle" scope="col">Payment Status</th>
-                    <th class="align-middle" scope="col">Payment Method</th>
-                    <th class="align-middle" scope="col">
-                      Ordered Date & Time
-                    </th>
-                    <th class="align-middle" scope="col">Cancel / Return</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% userorders.reverse().forEach(order => { %> <%
-                  order.products.forEach((productItem, index, array) => { %>
-                  <tr>
-                    <td class="text-center"></td>
-                    <td>
-                      <p class="fw-bold"><%= order.orderId %></p>
-                    </td>
-                    <td><%= productItem.product.title %></td>
-                    <td><%= order.paymentIntent.amount %></td>
-                    <td><%= order.paymentIntent.status %></td>
-                    <td><%= order.paymentIntent.method %></td>
-                    <td>
-                      <% if (index === array.length - 1) { %>
-                      <strong
-                        ><p>
-                          <%= new Date(order.createdAt).toLocaleString("en-US",
-                          { year: 'numeric', month: '2-digit', day: '2-digit',
-                          hour: '2-digit', minute: '2-digit', second: '2-digit'
-                          }) %>
-                        </p></strong
-                      >
-                      <% } %>
-                    </td>
-                    <td><%= order.request %></td>
-                  </tr>
-                  <% }); %> <% }); %>
-                </tbody>
-              </table>
+                      <th class="align-middle" scope="col">Order ID</th>
+                      <th class="align-middle" scope="col">Product Name</th>
+                      <th class="align-middle" scope="col">Total</th>
+                      <th class="align-middle" scope="col">Payment Status</th>
+                      <th class="align-middle" scope="col">Payment Method</th>
+                      <th class="align-middle" scope="col">
+                        Ordered Date & Time
+                      </th>
+                      <th class="align-middle" scope="col">Cancel / Return</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% userorders.reverse().forEach(order => { %> <%
+                    order.products.forEach((productItem, index, array) => { %>
+                    <tr>
+                      <td class="text-center"></td>
+                      <td>
+                        <p class="fw-bold"><%= order.orderId %></p>
+                      </td>
+                      <td><%= productItem.product.title %></td>
+                      <td><%= order.paymentIntent.amount %></td>
+                      <td><%= order.paymentIntent.status %></td>
+                      <td><%= order.paymentIntent.method %></td>
+                      <td>
+                        <% if (index === array.length - 1) { %>
+                        <strong
+                          ><p>
+                            <%= new Date(order.createdAt).toLocaleString("en-US",
+                            { year: 'numeric', month: '2-digit', day: '2-digit',
+                            hour: '2-digit', minute: '2-digit', second: '2-digit'
+                            }) %>
+                          </p></strong
+                        >
+                        <% } %>
+                      </td>
+                      <td><%= order.request %></td>
+                    </tr>
+                    <% }); %> <% }); %>
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
           <div class="col-xl-4 col-lg-12">
             <div class="card mb-4">
              
@@ -439,7 +439,7 @@ new Chart(daily, {
           labels: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
           datasets: [
             {
-              label: "Daily Orders",
+              label: "My First Dataset",
               data: ordersByDays,
               backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)", "rgb(255, 205, 86)"],
               hoverOffset: 1,
