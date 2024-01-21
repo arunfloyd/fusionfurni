@@ -317,41 +317,62 @@ const shop = asyncHandler(async (req, res) => {
     const ITEMS_PER_PAGE = 8;
     let search = "";
     let sortOrder = "";
-    if (req.query.Search || req.query.Sort) {
+    let category = "";
+    let minPrice = 0;
+    let maxPrice = Infinity;
+
+    console.log(req.query); // Print the request query parameters
+
+    // Extract filters from request query parameters
+    if (req.query.Search || req.query.Sort || req.query.category) {
       search = req.query.Search;
       sortOrder = req.query.Sort;
+      category = req.query.category;
+      minPrice = parseFloat(req.query.MinPrice) || 0;
+      maxPrice = parseFloat(req.query.MaxPrice) || Infinity;
     }
+
     const sortingOptions = {
-      default: {}, // Add your default sorting option here
+      default: {},
       priceHigh: { price: -1 },
       priceLow: { price: 1 },
     };
-    const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
+
+    const filterOptions = {
+      default: {
+        $and: [
+          search && {
+            title: { $regex: new RegExp(".*" + search + ".*", "i") },
+          },
+          category && {
+            category: category,
+          },
+          { price: { $gte: minPrice, $lte: maxPrice } },
+          { list: true },
+        ].filter(Boolean),
+      },
+    };
+    
+
+    console.log("Filter Options:", filterOptions);
+    console.log("Database Query:", filterOptions.default.$and);
+
+    const cat = await Category.find({});
+    const page = parseInt(req.query.page) || 1;
     const totalProducts = await Product.countDocuments({
-      $and: [
-        {
-          $or: [{ title: { $regex: ".*" + search + ".*", $options: "i" } }],
-        },
-        {
-          list: true,
-        },
-      ],
+      $and: [filterOptions.default, { list: true }],
     });
     const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE);
     const skip = (page - 1) * ITEMS_PER_PAGE;
+
     const usersData = await Product.find({
-      $and: [
-        {
-          $or: [{ title: { $regex: ".*" + search + ".*", $options: "i" } }],
-        },
-        {
-          list: true,
-        },
-      ],
+      $and: [filterOptions.default, { list: true }],
     })
       .sort(sortingOptions[sortOrder])
       .skip(skip)
       .limit(ITEMS_PER_PAGE);
+
+    const listCategory = await Category.find({});
 
     res.render("UI/shop", {
       getallProduct: usersData,
@@ -359,12 +380,18 @@ const shop = asyncHandler(async (req, res) => {
       totalPages: totalPages,
       search: search,
       sortOrder: sortOrder,
+      cat: listCategory,
+      categoryFilter: category,
+      minPriceFilter: minPrice,
+      maxPriceFilter: maxPrice,
     });
   } catch (error) {
-    // Handle the error appropriately, e.g., send an error response
+    console.error("Error in shop route:", error);
     res.status(500).send("Internal Server Error");
   }
 });
+
+
 
 const about = asyncHandler(async (req, res) => {
   try {
@@ -617,7 +644,6 @@ const userCart = asyncHandler(async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 const checkout = asyncHandler(async (req, res) => {
   try {
     const { _id } = req.user;
@@ -627,11 +653,17 @@ const checkout = asyncHandler(async (req, res) => {
     );
 
     // Check if quantity is greater than 0 for each product in the cart
-    const isValidCart = cart.products.every(productItem => {
-      return productItem.quantity > 0 && productItem.quantity <= productItem.product.quantity &&productItem.product.list===true;
+    const isValidCart = cart.products.every((productItem) => {
+      console.log(productItem.product.list); // Log the value
+      return (
+        productItem.quantity > 0 &&
+        productItem.quantity <= productItem.product.quantity &&
+        productItem.product.list === true
+      );
     });
+
     if (!isValidCart) {
-      req.flash('message',"Something Went Wrong.Please Try Again !!")
+      req.flash("message", "Something Went Wrong.Please Try Again !!");
       return res.redirect("/view-cart"); // Assuming you have a specific template for an empty cart
     }
 
@@ -650,11 +682,49 @@ const getUserCart = asyncHandler(async (req, res) => {
     const cart = await Cart.findOne({ orderby: _id }).populate(
       "products.product"
     );
-    res.render("UI/cart", { cart: cart , message: req.flash("message")});
+    res.render("UI/cart", { cart: cart, message: req.flash("message") });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+const verifyRazopay = asyncHandler(async (req, res) => {
+  try {
+    const rawBody = req.body;
+    console.log("Hello", rawBody);
+    const headers = req.headers;
+    console.log("Received Headers:", headers);
+    const body = JSON.stringify(req.body);
+    console.log("Received Body:", body);
+    const signature = req.get("X-Razorpay-Signature");
+    console.log("Received Signature:", signature);
+    const expectedSignature = crypto
+      .createHmac("sha256", RAZORPAY_SECRET_KEY)
+      .update(body)
+      .digest("hex");
+    console.log(expectedSignature);
+
+    if (signature === expectedSignature) {
+      // Signature is valid, process the webhook payload
+      const payload = JSON.parse(req.body);
+      console.log("Webhook Event:", payload);
+
+      // Check payment status and other details from the payload
+      if (payload.event === "payment.captured") {
+        // Payment was successful, you can update your order status or perform other actions
+      }
+
+      res.status(200).send("OK");
+    } else {
+      // Invalid signature
+      console.error("Invalid Razorpay signature");
+      res.status(400).send("Invalid Signature");
+    }
+  } catch (error) {
+    console.error("Error in verifyRazopay:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 const createOnlinePayment = async (req, res) => {
   try {
     const {
@@ -666,8 +736,6 @@ const createOnlinePayment = async (req, res) => {
       description,
       productName,
     } = req.body;
-    console.log(email);
-    console.log(product);
 
     const amount = originalAmount * 100;
 
@@ -695,6 +763,7 @@ const createOnlinePayment = async (req, res) => {
           contact: mobile,
           name: productName,
           email: email,
+          razorpay_payment_id: order.id, // Add payment ID to the response
         });
       } else {
         res.status(400).send({ success: false, msg: "Something went wrong!" });
@@ -705,75 +774,75 @@ const createOnlinePayment = async (req, res) => {
   }
 };
 const createOrder = asyncHandler(async (req, res) => {
-  const { COD, couponApplied, addressId, paymentMethod, orderTotal } = req.body;
-  const { _id } = req.user;
-
   try {
-    const user = await User.findOne(_id);
-    const cart = await Cart.findOne({ orderby: _id }).populate("products.product");
+    const { COD, couponApplied, paymentMethod, orderTotal } = req.body;
+    const { _id } = req.user;
+    const { payment_id, addressId } = req.body;
+    console.log("ass", addressId);
 
-    // Check if the cart is valid
-    const isValidCart = cart.products.every(productItem => {
-      return productItem.quantity > 0 && productItem.quantity <= productItem.product.quantity && productItem.product.quantity===true;
+    console.log("Payment ID in create-order:", payment_id);
+    const user = await User.findOne(_id);
+    const cart = await Cart.findOne({ orderby: _id }).populate(
+      "products.product"
+    );
+    const isValidCart = cart.products.every((productItem) => {
+      return (
+        productItem.quantity > 0 &&
+        productItem.quantity <= productItem.product.quantity &&
+        productItem.product.list === true
+      );
     });
-    console.log(isValidCart)
+
+    console.log(isValidCart);
 
     if (!isValidCart) {
-      req.flash('message', "Something Went Wrong. Please Try Again!!");
-      res.status(400).send({ success: false})
-      return res.redirect("/view-cart");
-    }else{
-      const addresses = await Address.find({ user: _id }).exec();
+      req.flash("message", "Something Went Wrong. Please Try Again!!");
+      res.status(400).send({ success: false });
+    } else {
+      const addresses = await Address.findById({ _id: addressId });
+      console.log(addresses);
       let userCart = await Cart.findOne({ orderby: user._id });
       let finalAmount = 0;
-  
+
       if (couponApplied && userCart.totalAfterDiscount) {
         finalAmount = Number(userCart.totalAfterDiscount);
       } else {
         finalAmount = Number(userCart.cartTotal);
       }
-  
       let newOrder = await new Order({
         products: userCart.products,
         paymentIntent: {
-          id: uniqid(),
+          id: payment_id,
           method: paymentMethod,
-          amount: finalAmount,
-          status: "Pending",
+          amount: Number(finalAmount),
+          status: paymentMethod !== "COD" ? "Completed" : undefined, // Set 'Completed' only if paymentMethod is not 'COD'
           created: Date.now(),
         },
         orderId: orderid.generate(),
-        address: addressId,
+        address: addresses,
         orderby: user._id,
         orderStatus: "Processing",
         expectedDelivery: Date.now() + 7 * 24 * 60 * 60 * 1000,
       }).save();
-  
+
       // Update product quantities
       for (const item of userCart.products) {
         const count = typeof item.quantity === "number" ? item.quantity : 0;
         const updatedQuantity = isNaN(count) ? 0 : +count;
-  
+
         await Product.updateOne(
           { _id: item.product._id },
           { $inc: { quantity: -updatedQuantity, sold: updatedQuantity } }
         );
       }
-  
-      // Remove the duplicate line below
-      // await Cart.deleteOne({ orderby: user._id });
-  
-      res.redirect("/thankyou");
-      return; // Ensure the function ends after redirect
-    }
 
-    
+      res.status(200).send({ success: true });
+    }
   } catch (error) {
     console.error("Error in createOrder:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
 
 // const createOrder = asyncHandler(async (req, res) => {
 //   const { COD, couponApplied, addressId, paymentMethod, orderTotal } = req.body;
@@ -849,8 +918,8 @@ const getOrders = asyncHandler(async (req, res) => {
       .exec();
     res.render("UI/orders", { userorders: userorders });
   } catch (error) {
-    console.error(`erroria : `,error);
-    res.status(500).json({ error: "Internal server error" ,error});
+    console.error(`erroria : `, error);
+    res.status(500).json({ error: "Internal server error", error });
   }
 });
 
@@ -864,7 +933,7 @@ const getOrdersDetails = asyncHandler(async (req, res) => {
       .populate("orderby")
       .populate("address")
       .exec();
-console.log(userorders)
+    console.log(userorders);
     res.render("UI/orderDetails", { userorder: userorders });
   } catch (error) {
     throw new Error(error);
@@ -1046,7 +1115,6 @@ const removeItem = asyncHandler(async (req, res) => {
   }
 });
 
-
 const updateQuantity = asyncHandler(async (req, res) => {
   try {
     const { productId } = req.params;
@@ -1197,9 +1265,9 @@ const requestReturn = asyncHandler(async (req, res) => {
 
     let updateField;
     if (selectedRequest === "Request Cancellation Product") {
-      updateField = { request: "Request Cancel" };
+      updateField = { orderStatus: "Cancelled" };
     } else if (selectedRequest === "Request Return Product") {
-      updateField = { request: "Request Return" };
+      updateField = { orderStatus: "Returned" };
     } else {
       return res.status(400).json({ error: "Invalid request type" });
     }
@@ -1350,4 +1418,6 @@ module.exports = {
   removeWish,
   editAddress,
   updateAddress,
+  verifyRazopay,
+ 
 };

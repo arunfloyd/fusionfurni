@@ -45,6 +45,8 @@ const {
   removeWish,
   editAddress,
   updateAddress,
+  verifyRazopay,
+
 } = require("../controller /userController");
 const {
   userMiddleware,
@@ -87,6 +89,8 @@ router.post(
   isBlocked,
   createOnlinePayment
 );
+router.post("/verify-payment", userMiddleware, verifyRazopay);
+
 router.get("/thankyou", userMiddleware, isBlocked, thankyou);
 router.get("/all-user", getallUser);
 router.get("/orders", userMiddleware, getOrders);

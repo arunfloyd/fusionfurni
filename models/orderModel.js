@@ -40,14 +40,14 @@ var orderSchema = new mongoose.Schema(
         "Returned",
       ],
     },
+    address: {
+      type: Array,
+    },
     orderby: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    address: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Address",
-    },
+  
     expectedDelivery: {
       type: String,
     },

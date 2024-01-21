@@ -95,7 +95,7 @@
                             <div class="card-body">
                                 <div>
                                     <!-- HERE IT WAS productImages  -->
-                                    <label class="form-label">Choose upto 5 pictures</label>
+                                    <label class="form-label">Choose upto 4 pictures</label>
                                     <input class="form-control" id="image-input" type="file" accept="image/*" multiple name="images"  required />
                                      <span id="imageError" class="text-danger"></span>
                                 </div>
@@ -245,12 +245,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             console.log('Number of selected files:', files.length);
             console.log('Selected files:', files);
 
-            if (files.length > 5 || files.length < 5) {
+            if (files.length > 4 || files.length < 4) {
                 inputImage.value = '';
                 Swal.fire({
                     icon: 'warning',
                     title: 'Oops...!',
-                    text: 'You can only select up to 5 images!',
+                    text: 'You can only select up to 4 images!',
 
                     confirmButtonColor: '#3085d6',
                     confirmButtonText: 'OK'

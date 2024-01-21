@@ -9,7 +9,7 @@
                 <div class="content-header">
                     <div>
                         <h2 class="content-title card-title">Order Status Control</h2>
-                        <p>You can change the Order status and payment status here</p>
+                        <h3>You can change the Order status of the product</h3>
                     </div>
                    
                 </div>
@@ -44,20 +44,8 @@
 
                                         <input type="text" placeholder="Type here" class="form-control" id="product_slug" name="method" value="<%= userorders.paymentIntent.method%>" readonly/>
                            
-                                        <br>
-                                        <label class="form-label">Conform the Payment Status (if COD click choose Completed after Delivery</label>
-                                        <br>
+                                    
                                        
-                                        <div class="radio-group">
-                                            <label>
-                                                <input type="radio" name="payment" value="Completed" <%= userorders.paymentIntent.status == 'Completed' ? 'checked' : '' %> />
-                                                Completed
-                                            </label>
-                                            <label>
-                                                <input type="radio" name="payment" value="Pending" <%= userorders.paymentIntent.status == 'Pending' ? 'checked' : '' %> />
-                                                Pending
-                                            </label>
-                                        </div> 
                                         
 
                                     </div>
@@ -68,7 +56,21 @@
                                     </div>
                                     <div class="mb-4">
                                         <label class="form-label">Address</label>
-                                        <input placeholder="Type here" class="form-control" name="description" value="<%= `${userorders.createdAt.toLocaleDateString('en-GB')} ${userorders.createdAt.toLocaleTimeString('en-US')}` %>" readonly/>
+                                        <div class="address-details border border-dark p-3 mb-3" style=" color: black; font-size: 30px; font-family: 'Courier New', Courier, monospace;">
+                                            <!-- Adjust the font-size value as needed -->
+                                      
+                                            <% if (userorders.address) { %>
+                                            
+                                                <p class="mb-1"><strong>Name:</strong> <%= userorders.address[0].name %></p>
+                                                <p class="mb-1"><strong>Mobile:</strong> <%= userorders.address[0].mobile %></p>
+                                                <p class="mb-1"><strong>Street:</strong> <%= userorders.address[0].street %></p>
+                                                <p class="mb-1"><strong>Area:</strong> <%= userorders.address[0].area %></p>
+                                                <p class="mb-1"><strong>Landmark:</strong> <%= userorders.address[0].landmark %></p>
+                                                <p class="mb-1"><strong>Pincode:</strong> <%= userorders.address[0].pincode %></p>
+                                              </div>
+                                            <% } else { %>
+                                              <p>No address available</p>
+                                            <% } %>
                                     </div>
                                 
                                     <div class="mb-4">
@@ -82,17 +84,7 @@
                                             <option value="Returned " <%= userorders.orderStatus === 'Returned' ? 'selected' : '' %>>Returned</option>
                                         </select>
                                     </div>
-                                    <div class="mb-4">
-                                        <label class="form-label">Request Status</label>
-                                        <select class="form-select" name="request" disabled>
-                                            <option value="No Request" <%= userorders.request === 'No Request' ? 'selected' : '' %>>No Request</option>
-                                            <option value="Request Cancellation" <%= userorders.request === 'Request Cancellation' ? 'selected' : '' %>>Request Cancellation</option>
-                                    
-                                            <option value="Request Return" <%= userorders.request === 'Request Return' ? 'selected' : '' %>>Request Return</option>
-                                            <option value="Accept Cancellation" <%= userorders.request === 'Accept Cancellation' ? 'selected' : '' %>>Accept Cancellation</option>
-                                            <option value="Accept Return" <%= userorders.request === 'Accept Return' ? 'selected' : '' %>>Accept Return</option>
-                                        </select>
-                                    </div>
+                                
                                 
                                     <div class="col-md-3">
                                         <button type="submit" class="btn btn-primary">Update Status</button>

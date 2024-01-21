@@ -1,4 +1,11 @@
 <%- include('../layout/header.ejs') %>
+<!-- Include SweetAlert CSS and JS in your HTML -->
+<link rel="stylesheet" href="path/to/sweetalert2.min.css">
+<script src="path/to/sweetalert2.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+
+
 <!-- Start Hero Section -->
 <div class="hero">
     <div class="container">
@@ -53,7 +60,7 @@
                                                 <%= address.pincode %>
                                                 <%= address.addressType %>
                                             </p>
-                                            <a href="#" class="card-link"> Edit</a>
+                                            <!-- <a href="#" class="card-link"> Edit</a> -->
                                         </div>
                                     </div>
                                 </div>
@@ -82,9 +89,9 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="paymentMethod" id="codRadio1" value="COD" required>
                                         <label class="form-check-label" for="codRadio1">
-                                            Cash On Delivery
+                                          Cash On Delivery
                                         </label>
-                                    </div>
+                                      </div>
                                 </div>
                             </div>
                             <br>
@@ -99,22 +106,19 @@
                                     <!-- Radio button for Online Payment -->
                                     <div class="pay-form">
                                         <input class="form-check-input" type="radio" name="paymentMethod" id="codRadio2" value="OnlinePayment" required>
-                                        <label class="form-check-label" for="codRadio2">
-                                            Online Payment<br><br>
-                                            <button class="btn btn-primary" id="pay-button" disabled>Pay Now</button>
-                                             
-                                        </label>
-                                       
-    
-                                    </div>
+                                        <label class="form-check-label" for="codRadio2">Online Payment<br><br></label>
+                                      </div>
                                 </div>
                             </div>
                             
 
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" id="payButtonGroup">
+                            <button class="btn btn-primary" id="pay-button" disabled>Pay Now</button>
+                          </div>
+                        <div class="form-group" id="placeOrderGroup" style="display: none;">
                             <button type="button" class="btn btn-primary" id="placeOrderBtn">Place Order</button>
-                        </div>
+                          </div>
                     </form>
 
                     <form action="/add-address" method="post" id="addressForm" style="display: none;">
@@ -179,7 +183,7 @@
                                             
                                         <% }); %>
                                     <% } else { %>
-                                        <!-- Handle the case where cart or products are null or empty -->
+                                    
                                         <tr>
                                             <td colspan="5">colum
                                                 <h4>Your Fushion Furni Cart is empty. <a href="/shop">Continue Shopping</a></h4>
@@ -212,6 +216,77 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
+ 
+ $(document).ready(function () {
+        // Handling the "Online Payment" radio button
+        $('#codRadio2').change(function () {
+            if ($(this).is(':checked') && $(this).val() === 'OnlinePayment') {
+                $('#payButtonGroup').show(); // Show the "Pay Now" button group
+                $('#placeOrderGroup').hide(); // Hide the "Place Order" button group
+            } else {
+                $('#payButtonGroup').hide(); // Hide the "Pay Now" button group
+            }
+        });
+        if (!$('#codRadio2').is(':checked') || $('#codRadio2:checked').val() !== 'OnlinePayment') {
+            $('#payButtonGroup').hide();
+        }
+
+        // Handling the "Cash On Delivery" radio button
+        $('#codRadio1').change(function () {
+            if ($(this).is(':checked') && $(this).val() === 'COD') {
+                $('#placeOrderGroup').show(); // Show the "Place Order" button group
+                $('#payButtonGroup').hide(); // Hide the "Pay Now" button group
+            } else {
+                $('#placeOrderGroup').hide();
+            }
+        });
+
+      
+        if ($('input[name="paymentMethod"]:checked').val() !== 'COD') {
+            $('#placeOrderGroup').hide();
+        }
+
+        $('#placeOrderBtn').click(function () {
+            
+        });
+        $('#pay-button').click(function (e) {
+    e.preventDefault();
+    if (!$('input[name="addressSelection"]').is(':checked')) {
+        showSweetMessage();
+    } else {
+        // Your existing logic here
+    }
+
+        });
+        function showSweetMessage() {
+            Swal.fire("Oops!", "Please select an address.", "warning");
+
+        }
+        
+    });
+
+
+
+$(document).ready(function() {
+    $('input[name="paymentMethod"]').change(function() {
+      if ($(this).is(':checked') && $(this).val() === 'COD') {
+        $('#placeOrderGroup').show(); // Show the "Place Order" button
+      } else {
+        $('#placeOrderGroup').hide(); // Hide the "Place Order" button
+      }
+    });
+
+    // Optional: If you want to hide the button on page load
+    if ($('input[name="paymentMethod"]:checked').val() !== 'COD') {
+      $('#placeOrderGroup').hide();
+    }
+
+    $('#placeOrderBtn').click(function() {
+      // Add your logic for placing the order
+      // ...
+    });
+  });
+
     $(document).ready(function () {
         $("#codRadio2").change(function () {
                 // Enable or disable the "Pay Now" button based on the radio button's checked status
@@ -241,52 +316,79 @@
         var email = $('#email').val();
         var mobile = $('#mobile').val();
         var product = $('#title').val();
+        const selectedAddressId = $("input[name='addressSelection']:checked").val();
 
-        $.ajax({
-            url: "/create-online-payment",
-            type: "POST",
-            data: {
-                productName: productName,
-                amount: amount,
-                email: email,
-                product:product
-            },
-            success: function(res){
-                if(res.success){
-                    var options = {
-                        "key": res.key_id, // No need for extra quotes around variables
-                        "amount": res.amount,
-                        "currency": "INR",
-                        "name": res.product,
-                        "description": res.description,
-                        "image": "https://dummyimage.com/600x400/000/fff",
-                        "order_id": res.order_id,
-                        "handler": function (response){
-                            alert("Payment Succeeded");
-                        },
-                        "prefill": {
-                            "contact": res.contact,
-                            "name": res.name,
-                            "email": res.email
-                        },
-                        "notes": {
-                            "description": res.description
-                        },
-                        "theme": {
-                            "color": "#2300a3"
-                        }
-                    };
-                    var razorpayObject = new Razorpay(options);
-                    razorpayObject.on('payment.failed', function (response){
-                        alert("Payment Failed");
-                    });
-                    razorpayObject.open();
-                }
-                else{
-                    alert(res.msg);
-                }
+if (selectedAddressId) {
+    $.ajax({
+        url: "/create-online-payment",
+        type: "POST",
+        data: {
+            productName: productName,
+            amount: amount,
+            email: email,
+            product: product,
+            addressId: selectedAddressId
+        },
+        success: function (res) {
+            if (res.success) {
+                var options = {
+                    "key": res.key_id,
+                    "amount": res.amount,
+                    "currency": "INR",
+                    "name": res.product,
+                    "description": res.description,
+                    "image": "https://dummyimage.com/600x400/000/fff",
+                    "order_id": res.order_id,
+                    "handler": function (response) {
+                        // After successful payment, call the server to verify the payment
+                        $.ajax({
+                            url: "/create-order",
+                            type: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({ payment_id: response.razorpay_payment_id,addressId:selectedAddressId }),
+                            success: function (verificationResponse) {
+                                if (verificationResponse.success) {
+                                    window.location.href = "/thankyou";
+                                } else {
+                                    Swal.fire("Oops!", "Payment verification failed", "error");
+                                }
+                            },
+                            error: function () {
+                                Swal.fire("Oops!", "Error verifying payment", "error");
+                            }
+                        });
+                    },
+                    "prefill": {
+                        "contact": res.contact,
+                        "name": res.name,
+                        "email": res.email
+                    },
+                    "notes": {
+                        "description": res.description
+                    },
+                    "theme": {
+                        "color": "#2300a3"
+                    }
+                };
+                var razorpayObject = new Razorpay(options);
+                razorpayObject.on('payment.failed', function (response) {
+                    Swal.fire("Oops!", "Sorry, the payment failed. Please try again", "error");
+                });
+                razorpayObject.open();
+            } else {
+                alert(res.msg);
             }
-        });
+        },
+        error: function () {
+            Swal.fire("Oops!", "Error creating online payment", "error");
+        }
+    });
+} else {
+    Swal.fire("Ooho!", "Please Select Address", "error");
+}
+
+
+
     });
 
         $("#placeOrderBtn").click(function () {
@@ -309,7 +411,7 @@
             
         });
     } else {
-        console.error('Please select both an address and a payment method.');
+        Swal.fire("Oops!", "Please select an address to continue", "error");
     }
 }); 
 

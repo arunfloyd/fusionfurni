@@ -29,10 +29,10 @@ const createProduct = async (req, res) => {
       resizedImages[i] = req.files[i].filename;
 
     }
-    if (req.files.length !== 5 || req.files.length > 5) {
+    if (req.files.length !== 4 || req.files.length > 4) {
 
       // req.session.message = 'only 5 images allowed'
-      req.flash('message','only 5 images allowed')
+      req.flash('message','only 4 images allowed')
       res.redirect('/admin/product/list',)
 
 

@@ -18,8 +18,7 @@ const multer = require("multer");
 // const upload = multer({ storage: storage });
 
 router.get("/add", authMiddleware, addProduct);
-router.post('/add', upload.upload.array('image', 5), authMiddleware,createProduct)
-// router.post("/add", upload.array("images"), authMiddleware, createProduct);
+router.post('/add', upload.upload.array('image', 4), authMiddleware,createProduct)
 router.get("/list", authMiddleware, getallProduct);
 router.get("/:id", authMiddleware, loadUpdateProduct);
 router.post("/delete/images", asyncHandler(updateImages));
