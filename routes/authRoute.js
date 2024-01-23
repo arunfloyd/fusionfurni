@@ -46,6 +46,8 @@ const {
   editAddress,
   updateAddress,
   verifyRazopay,
+  loadWallet,
+  loadMoney,
 
 } = require("../controller /userController");
 const {
@@ -109,4 +111,6 @@ router.get("/refresh", handleRefreshToken);
 router.get("/error", errorPage);
 router.get("/request-return/:id", loadRequestReturn);
 router.post("/request-return", requestReturn);
+router.get("/wallet", userMiddleware,loadWallet);
+router.post("/create-money", userMiddleware,loadMoney);
 module.exports = router;

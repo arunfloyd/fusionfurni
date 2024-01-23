@@ -12,6 +12,8 @@
     <meta name="description" content="" />
     <meta name="keywords" content="bootstrap, bootstrap4" />
     <link href="/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
       rel="stylesheet"
@@ -81,15 +83,18 @@
                 class="dropdown-menu dropdown-menu-end"
                 aria-labelledby="dropdownAccount"
               >
-                <a class="dropdown-item" href="/profile"
-                  ><i class="material-icons md-help_outline"></i>Edit Profile</a
-                >
+              <a class="dropdown-item" href="/profile">
+                <i class="material-icons md-help_outline"></i>Edit Profile
+              </a>
                 <a class="dropdown-item" href="/orders"
                   ><i class="material-icons md-help_outline"></i>My Orders</a
                 >
                 <a class="dropdown-item" href="/wishlist"
                   ><i class="material-icons md-help_outline"></i>Wish List</a
                 >
+                <a class="dropdown-item" href="/wallet"
+                ><i class="material-icons md-help_outline"></i>My Wallet</a
+              >
                 <div class="dropdown-divider"></div>
                 <% console.log(locals.user); %> <% if (locals.user) { %>
                 <a class="dropdown-item text-danger" href="/logout"

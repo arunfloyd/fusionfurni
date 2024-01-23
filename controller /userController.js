@@ -21,7 +21,7 @@ const Razorpay = require("razorpay");
 const WishList = require("../models/wishListModel");
 const { elements } = require("chart.js");
 const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
-
+const Wallet = require("../models/walletModel");
 const razorpayInstance = new Razorpay({
   key_id: RAZORPAY_ID_KEY,
   key_secret: RAZORPAY_SECRET_KEY,
@@ -352,7 +352,6 @@ const shop = asyncHandler(async (req, res) => {
         ].filter(Boolean),
       },
     };
-    
 
     console.log("Filter Options:", filterOptions);
     console.log("Database Query:", filterOptions.default.$and);
@@ -390,8 +389,6 @@ const shop = asyncHandler(async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-
-
 
 const about = asyncHandler(async (req, res) => {
   try {
@@ -648,6 +645,7 @@ const checkout = asyncHandler(async (req, res) => {
   try {
     const { _id } = req.user;
     const user = await User.findOne(_id);
+    const balance = await Wallet.findOne({user:_id})
     const cart = await Cart.findOne({ orderby: _id }).populate(
       "products.product"
     );
@@ -668,7 +666,7 @@ const checkout = asyncHandler(async (req, res) => {
     }
 
     const addresses = await Address.find({ user: _id }).exec();
-    res.render("UI/checkout", { addresses, cart, user });
+    res.render("UI/checkout", { addresses, cart, user ,balance});
   } catch (error) {
     console.error(error);
     res.send(error);
@@ -778,9 +776,7 @@ const createOrder = asyncHandler(async (req, res) => {
     const { COD, couponApplied, paymentMethod, orderTotal } = req.body;
     const { _id } = req.user;
     const { payment_id, addressId } = req.body;
-    console.log("ass", addressId);
-
-    console.log("Payment ID in create-order:", payment_id);
+    
     const user = await User.findOne(_id);
     const cart = await Cart.findOne({ orderby: _id }).populate(
       "products.product"
@@ -824,7 +820,7 @@ const createOrder = asyncHandler(async (req, res) => {
         orderStatus: "Processing",
         expectedDelivery: Date.now() + 7 * 24 * 60 * 60 * 1000,
       }).save();
-
+      
       // Update product quantities
       for (const item of userCart.products) {
         const count = typeof item.quantity === "number" ? item.quantity : 0;
@@ -835,6 +831,24 @@ const createOrder = asyncHandler(async (req, res) => {
           { $inc: { quantity: -updatedQuantity, sold: updatedQuantity } }
         );
       }
+      await Wallet.findOneAndUpdate(
+  { user: _id },
+  { 
+    $inc: { balance: -finalAmount },
+    $push: {
+      transactions: {
+        type: "Debit",
+        amount: - finalAmount, // Use parsedAmount instead of amount
+        description: "Wallet Money used for Purchasing Product",
+        paymentID: newOrder.orderId
+      }
+    }
+  },
+  { new: true } // This option returns the modified document
+);
+
+      
+            await Cart.deleteOne({ orderby: user._id });
 
       res.status(200).send({ success: true });
     }
@@ -1259,6 +1273,54 @@ const loadRequestReturn = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+const loadWallet = asyncHandler(async (req, res) => {
+  try {
+    const { _id } = req.user;
+    let balance = await Wallet.findOne({ user: _id });
+
+    if (!balance) {
+      balance = { balance: 0 }; // Assuming 'amount' is the property representing the balance
+    }
+    console.log(balance)
+
+    res.render("UI/wallet", { balance }); // Pass 'balance' as an object property
+  } catch (error) {
+    console.error("Error loading wallet:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+const loadMoney = asyncHandler(async (req, res) => {
+  try {
+    const { amount,paymentID } = req.body;
+    const { _id } = req.user;
+
+    let userWallet = await Wallet.findOne({ user: _id });
+    if (!userWallet) {
+      userWallet = new Wallet({
+        user: _id,
+        balance: 0,
+        transactions: [],
+      });
+    }
+    const parsedAmount = parseFloat(amount);
+
+    userWallet.balance += parsedAmount;
+    userWallet.transactions.push({
+      type: "credit",
+      amount: parsedAmount, // Use parsedAmount instead of amount
+      description: "Added money to wallet from Razopay",
+      paymentID:paymentID
+    });
+
+    await userWallet.save();
+    res.status(200).json({ success: true, wallet: userWallet });
+  } catch (error) {
+    console.error("Error adding money:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 const requestReturn = asyncHandler(async (req, res) => {
   try {
     const { selectedRequest, id } = req.body;
@@ -1419,5 +1481,6 @@ module.exports = {
   editAddress,
   updateAddress,
   verifyRazopay,
- 
+  loadWallet,
+  loadMoney,
 };

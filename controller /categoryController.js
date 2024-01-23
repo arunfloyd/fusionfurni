@@ -28,7 +28,8 @@ const loadUpdate = asyncHandler(async (req, res) => {
   try {
     const getallCategory = await Category.findById(id);
     res.render("adminDash/indexEditCategory", {
-      getallCategory: getallCategory, message: req.flash("message"),
+      getallCategory: getallCategory,
+      message: req.flash("message"),
     });
   } catch {
     // throw new Error(error)

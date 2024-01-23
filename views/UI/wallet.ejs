@@ -1,0 +1,272 @@
+<%- include('../layout/header.ejs') %>
+<style>/* General styles */
+  .wallet-container {
+    padding: 30px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .wallet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .wallet-header h1 {
+    font-size: 24px;
+    font-weight: 600;
+  }
+  
+  .wallet-header img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+  }
+  
+  .wallet-balance {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 500;
+  }
+  
+  .balance-amount {
+    font-size: 24px;
+    color: #007bff;
+  }
+  
+  .wallet-actions {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .add-money-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .recent-transactions table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .recent-transactions th,
+  .recent-transactions td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  .modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 400px;
+  margin: auto;
+  padding: 20px;
+  border-radius: 10px;
+  color: #fff; /* Change text color to white for better visibility */
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle box-shadow for depth */
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  color: #333;
+  z-index: 1; /* Ensure close button is above modal content */
+}
+
+/* Style for the input and button */
+label {
+  display: block;
+  margin-bottom: 10px;
+  color: #fff; /* Change label text color to white */
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+}
+
+button {
+  background-color: #4caf50;
+  color: #fff;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Add hover effect for the button */
+button:hover {
+  background-color: #45a049;
+}
+  </style>
+
+<main class="wallet-container">
+  <section class="wallet-header">
+    <h1>Your Wallet</h1>
+    <i class="fa-solid fa-wallet" style="font-size: 24px;"></i>
+
+  </section>
+
+  <section class="wallet-balance">
+    <h2>Current Balance: <span class="balance-amount" id="balance"><%=balance.balance%></span></h2>
+  </section>
+
+  <section class="wallet-actions">
+    <button class="add-money-button" id="openModalButton">Add Money</button>
+  </section>
+
+  <section class="recent-transactions">
+    <h2>Recent Transactions</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Payment-ID</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <% if (balance.transactions && balance.transactions.length > 0) { %>
+      <tbody>
+       
+        <% for (let i = 0; i < balance.transactions.length; i++) { %>
+          <tr>
+            <td><%= new Date(balance.transactions[i].timestamp).toLocaleDateString('en-GB') + ' ' + new Date(balance.transactions[i].timestamp).toLocaleTimeString() %></td>
+            <td><%= balance.transactions[i].paymentID %></td>
+            <td><%= balance.transactions[i].type %></td>
+            <td><%= balance.transactions[i].description %></td>
+            <td><%= balance.transactions[i].amount %></td>
+          </tr>
+        <% } %>
+    
+      </tbody>
+    </table>
+        </tbody>
+        <% } else { %>
+          <p>No transactions available.</p>
+        <% } %>
+    </table>
+  </section><br><br><br><br><br><br>
+</main>
+<div class="modal" id="addMoneyModal">
+  <div class="modal-content">
+    <span class="close" id="closeModalButton">&times;</span>
+    <label for="amountInput">Enter the amount to add:</label>
+    <input type="number" id="amountInput" placeholder="ENTER THE AMOUNT TO BE ADDED">
+    <button id="confirmAddMoneyButton">Add Money</button>
+  </div>
+</div>
+<%- include('../layout/footer.ejs') %>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const addMoneyButton = document.getElementById('openModalButton');
+  const modal = document.getElementById('addMoneyModal');
+  const closeModalButton = document.getElementById('closeModalButton');
+  const confirmAddMoneyButton = document.getElementById('confirmAddMoneyButton');
+  const balanceAmount = document.getElementById('balance');
+  const amountInput = document.getElementById('amountInput');
+  const balanceSpan = document.querySelector('.balance-amount');
+  const balanceValueString = balanceSpan.textContent;
+  const balanceValue = parseInt(balanceValueString, 10);
+  addMoneyButton.addEventListener('click', function () {
+    modal.style.display = 'block';
+  });
+  closeModalButton.addEventListener('click', function () {
+    modal.style.display = 'none';
+  });
+
+});
+
+$('#confirmAddMoneyButton').click(function(e){
+        e.preventDefault();
+        var amount = $('#amountInput').val();
+if (amount) {
+    $.ajax({
+        url: "/create-online-payment",
+        type: "POST",
+        data: {
+            amount: amount,
+        },
+        success: function (res) {
+            if (res.success) {
+                var options = {
+                    "key": res.key_id,
+                    "amount": res.amount,
+                    "currency": "INR",
+                    "description": res.description,
+                    "image": "https://dummyimage.com/600x400/000/fff",
+                    "order_id": res.order_id,
+                    "handler": function (response) {
+                        // After successful payment, call the server to verify the payment
+                        $.ajax({
+                            url: "/create-money",
+                            type: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({ paymentID: response.razorpay_payment_id,amount }),
+                            success: function (verificationResponse) {
+                                if (verificationResponse.success) {
+                                    window.location.href = "/wallet";
+                                } else {
+                                    Swal.fire("Oops!", "Payment verification failed", "error");
+                                }
+                            },
+                            error: function () {
+                                Swal.fire("Oops!", "Error verifying payment", "error");
+                            }
+                        });
+                    },
+                    "prefill": {
+                        "contact": res.contact,
+                        "name": res.name,
+                        "email": res.email
+                    },
+                    "notes": {
+                        "description": res.description
+                    },
+                    "theme": {
+                        "color": "#2300a3"
+                    }
+                };
+                var razorpayObject = new Razorpay(options);
+                razorpayObject.on('payment.failed', function (response) {
+                    Swal.fire("Oops!", "Sorry, the payment failed. Please try again", "error");
+                });
+                razorpayObject.open();
+            } else {
+                alert(res.msg);
+            }
+        },
+        error: function () {
+            Swal.fire("Oops!", "Error creating online payment", "error");
+        }
+    });
+} else {
+    Swal.fire("Ooho!", "Please Select Address", "error");
+}
+});
+</script>

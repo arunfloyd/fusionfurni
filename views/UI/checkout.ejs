@@ -110,6 +110,34 @@
                                       </div>
                                 </div>
                             </div>
+                            <br>
+
+                            <h3 class="h6 mb-0"><a class="d-block" data-bs-toggle="collapse" href="#collapsepaypals1" role="button" aria-expanded="false" aria-controls="collapsepaypals">Wallet ↓</a></h3>
+                            <div class="collapse" id="collapsepaypals1">
+                                <div class="py-2">
+                                    <p class="mb-0">
+                                        A wallet in e-commerce provides users with a convenient and secure method of making digital payments. Users can load funds into their wallet, and then use these funds to make purchases on the platform without the need to enter credit card details or other payment information for each transaction.
+                                    </p>
+                                    <!-- Radio button for Online Payment -->
+                                    <div class="wallet">
+                                        <% if (balance && balance.balance !== undefined) { %>
+                                          <p><strong style="font-size: 18px; color: #1c81c5;">Balance Amount: ₹<%= balance.balance %></strong></p>
+                                      
+                                          <% if (cart && cart.cartTotal !== undefined && cart.cartTotal > (balance.balance || 0)) { %>
+                                            <p style="color: red;">Sorry !! insufficient balance </p>
+                                            <a href="/wallet" class="styled-link">Click here to LOAD Wallet</a>
+                                          <% } else { %>
+                                            <input class="form-check-input" type="radio" name="paymentMethod" id="codRadio3" value="Wallet" required>
+                                            <label class="form-check-label" for="codRadio3"> Wallet</label>
+                                          <% } %>
+                                      
+                                        <% } else { %>
+                                          <p style="color: red;">Oho !! Unable to retrieve balance information</p>
+                                        <% } %>
+                                      </div>
+                                      
+                                </div>
+                            </div>
                             
 
                         </div>
@@ -286,6 +314,16 @@ $(document).ready(function() {
       // ...
     });
   });
+  $(document).ready(function () {
+    $('#codRadio3').change(function () {
+        if ($(this).is(':checked')) {
+            $('#placeOrderGroup').show(); // Show the "Place Order" button
+        } else {
+            $('#placeOrderGroup').hide(); // Hide the "Place Order" button
+        }
+    });
+});
+
 
     $(document).ready(function () {
         $("#codRadio2").change(function () {
@@ -306,6 +344,7 @@ $(document).ready(function() {
                     $("#pay-button").prop("disabled", true);
                 }
             });
+            
 
         $('#pay-button').click(function(e){
         e.preventDefault();
