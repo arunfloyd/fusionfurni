@@ -6,14 +6,16 @@ const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const authRouter = require("./routes/authRoute");
 const adminRouter = require("./routes/adminRoute");
+const couponRouter = require("./routes/couponRoute");
+
 const dbConnect = require("./config/dbConnect");
 const productRouter = require("./routes/productRoute");
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
 const categoryRouter = require("./routes/categoryRoute");
 const cors = require("cors");
 const sessions = require("express-session");
 const flash = require("express-flash");
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 const app = express();
 
 dbConnect();
@@ -46,6 +48,8 @@ app.use("", authRouter);
 app.use("/admin", adminRouter);
 app.use("/admin/product", productRouter);
 app.use("/admin/category", categoryRouter);
+app.use("/admin/coupon", couponRouter);
+
 app.use(function (req, res, next) {
   next(createError(404));
 });
