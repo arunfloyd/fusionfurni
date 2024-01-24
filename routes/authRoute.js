@@ -48,6 +48,7 @@ const {
   verifyRazopay,
   loadWallet,
   loadMoney,
+  applyCoupon,
 
 } = require("../controller /userController");
 const {
@@ -73,13 +74,13 @@ router.get("/contact", contact);
 router.get("/product/:id", product);
 router.get("/blog", blog);
 router.get("/services", services);
-router.get("/cart", cart);
 router.get("/about", about);
 router.get("/wishlist", userMiddleware, isBlocked, loadWishlist);
 router.post("/add-wishlist", userMiddleware, isBlocked, createWishlist);
 router.post("/remove-wish", userMiddleware, isBlocked, removeWish);
 router.post("/cart", userMiddleware, isBlocked, userCart);
 router.get("/view-cart", userMiddleware, isBlocked, getUserCart);
+router.post("/apply-coupon", userMiddleware, isBlocked, applyCoupon);
 router.post("/remove-item", userMiddleware, removeItem);
 router.post("/update-quantity/:productId", userMiddleware, updateQuantity);
 router.get("/check-update", userMiddleware, updateQuantity);

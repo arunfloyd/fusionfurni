@@ -7,7 +7,7 @@ const morgan = require("morgan");
 const authRouter = require("./routes/authRoute");
 const adminRouter = require("./routes/adminRoute");
 const couponRouter = require("./routes/couponRoute");
-
+const offerRouter = require("./routes/offerRoute");
 const dbConnect = require("./config/dbConnect");
 const productRouter = require("./routes/productRoute");
 const bodyParser = require("body-parser");
@@ -49,6 +49,8 @@ app.use("/admin", adminRouter);
 app.use("/admin/product", productRouter);
 app.use("/admin/category", categoryRouter);
 app.use("/admin/coupon", couponRouter);
+app.use("/admin/offers", offerRouter);
+
 
 app.use(function (req, res, next) {
   next(createError(404));

@@ -35,7 +35,7 @@
                       <% } %>
                       
                       
-                      
+        
                     <thead>
                         <tr>
                             <th class="product-thumbnail">Image</th>
@@ -124,12 +124,56 @@
                         </div>
                         <div class="col-md-8 mb-3 mb-md-0">
                             <input type="text" class="form-control py-3" id="coupon" placeholder="Coupon Code">
+                            <div id="couponError" class="text-danger"></div>
                         </div>
                         <div class="col-md-4">
-                            <button class="btn btn-black">Apply Coupon</button>
+                            <button class="btn btn-black" id="applyCouponBtn">Apply Coupon</button>
+                        </div>
+                    </div>
+                    
+                    <br>
+                
+                    <div class="col-md-4">
+                        <button class="btn btn-black" data-toggle="modal" data-target="#couponModal">Available Coupons</button>
+                    </div>
+                </div>
+                <!-- Modal -->
+<div class="modal fade" id="couponModal" tabindex="-1" role="dialog" aria-labelledby="couponModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="couponModalLabel">Available Coupons</h5>
+               
+            </div>
+            <!-- Inside your modal body -->
+<!-- Inside your modal body -->
+<div class="modal-body">
+    <% if (coupon.length > 0) { %>
+        <div class="row">
+            <% coupon.forEach(function(coupon) { %>
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= coupon.couponName %></h5>
+                            <p class="card-text">CODE: <%= coupon.couponCode %></p>
+                            <p class="card-text">Discount: ₹ <%= coupon.discountAmount %></p>
                         </div>
                     </div>
                 </div>
+            <% }); %>
+        </div>
+    <% } else { %>
+        <p>No Coupons</p>
+    <% } %>
+</div>
+
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
                 <div class="col-md-6 pl-5">
                     <div class="row justify-content-end">
                         <div class="col-md-7">
@@ -143,7 +187,7 @@
                                     <span class="text-black">Subtotal</span>
                                 </div>
                                 <div class="col-md-6 text-right">
-                                    <strong class="text-black">₹<%= cart.cartTotal %></strong>
+                                    <strong class="text-black">₹<%= Number(cart.cartTotal) + Number(cart.totalAfterDiscount ?? 0) %></strong>
                                 </div>
                             </div>
                             <div class="row mb-3">
@@ -151,7 +195,7 @@
                                     <span class="text-black">Coupon Discount</span>
                                 </div>
                                 <div class="col-md-6 text-right">
-                                    <strong class="text-black">₹00.00</strong>
+                                    <strong class="text-black">₹<%= cart.totalAfterDiscount %></strong>
                                 </div>
                             </div>
                             <div class="row mb-5">
@@ -199,10 +243,43 @@
         </div>
     </div>
 
+<!-- Include Axios from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-      
-      
-<script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>   
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var applyCouponBtn = document.getElementById("applyCouponBtn");
+        var couponInput = document.getElementById("coupon");
+        var couponError = document.getElementById("couponError");
+
+        applyCouponBtn.addEventListener("click", function () {
+            var couponCode = couponInput.value;
+            couponError.textContent = "";
+
+            if (couponCode.length !== 8) {
+                couponError.textContent = "Please Enter a Valid Coupon Code";
+            } else {
+                axios.post("/apply-coupon", { couponCode: couponCode })
+  .then(function (response) {
+    console.log("Coupon applied successfully");
+    window.location.reload()
+    console.log(response.data.cart);
+  })
+  .catch(function (error) {
+    Swal.fire({
+    icon: 'error',
+    title: 'Error',
+    text: error.response.data.message,
+  });
+  });
+
+            }
+        });
+    });
     document.addEventListener('DOMContentLoaded', () => {
         const quantityDropdowns = document.querySelectorAll('.quantity');
 
@@ -264,7 +341,6 @@ if (checkoutButton) {
     });
 </script>
 
-</script>
 
 
 

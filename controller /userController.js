@@ -8,6 +8,7 @@ const Product = require("../models/productModel");
 const nodemailer = require("nodemailer");
 const Cart = require("../models/cartModel");
 const Category = require("../models/categoryModel");
+const Coupon = require("../models/couponModel")
 const Otp = require("../models/otpModel");
 const bcrypt = require("bcrypt");
 const Order = require("../models/orderModel");
@@ -401,6 +402,8 @@ const about = asyncHandler(async (req, res) => {
 });
 const cart = asyncHandler(async (req, res) => {
   try {
+    const coupon = await Coupon.find({})
+    console.log(coupon)
     res.render("UI/cart");
   } catch (error) {
     // throw new Error("Shop Can't Access")
@@ -677,14 +680,95 @@ const checkout = asyncHandler(async (req, res) => {
 const getUserCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   try {
+    const coupon = await Coupon.find({})
     const cart = await Cart.findOne({ orderby: _id }).populate(
       "products.product"
     );
-    res.render("UI/cart", { cart: cart, message: req.flash("message") });
+    res.render("UI/cart", { cart: cart,coupon, message: req.flash("message") });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+const applyCoupon = asyncHandler(async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const { couponCode } = req.body;
+    const cart = await Cart.findOne({ orderby: _id });
+    const couponEntered = await Coupon.findOne({ couponCode: couponCode });
+    const alreadyUsedCoupon = await Coupon.findOne({ usersUsed: _id });
+
+    console.log(cart);
+    console.log(couponEntered);
+
+    if (!couponEntered) {
+      // Coupon is not valid
+      return res.status(400).json({ message: 'Invalid coupon code' });
+    }
+    if (alreadyUsedCoupon && alreadyUsedCoupon._id.equals(couponEntered._id)) {
+      // User has already used the same coupon
+      return res.status(400).json({ message: 'You have already used this coupon' });
+    }
+    if (cart.totalAfterDiscount !== null) {
+      // User has already applied a coupon to the cart
+      return res.status(400).json({ message: 'You have already applied a coupon to the cart' });
+    }
+
+   
+    // Apply the coupon and update the cart
+    const couponUpdate = await Coupon.findByIdAndUpdate(
+      couponEntered._id,
+      { $push: { usersUsed: _id } },
+      { new: true }
+    );
+
+    const cartUpdate = await Cart.findByIdAndUpdate(
+      cart._id,
+      {
+        $set: { totalAfterDiscount: couponEntered.discountAmount },
+        $inc: { cartTotal: -couponEntered.discountAmount }
+      },
+      { new: true }
+    );
+
+    // Send success response to Axios
+    return res.status(200).json({ message: 'Coupon applied successfully', cart: cartUpdate });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+
+// const applyCoupon = asyncHandler(async(req,res)=>{
+//   try{
+//     const {_id}=req.user
+//     const { couponCode } = req.body;
+//     const cart = await Cart.findOne({orderby:_id})
+// const couponEntered = await Coupon.findOne({couponCode:couponCode}) ;
+// console.log(cart)
+// console.log(couponEntered)
+
+// if(couponEntered){
+//   const couponUpdate = await Coupon.findByIdAndUpdate(
+//     couponEntered._id,
+//     { $push: { usersUsed: _id } }, 
+//     { new: true });
+//     const cartUpdate = await Cart.findByIdAndUpdate(
+//       cart._id,
+//       {
+//         $set: { totalAfterDiscount: couponEntered.discountAmount },
+//         $inc: { cartTotal: -couponEntered.discountAmount }
+//       },
+//       { new: true } 
+//     );
+//     }else{
+//   res.json('message',"Not a valid ")
+// }
+//  }catch(error){
+//     console.log(error)
+//     throw new Error(error)
+//   }
+// });
 const verifyRazopay = asyncHandler(async (req, res) => {
   try {
     const rawBody = req.body;
@@ -1483,4 +1567,5 @@ module.exports = {
   verifyRazopay,
   loadWallet,
   loadMoney,
+  applyCoupon
 };

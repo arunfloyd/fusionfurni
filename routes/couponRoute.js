@@ -1,8 +1,17 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const {loadAddCoupon, addCoupon} = require('../controller /couponContoller')
+const {
+  loadAddCoupon,
+  addCoupon,
+  deleteCoupon,
+  loadEditCoupon,
+  editCoupon,
+} = require("../controller /couponContoller");
 
-router.get('/',loadAddCoupon);
-router.post('/',addCoupon);
+router.get("/", loadAddCoupon);
+router.post("/", addCoupon);
+router.delete("/delete/:id", deleteCoupon);
+router.get("/:id", loadEditCoupon);
+router.put("/:id", editCoupon);
 
-module.exports =router
+module.exports = router;

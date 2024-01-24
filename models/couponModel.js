@@ -20,11 +20,7 @@ const couponSchema = new mongoose.Schema({
   },
   expiryDate: {
     type: Date,
-    default: function () {
-      const now = new Date();
-      now.setDate(now.getDate() + 30);
-      return now;
-    },
+    default:  new Date('9999-12-31T23:59:59.999Z')
   },
    
   isActive: {

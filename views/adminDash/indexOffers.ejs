@@ -1,0 +1,443 @@
+<%- include('header.ejs') %>
+
+<body>
+  <div class="screen-overlay"></div>
+  <%- include('navbar-aside.ejs') %>
+  <main class="main-wrap">
+    <section class="content-main">
+      <div class="content-header">
+        <div>
+          <h2 class="content-title card-title">Offers</h2>
+          <p>Add, edit, or delete offers</p>
+        </div>
+        <div>
+          <input
+            type="text"
+            placeholder="Search Categories"
+            class="form-control bg-white"
+          />
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4">
+            <h3>Product Offers</h3>
+
+              <form id="categoryForm" action="/admin/coupon" method="post">
+                <div class="mb-4">
+                  <label for="product_name" class="form-label"
+                    >Offer Name</label
+                  >
+                  <input
+                    type="text"
+                    placeholder="Type here"
+                    class="form-control"
+                    id="offer"
+                    name="offer_name"
+                    minlength="3"
+                    maxlength="50"
+                  />
+                  <div id="nameError" class="text-danger"></div>
+                </div>
+                <div class="mb-4">
+                    <label for="productOrCategory" class="form-label">Product or Category</label>
+                    <select class="form-select" id="productOrCategory" name="product_or_category">
+                        <% if (product && product.length > 0) { %>
+                            <% for (var i = 0; i < product.length; i++) { %>
+                                <option value="<%= product[i].title %>"><%= product[i].title %></option>
+                            <% } %>
+                        <% } else { %>
+                            <option value="product">No Product Available</option>
+                        <% } %>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                  <label for="couponCode" class="form-label"> Percentage Of Discount</label>
+                  <input
+                    type="text"
+                    placeholder="Type here"
+                    class="form-control"
+                    id="percentage"
+                    name="percentage"
+                    minlength="3"
+                    maxlength="50"
+                  />
+                </div>
+                <div id="couponCodeError" class="text-danger"></div>
+
+                <div class="mb-4">
+                  <label for="product_slug" class="form-label"
+                    >Discount Amount</label
+                  >
+                  <input
+                    type="number"
+                    placeholder="Type here"
+                    class="form-control"
+                    id="product_slug"
+                    name="discountAmount"
+                    minlength="3"
+                    maxlength="50"
+                  />
+                  <div id="slugError" class="text-danger"></div>
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label">Description</label>
+                  <input
+                    placeholder="Type here"
+                    class="form-control"
+                    id="offer_description"
+                    name="description"
+                  />
+                  <div id="descriptionError" class="text-danger"></div>
+                </div>
+                <div class="mb-4">
+                    <label for="product_slug" class="form-label"
+                      >Starting Date</label
+                    >
+                    <input
+                      type="date"
+                      placeholder="Type here"
+                      class="form-control"
+                      id="product_slug"
+                      name="startingDate"
+                      minlength="3"
+                      maxlength="50"
+                      required
+                    />
+                    <div id="product_slugs" class="text-danger"></div>
+                  </div>
+                <div class="mb-4">
+                  <label for="product_slug" class="form-label"
+                    >Expiry Date</label
+                  >
+                  <input
+                    type="date"
+                    placeholder="Type here"
+                    class="form-control"
+                    id="product_slug"
+                    name="expiryDate"
+                    minlength="3"
+                    maxlength="50"
+                    required
+                  />
+                  <div id="product_slugs" class="text-danger"></div>
+                </div>
+                <div class="d-grid">
+                  <button
+                    type="button"
+                    class="btn btn-primary edit-coupon-button"
+                    id="edit-coupon-button"
+                    onclick="validateForm()"
+                  >
+                    Add Coupon
+                  </button>
+                </div>
+             
+              </form>
+            </div>
+           
+            
+               
+            <div class="col-md-4">
+                <h3>Category Offers</h3>
+                <form id="categoryForm" action="/admin/coupon" method="post">
+                  <div class="mb-4">
+                    <label for="product_name" class="form-label"
+                      >Coupon Title</label
+                    >
+                    <input
+                      type="text"
+                      placeholder="Type here"
+                      class="form-control"
+                      id="product_name"
+                      name="couponName"
+                      minlength="3"
+                      maxlength="50"
+                    />
+                    <div id="nameError" class="text-danger"></div>
+                  </div>
+                  <div class="mb-4">
+                    <label for="couponCode" class="form-label">Coupon Code</label>
+                    <input
+                      type="text"
+                      placeholder="Type here"
+                      class="form-control"
+                      id="couponCode"
+                      name="couponCode"
+                      minlength="3"
+                      maxlength="50"
+                    />
+                  </div>
+                  <div id="couponCodeError" class="text-danger"></div>
+  
+                  <div class="mb-4">
+                    <label for="product_slug" class="form-label"
+                      >Discount Amount</label
+                    >
+                    <input
+                      type="number"
+                      placeholder="Type here"
+                      class="form-control"
+                      id="product_slug"
+                      name="discountAmount"
+                      minlength="3"
+                      maxlength="50"
+                    />
+                    <div id="slugError" class="text-danger"></div>
+                  </div>
+  
+                  <div class="mb-4">
+                    <label class="form-label">Description</label>
+                    <input
+                      placeholder="Type here"
+                      class="form-control"
+                      id="product_description"
+                      name="couponDescription"
+                    />
+                    <div id="descriptionError" class="text-danger"></div>
+                  </div>
+                  <div class="mb-4">
+                    <label for="product_slug" class="form-label"
+                      >Expiry Date</label
+                    >
+                    <input
+                      type="date"
+                      placeholder="Type here"
+                      class="form-control"
+                      id="product_slug"
+                      name="expiryDate"
+                      minlength="3"
+                      maxlength="50"
+                      required
+                    />
+                    <div id="product_slugs" class="text-danger"></div>
+                  </div>
+                  <div class="d-grid">
+                    <button
+                      type="button"
+                      class="btn btn-primary edit-coupon-button"
+                      id="edit-coupon-button"
+                      onclick="validateForm()"
+                    >
+                      Add Coupon
+                    </button>
+                  </div>
+               
+                </form>
+              </div>
+              <div class="col-md-4">
+                <h3>Sessional Offers</h3>
+                <form id="categoryForm" action="/admin/coupon" method="post">
+                  <div class="mb-4">
+                    <label for="product_name" class="form-label"
+                      >Coupon Title</label
+                    >
+                    <input
+                      type="text"
+                      placeholder="Type here"
+                      class="form-control"
+                      id="product_name"
+                      name="couponName"
+                      minlength="3"
+                      maxlength="50"
+                    />
+                    <div id="nameError" class="text-danger"></div>
+                  </div>
+                  <div class="mb-4">
+                    <label for="couponCode" class="form-label">Coupon Code</label>
+                    <input
+                      type="text"
+                      placeholder="Type here"
+                      class="form-control"
+                      id="couponCode"
+                      name="couponCode"
+                      minlength="3"
+                      maxlength="50"
+                    />
+                  </div>
+                  <div id="couponCodeError" class="text-danger"></div>
+  
+                  <div class="mb-4">
+                    <label for="product_slug" class="form-label"
+                      >Discount Amount</label
+                    >
+                    <input
+                      type="number"
+                      placeholder="Type here"
+                      class="form-control"
+                      id="product_slug"
+                      name="discountAmount"
+                      minlength="3"
+                      maxlength="50"
+                    />
+                    <div id="slugError" class="text-danger"></div>
+                  </div>
+  
+                  <div class="mb-4">
+                    <label class="form-label">Description</label>
+                    <input
+                      placeholder="Type here"
+                      class="form-control"
+                      id="product_description"
+                      name="couponDescription"
+                    />
+                    <div id="descriptionError" class="text-danger"></div>
+                  </div>
+                  <div class="mb-4">
+                    <label for="product_slug" class="form-label"
+                      >Expiry Date</label
+                    >
+                    <input
+                      type="date"
+                      placeholder="Type here"
+                      class="form-control"
+                      id="product_slug"
+                      name="expiryDate"
+                      minlength="3"
+                      maxlength="50"
+                      required
+                    />
+                    <div id="product_slugs" class="text-danger"></div>
+                  </div>
+                  <div class="d-grid">
+                    <button
+                      type="button"
+                      class="btn btn-primary edit-coupon-button"
+                      id="edit-coupon-button"
+                      onclick="validateForm()"
+                    >
+                      Add Coupon
+                    </button>
+                  </div>
+               
+                </form>
+              </div>
+            
+          </div>
+        </div>
+      </div>
+    </section>
+    <%- include('footer.ejs') %>
+  </main>
+</body>
+<!-- <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+  function validateForm() {
+    var isValid = true;
+
+    // Validate Coupon Title
+    var titleInput = $("#product_name");
+    var titleError = $("#nameError");
+    var titleValue = titleInput.val().trim();
+    if (titleValue.length < 3 || titleValue.length > 50) {
+      titleError.text("Title should be between 3 and 50 characters.");
+      isValid = false;
+    } else {
+      titleError.text("");
+    }
+
+    // Validate Coupon Code
+    var couponCodeInput = $("#couponCode");
+    var couponCodeError = $("#couponCodeError");
+    var couponCodeValue = couponCodeInput.val().trim();
+    var couponCodeRegex = /^[A-Z]{4}\d{4}$/;
+
+    if (!couponCodeRegex.test(couponCodeValue)) {
+      couponCodeError.text(
+        "Coupon code should have 8 characters, starting with 4 capital alphabetic and followed by 4 numeric."
+      );
+      isValid = false;
+    } else {
+      couponCodeError.text("");
+    }
+
+    // Validate Discount Amount
+    var amountInput = $("#product_slug");
+    var amountError = $("#slugError");
+    var amountValue = amountInput.val().trim();
+    if (isNaN(amountValue) || amountValue <= 49) {
+      amountError.text(
+        "Discount amount should be a valid number greater than 50."
+      );
+      isValid = false;
+    } else {
+      amountError.text("");
+    }
+
+    // Validate Description
+    var descriptionInput = $("#product_description");
+    var descriptionError = $("#descriptionError");
+    var descriptionValue = descriptionInput.val().trim();
+    var wordCount = descriptionValue.split(/\s+/).filter(function (word) {
+      return word.length > 0;
+    }).length;
+
+    if (wordCount < 5) {
+      descriptionError.text("Description should have at least 5 words.");
+      isValid = false;
+    } else {
+      descriptionError.text("");
+    }
+    var expiryDateInput = $("#product_slug");
+var slugError = $("#product_slugs");
+
+expiryDateInput.on("change", function () {
+  var selectedDate = $(this).val();
+
+  if (!selectedDate) {
+    // Display an error message if no date is selected
+    slugError.text("Expiry date is required.");
+  } else {
+    var expiryDate = new Date(selectedDate);
+    var currentDate = new Date();
+
+    if (expiryDate <= currentDate) {
+      // Display an error message if the selected date is not greater than today
+      slugError.text("Expiry date should be greater than today's date.");
+    } else {
+      // Clear the error message if the date is valid
+      slugError.text("");
+    }
+  }
+});
+
+
+
+    // You can add additional validations for other fields if needed
+
+    if (isValid) {
+      // If all validations pass, submit the form
+      $("#categoryForm").submit();
+    }
+  }
+</script>
+<script>
+  $(document).ready(function () {
+    // Event handler for the delete link
+    $(".delete-link").on("click", function (e) {
+      e.preventDefault(); // Prevent the default link behavior
+
+      // Get the coupon ID from the data attribute
+      var couponId = $(this).data("coupon-id");
+
+      // Confirm the delete action
+      if (confirm("Are you sure you want to delete this item?")) {
+        // Make an AJAX request to delete the item
+        $.ajax({
+          type: "DELETE",
+          url: "/admin/coupon/delete/" + couponId,
+          success: function (response) {
+            console.log("Item deleted successfully");
+            window.location.reload();
+          },
+          error: function (error) {
+            console.error("Error deleting item:", error);
+          },
+        });
+      }
+    });
+  });
+</script> -->

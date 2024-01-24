@@ -1,0 +1,151 @@
+<%- include('header.ejs') %>
+
+<body>
+  <div class="screen-overlay"></div>
+  <%- include('navbar-aside.ejs') %>
+  <main class="main-wrap">
+    <section class="content-main">
+      <div class="content-header">
+        <div>
+          <h2 class="content-title card-title">Edit Coupons</h2>
+          <p>Add, edit, or delete a Coupon</p>
+        </div>
+        <div>
+          <input
+            type="text"
+            placeholder="Search Categories"
+            class="form-control bg-white"
+          />
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3">
+              <form id="categoryForm" action="/admin/coupon" method="post">
+                <div class="mb-4">
+                  <label for="product_name" class="form-label"
+                    >Coupon Title</label
+                  >
+                  <input
+                    type="text"
+                    placeholder="Type here"
+                    class="form-control"
+                    id="product_name"
+                    name="couponName"
+                    minlength="3"
+                    maxlength="50"
+                    value="<%=coupon.couponName%>"
+                  />
+                  <div id="nameError" class="text-danger"></div>
+                </div>
+                <div class="mb-4">
+                  <label for="product_slug" class="form-label"
+                    >Coupon Code</label
+                  >
+                  <input
+                    type="text"
+                    placeholder="Type here"
+                    class="form-control"
+                    id="product_slug"
+                    name="couponCode"
+                    minlength="3"
+                    maxlength="50"
+                    value="<%=coupon.couponCode%>"
+                  />
+                  <div id="slugError" class="text-danger"></div>
+                </div>
+                <div class="mb-4">
+                  <label for="product_slug" class="form-label"
+                    >Discount Amount</label
+                  >
+                  <input
+                    type="number"
+                    placeholder="Type here"
+                    class="form-control"
+                    id="product_slug"
+                    name="discountAmount"
+                    minlength="3"
+                    maxlength="50"
+                    value="<%=coupon.discountAmount%>"
+                  />
+                  <div id="slugError" class="text-danger"></div>
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label">Description</label>
+                  <input
+                    placeholder="Type here"
+                    class="form-control"
+                    id="product_description"
+                    name="couponDescription"
+                    value="<%=coupon.couponDescription%>"
+                  />
+                  <div id="descriptionError" class="text-danger"></div>
+                </div>
+                <div class="mb-4">
+                  <label for="product_slug" class="form-label"
+                    >Expiry Date</label
+                  >
+                  <input
+                    type="date"
+                    placeholder="Type here"
+                    class="form-control"
+                    id="product_slug"
+                    name="expiryDate"
+                  
+                    value="<%=coupon.expiryDate%>"
+                  />
+                  <div id="slugError" class="text-danger"></div>
+                </div>
+                <div class="d-grid">
+                  <button
+                    type="button"
+                    class="btn btn-primary edit-coupon-button"
+                    id="edit-coupon-button"
+                  >
+                    Edit Coupon
+                  </button>
+                </div>
+                <% if(message && message.length > 0) { %>
+                    <p style="color: rgb(208, 6, 6)"><%= message %></p>
+                    <% } %>
+                <input type="hidden" name="id" id="coupon_id" value="<%=coupon._id%>"
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <script>
+      
+      $(document).ready(function () {
+  $("#edit-coupon-button").on("click", function () {
+    var couponId = $("#coupon_id").val();
+    var formData = $("#categoryForm").serialize();
+    console.log("couponId:", couponId);
+    console.log("formData:", formData);
+
+    $.ajax({
+      type: "PUT",
+      url: "/admin/coupon/" + couponId,
+      data: formData,
+      success: function (response) {
+        console.log("Coupon updated successfully");
+        window.location.href = '/admin/coupon';;
+      },
+      error: function (error) {
+        console.error("Error updating coupon:", error);
+        window.location.href = '/admin/coupon';;
+      },
+    });
+  });
+});
+
+
+    </script>
+    <%- include('footer.ejs') %>
+  </main>
+</body>
