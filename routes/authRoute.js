@@ -49,6 +49,7 @@ const {
   loadWallet,
   loadMoney,
   applyCoupon,
+  userRegister,
 
 } = require("../controller /userController");
 const {
@@ -59,8 +60,10 @@ const {
 const router = express.Router();
 router.get("/login", noCacheHeaders, loadlogin);
 router.post("/login", loginUserCtrl);
-router.get("/register", loginUserCtrl);
+router.get("/register", userRegister);
 router.post("/register", createUser);
+router.get('/register/:profileId', userRegister);
+router.post("/register/:profileId", createUser);
 router.get("/forget-password", loadForgetPassword);
 router.post("/forget-password", forgotPasswordToken);
 router.get("/reset-password/:token", loadChangePassword);

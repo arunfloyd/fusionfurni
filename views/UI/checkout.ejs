@@ -191,6 +191,7 @@
             <div class="col-md-6">
                 <div class="row mb-5">
                     <div class="col-md-12">
+                        
                         <h2 class="h3 mb-3 text-black">Order Summary</h2>
                         <div class="p-3 p-lg-5 border bg-white">
                             <table class="table site-block-order-table mb-5">
@@ -206,7 +207,9 @@
                                                 <td><%= productItem.product.title %></td>
 
                                                 <td> <strong class="mx-2">x</strong> <%= productItem.quantity %></td>
-                                                <td><%= productItem.product.price %> <strong class="mx-2">x</strong> <%= productItem.quantity %> = <%= productItem.product.price * productItem.quantity %></td>
+                                                <td><%= productItem.price %> <strong class="mx-2">x</strong> <%= productItem.quantity %> = <%= productItem.price * productItem.quantity %></td>
+                                                
+
                                             </tr>
                                             
                                         <% }); %>
@@ -219,8 +222,20 @@
                                         </tr>
                                     <% } %>
                                     <tr>
+                                        <td>Discount</td>
+                                    
+                                        <% if (cart.totalAfterDiscount) { %>
+                                            <td><strong class="mx-2">x</strong> 1</td>
+                                            <td><%= cart.totalAfterDiscount %></td>
+                                        <% } else { %>
+                                            <td>No Discount Coupon Applied</td>
+                                        <% } %>
+                                    
+                                        <td><strong class="mx-2"></td>
+                                    </tr>
+                                    <tr>
                                         <td class="text-black font-weight-bold"><strong>Order Total</strong></td>
-                                        <td class="text-black font-weight-bold"><strong>₹ <%=cart.cartTotal%></strong></td>
+                                        <td class="text-black font-weight-bold"><strong>₹<%=cart.cartTotal%></strong></td>
                                     </tr>
                                 </tbody>
                             </table>

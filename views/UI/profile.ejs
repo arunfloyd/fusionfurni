@@ -1,13 +1,58 @@
 <%- include('../layout/header.ejs') %>
+    
+<style>
+  
+    .containers {
+        text-align: center;
+        max-width: 400px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin: 0 auto; /* Center the container horizontally */
+            margin-top: 10vh; 
+    }
 
+    .h4 {
+        text-decoration: underline;
+        color: #333;
+    }
+
+    .span {
+        color: #ff5722; /* Highlighted color for RS:1000/- */
+        font-weight: bold;
+    }
+
+   .p {
+        margin: 15px 0;
+        color: #666;
+        font-size: 16px;
+    }
+
+    .a {
+        text-decoration: none;
+    }
+
+    .gradient-button {
+        padding: 10px 15px;
+        background: linear-gradient(to right, #ff7e5f, #feb47b);
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        display: inline-block;
+        margin-top: 15px;
+    }
+</style>
 
 <!-- Start Contact Form -->
 <div class="untree_co-section">
     <div class="container">
-        <h3>Personal Information</h3>
+        <h3>Personal Information & Earn Some Rewards </h3>
         <div class="block">
+        
             
-            <div class="row justify-content-center">
+            </a>            <div class="row justify-content-center">
                 <div class="col-md-8 col-lg-8 pb-4">
                     <form action="/profile" method="post" id="mainForm">
                       <div class="row">
@@ -126,13 +171,36 @@
                 </div>
             </div>
         </div>
+        <div class="text-center">
+        <div class="containers">
+            <h4 class="h4">Refer And Earn upto <span class="span">RS:1000/-</span></h4>
+            <p class="p">Share this link with your friend, and after their successful signup, you will get Rs: 100 in your wallet.</p>
+            <p class="p">So Let's Go...</p>
+            <a href="#" class="a" onclick="copyLink()"><button class="btn btn-warning">Share The Link</button> </a>        </div>
+    </div>  
     </div>
 </div>
 </div>
 <%- include('../layout/footer.ejs') %>
 
 <!-- End Contact Form -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+<script>
+    function copyLink() {
+        var linkText = "http://localhost:3000/register/<%= profile._id %>";
+        var tempInput = document.createElement("input");
+        tempInput.value = linkText;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+
+        alert("Link copied to clipboard!");
+    }
+</script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
      function editAddress(address) {
@@ -153,20 +221,16 @@
 
         $(".remove-address").on("click", function (event) {
             event.preventDefault();
-            // Ask for confirmation
             const confirmed = confirm("Are you sure you want to remove this address?");
             if (confirmed) {
-                // Proceed with the removal action
                 const addressId = $(this).data("address-id");
                 window.location.href = "/remove-address/" + addressId;
             }
         });
         $(".edit-address").on("click", function (event) {
             event.preventDefault();
-            // Ask for confirmation
             const confirmed = confirm("Are you sure you want to remove this address?");
             if (confirmed) {
-                // Proceed with the removal action
                 const addressId = $(this).data("address-id");
                 window.location.href = "/edit-address/" + addressId;
             }

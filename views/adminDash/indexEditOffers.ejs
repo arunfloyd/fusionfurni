@@ -1,0 +1,302 @@
+<%- include('header.ejs') %>
+<style>
+  /* Add some styles for better appearance */
+  label {
+      display: block;
+      margin-bottom: 10px;
+  }
+
+  .form-select {
+      margin-bottom: 10px;
+  }
+</style>
+<body>
+  <div class="screen-overlay"></div>
+  <%- include('navbar-aside.ejs') %>
+  <main class="main-wrap">
+    <section class="content-main">
+      <div class="content-header">
+        <div>
+          <h2 class="content-title card-title">Offers</h2>
+          <p>Add, edit, or delete offers</p>
+        </div>
+        <div>
+          <input
+            type="text"
+            placeholder="Search Categories"
+            class="form-control bg-white"
+          />
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3">
+            <h3>Product Offers</h3>
+            
+              <form id="categoryForm" action="/admin/offers" method="post">
+                <div class="mb-4">
+                  <label for="product_name" class="form-label"
+                    >Offer Name</label
+                  >
+                  <input
+  type="text"
+  placeholder="Type here"
+  class="form-control"
+  id="offer_name"  
+  name="offer_name"
+  value=" <%= offer.offer.offer_name%> "
+/>
+                  <div id="nameError" class="text-danger"></div>
+                </div>
+              
+              <% if (offer.associationType === 'Category') { %>
+                <div class="mb-4">
+                    <label for="category" class="form-label"> Category</label>
+                    <select class="form-select" id="category" name="category">
+                        <% if (category && category.length > 0) { %>
+                            <% for (var i = 0; i < category.length; i++) { %>
+                                <option value="<%= category[i].title %>" <%= offer.associationId == category[i]._id ? 'selected' : '' %>><%= category[i].title %></option>
+                            <% } %>
+                        <% } else { %>
+                            <option value="product">No Product Available</option>
+                        <% } %>
+                    </select>
+                </div>
+            <% } else { %>
+                <div class="mb-4">
+                    <label for="product" class="form-label">Product</label>
+                    <select class="form-select" id="product" name="product">
+                        <% if (product && product.length > 0) { %>
+                            <% for (var i = 0; i < product.length; i++) { %>
+                                <option value="<%= product[i].title %>" <%= offer.associationId == product[i]._id ? 'selected' : '' %>><%= product[i].title %></option>
+                            <% } %>
+                        <% } else { %>
+                            <option value="product">No Product Available</option>
+                        <% } %>
+                    </select>
+                </div>
+            <% } %>
+            
+                
+                
+                <div class="mb-4">
+                  <label for="couponCode" class="form-label"> Percentage Of Discount</label>
+                  <input
+                    type="text"
+                    placeholder="Type here"
+                    class="form-control"
+                    id="percentage"
+                    name="percentage"
+                    value="<%=offer.offer.percentage%>"
+                    
+                  />
+                </div>
+                <div id="couponCodeError" class="text-danger"></div>
+
+          
+
+                <div class="mb-4">
+                  <label class="form-label">Description</label>
+                  <input
+                    placeholder="Type here"
+                    class="form-control"
+                    id="offer_description"
+                    name="description"
+                    value="<%=offer.offer.description%>"
+
+                  />
+                  <div id="descriptionError" class="text-danger"></div>
+                </div>
+                <div class="mb-4">
+                    <label for="product_slug" class="form-label"
+                      >Starting Date</label
+                    >
+                    <input
+                      type="date"
+                      placeholder="Type here"
+                      class="form-control"
+                      id="product_slug"
+                      name="startingDate"
+                      minlength="3"
+                      maxlength="50"
+                      value="<%= new Date(offer.offer.startingDate).toISOString().split('T')[0] %>"
+
+                      required
+                    />
+                    <div id="product_slugs" class="text-danger"></div>
+                  </div>
+                <div class="mb-4">
+                  <label for="product_slug" class="form-label"
+                    >Expiry Date</label
+                  >
+                  <input
+                    type="date"
+                    placeholder="Type here"
+                    class="form-control"
+                    id="product_slug"
+                    name="expiryDate"
+                    minlength="3"
+                    maxlength="50"
+                    value="<%= new Date(offer.offer.expiryDate).toISOString().split('T')[0] %>"
+                    required
+                  />
+                  <div id="product_slugs" class="text-danger"></div>
+                </div>   
+                <h5>List or Unlist the OFFER</h5><br>
+                <label>
+                  <input type="radio" name="status" value="true" <%= offer.offer.status === true ? 'checked' : '' %> onchange="toggleDropdowns()">
+                  List 
+                </label>
+                <label>
+                  <input type="radio" name="status" value="false" <%= offer.offer.status === false ? 'checked' : '' %> onchange="toggleDropdowns()">
+                  Unlist 
+                </label>
+                <input type="hidden" id="Offers" value="<%=offer._id%>">
+                <input type="hidden" id="product_slug_startingDate" value="<%= new Date(offer.offer.startingDate).toISOString().split('T')[0] %>">
+<input type="hidden" id="product_slug_expiryDate" value="<%= new Date(offer.offer.expiryDate).toISOString().split('T')[0] %>">
+                <div class="d-grid">
+                    <button type="button" class="btn btn-primary edit-coupon-button" onclick="submitForm()">
+                        Edit Product Offer
+                    </button>
+                </div>
+              
+                </div>
+             
+              </form>
+            
+            </div>
+ 
+        </div>
+      </div>
+    </section>
+    <%- include('footer.ejs') %>
+  </main>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+  function validateForm() {
+    var isValid = true;
+
+    // Validate Coupon Title
+    $(document).ready(function () {
+    var titleInput = $("#offer_name");
+    var titleError = $("#nameError");
+    var titleValue = titleInput.val().trim();
+
+    console.log('Title Value:', titleValue);
+
+    if (titleValue.length < 3 || titleValue.length > 50) {
+      titleError.text("Title should be between 3 and 50 characters.");
+      isValid = false;
+    } else {
+      titleError.text("");
+    }
+  });
+
+    // Validate Coupon Code
+    var couponCodeInput = $("#couponCode");
+    var couponCodeError = $("#couponCodeError");
+    var couponCodeValue = couponCodeInput.val().trim();
+    var couponCodeRegex = /^[A-Z]{4}\d{4}$/;
+
+    if (!couponCodeRegex.test(couponCodeValue)) {
+      couponCodeError.text(
+        "Coupon code should have 8 characters, starting with 4 capital alphabetic and followed by 4 numeric."
+      );
+      isValid = false;
+    } else {
+      couponCodeError.text("");
+    }
+
+    // Validate Discount Amount
+    var amountInput = $("#product_slug");
+    var amountError = $("#slugError");
+    var amountValue = amountInput.val().trim();
+    if (isNaN(amountValue) || amountValue <= 49) {
+      amountError.text(
+        "Discount amount should be a valid number greater than 50."
+      );
+      isValid = false;
+    } else {
+      amountError.text("");
+    }
+
+    // Validate Description
+    var descriptionInput = $("#product_description");
+    var descriptionError = $("#descriptionError");
+    var descriptionValue = descriptionInput.val().trim();
+    var wordCount = descriptionValue.split(/\s+/).filter(function (word) {
+      return word.length > 0;
+    }).length;
+
+    if (wordCount < 5) {
+      descriptionError.text("Description should have at least 5 words.");
+      isValid = false;
+    } else {
+      descriptionError.text("");
+    }
+    var expiryDateInput = $("#product_slug");
+var slugError = $("#product_slugs");
+
+expiryDateInput.on("change", function () {
+  var selectedDate = $(this).val();
+
+  if (!selectedDate) {
+    slugError.text("Expiry date is required.");
+  } else {
+    var expiryDate = new Date(selectedDate);
+    var currentDate = new Date();
+
+    if (expiryDate <= currentDate) {
+      slugError.text("Expiry date should be greater than today's date.");
+    } else {
+      slugError.text("");
+    }
+  }
+});
+
+    if (isValid) {
+      $("#categoryForm").submit();
+    }
+  }
+</script>
+
+<script>
+    const submitForm = async () => {
+      const offer_name = document.getElementById('offer_name').value;
+const categoryElement = document.getElementById('category');
+const category = categoryElement?.value || null;
+const productElement = document.getElementById('product');
+const product = productElement?.value || null;
+const percentage = document.getElementById('percentage').value;
+const couponCode = document.getElementById('offer_description').value;
+const startingDate = document.getElementById('product_slug_startingDate').value;
+const expiryDate = document.getElementById('product_slug_expiryDate').value;
+const status = document.querySelector('input[name="status"]:checked').value;
+const id = document.getElementById('Offers').value;
+
+        try {
+            const formData = {
+                offer_name: offer_name,
+                category: category,
+                product: product,
+                percentage: percentage,
+                couponCode: couponCode,
+                startingDate: startingDate,
+                expiryDate: expiryDate,
+                status: status,
+            };
+
+            console.log('Form Data:', formData);
+            const response = await axios.put(`/admin/offers/${id}`, formData);                        console.log('Response:', response.data);
+            window.location.href = '/admin/offers';
+        } catch (error) {
+            console.error('Error updating offer:', error.response ? error.response.data : error.message);
+        }
+    };
+</script>
+
+

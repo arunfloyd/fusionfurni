@@ -1,5 +1,15 @@
 <%- include('header.ejs') %>
+<style>
+  /* Add some styles for better appearance */
+  label {
+      display: block;
+      margin-bottom: 10px;
+  }
 
+  .form-select {
+      margin-bottom: 10px;
+  }
+</style>
 <body>
   <div class="screen-overlay"></div>
   <%- include('navbar-aside.ejs') %>
@@ -21,10 +31,10 @@
       <div class="card">
         <div class="card-body">
           <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
             <h3>Product Offers</h3>
 
-              <form id="categoryForm" action="/admin/coupon" method="post">
+              <form id="categoryForm" action="/admin/offers" method="post">
                 <div class="mb-4">
                   <label for="product_name" class="form-label"
                     >Offer Name</label
@@ -40,18 +50,43 @@
                   />
                   <div id="nameError" class="text-danger"></div>
                 </div>
+                <h5>Select Product / Category for offers </h5><br>
+<label>
+  <input type="radio" name="associationType" value="Category" onchange="toggleDropdowns()">
+  Category
+</label>
+<label>
+  <input type="radio" name="associationType" value="Product" onchange="toggleDropdowns()">
+  Product
+</label>
+              
+              
+              <br>
+              <br>
                 <div class="mb-4">
-                    <label for="productOrCategory" class="form-label">Product or Category</label>
-                    <select class="form-select" id="productOrCategory" name="product_or_category">
-                        <% if (product && product.length > 0) { %>
-                            <% for (var i = 0; i < product.length; i++) { %>
-                                <option value="<%= product[i].title %>"><%= product[i].title %></option>
+                  <label for="category" class="form-label"> Category</label>
+                  <select class="form-select" id="category" name="category" disabled>
+                        <% if (category && category.length > 0) { %>
+                            <% for (var i = 0; i < category.length; i++) { %>
+                                <option value="<%= category[i].title %>"><%= category[i].title %></option>
                             <% } %>
                         <% } else { %>
                             <option value="product">No Product Available</option>
                         <% } %>
                     </select>
                 </div>
+                <div class="mb-4">
+                  <label for="product" class="form-label">Product</label>
+                  <select class="form-select" id="product" name="product" disabled>
+                      <% if (product && product.length > 0) { %>
+                          <% for (var i = 0; i < product.length; i++) { %>
+                              <option value="<%= product[i].title %>"><%= product[i].title %></option>
+                          <% } %>
+                      <% } else { %>
+                          <option value="product">No Product Available</option>
+                      <% } %>
+                  </select>
+              </div>
                 
                 <div class="mb-4">
                   <label for="couponCode" class="form-label"> Percentage Of Discount</label>
@@ -61,27 +96,12 @@
                     class="form-control"
                     id="percentage"
                     name="percentage"
-                    minlength="3"
-                    maxlength="50"
+                    
                   />
                 </div>
                 <div id="couponCodeError" class="text-danger"></div>
 
-                <div class="mb-4">
-                  <label for="product_slug" class="form-label"
-                    >Discount Amount</label
-                  >
-                  <input
-                    type="number"
-                    placeholder="Type here"
-                    class="form-control"
-                    id="product_slug"
-                    name="discountAmount"
-                    minlength="3"
-                    maxlength="50"
-                  />
-                  <div id="slugError" class="text-danger"></div>
-                </div>
+          
 
                 <div class="mb-4">
                   <label class="form-label">Description</label>
@@ -126,194 +146,71 @@
                   <div id="product_slugs" class="text-danger"></div>
                 </div>
                 <div class="d-grid">
-                  <button
-                    type="button"
-                    class="btn btn-primary edit-coupon-button"
-                    id="edit-coupon-button"
-                    onclick="validateForm()"
-                  >
-                    Add Coupon
-                  </button>
+                  <button type="submit" class="btn btn-primary edit-coupon-button" id="edit-coupon-button" onclick="validateForm()">
+                    Add Product Offer
+                </button>
+              
                 </div>
              
               </form>
             </div>
-           
-            
-               
-            <div class="col-md-4">
-                <h3>Category Offers</h3>
-                <form id="categoryForm" action="/admin/coupon" method="post">
-                  <div class="mb-4">
-                    <label for="product_name" class="form-label"
-                      >Coupon Title</label
-                    >
-                    <input
-                      type="text"
-                      placeholder="Type here"
-                      class="form-control"
-                      id="product_name"
-                      name="couponName"
-                      minlength="3"
-                      maxlength="50"
-                    />
-                    <div id="nameError" class="text-danger"></div>
-                  </div>
-                  <div class="mb-4">
-                    <label for="couponCode" class="form-label">Coupon Code</label>
-                    <input
-                      type="text"
-                      placeholder="Type here"
-                      class="form-control"
-                      id="couponCode"
-                      name="couponCode"
-                      minlength="3"
-                      maxlength="50"
-                    />
-                  </div>
-                  <div id="couponCodeError" class="text-danger"></div>
-  
-                  <div class="mb-4">
-                    <label for="product_slug" class="form-label"
-                      >Discount Amount</label
-                    >
-                    <input
-                      type="number"
-                      placeholder="Type here"
-                      class="form-control"
-                      id="product_slug"
-                      name="discountAmount"
-                      minlength="3"
-                      maxlength="50"
-                    />
-                    <div id="slugError" class="text-danger"></div>
-                  </div>
-  
-                  <div class="mb-4">
-                    <label class="form-label">Description</label>
-                    <input
-                      placeholder="Type here"
-                      class="form-control"
-                      id="product_description"
-                      name="couponDescription"
-                    />
-                    <div id="descriptionError" class="text-danger"></div>
-                  </div>
-                  <div class="mb-4">
-                    <label for="product_slug" class="form-label"
-                      >Expiry Date</label
-                    >
-                    <input
-                      type="date"
-                      placeholder="Type here"
-                      class="form-control"
-                      id="product_slug"
-                      name="expiryDate"
-                      minlength="3"
-                      maxlength="50"
-                      required
-                    />
-                    <div id="product_slugs" class="text-danger"></div>
-                  </div>
-                  <div class="d-grid">
-                    <button
-                      type="button"
-                      class="btn btn-primary edit-coupon-button"
-                      id="edit-coupon-button"
-                      onclick="validateForm()"
-                    >
-                      Add Coupon
-                    </button>
-                  </div>
-               
-                </form>
+            <div class="col-md-9">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Type </th>
+                      <th>Title</th>
+                      <th>Name</th>
+                      <th>Percentage</th>
+                      <th>Status</th>
+                      <th>Expire On</th>
+                      <th>Action</th>
+
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (offer.length === 0) { %>
+                      <p>No offers available</p>
+                      <% } else { %>
+                          <% offer.forEach(offer => { %>
+                            <td><%= offer.associationType %></td>
+                            <td><%= offer.associationId.title.length > 30 ? offer.associationId.title.substring(0, 30) + '...' : offer.associationId.title %></td>
+                            <td><%= offer.offer.offer_name %></td>
+                            <td><%= offer.offer.percentage %> % OFF</td>
+
+                            <td> <%= offer.offer.status %></td>
+                            <td><%= (new Date(offer.offer.expiryDate)).toLocaleDateString('en-GB') %></td>                            <td>
+                        <div class="dropdown">
+                          <a
+                            href="#"
+                            data-bs-toggle="dropdown"
+                            class="btn btn-light rounded btn-sm font-sm"
+                          >
+                            <i class="material-icons md-more_horiz"></i>
+                          </a>
+                          <div class="dropdown-menu">
+                            <a
+                              class="dropdown-item"
+                              href="/admin/offers/<%= offer._id %>"
+                              >Edit info</a
+                            >
+                            <a
+                            class="dropdown-item text-danger delete-link"
+                            href="#"
+                            data-offer-id="<%= offer._id %>"
+                            >Delete</a>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <% }); %>
+    <% } %>
+                  </tbody>
+                </table>
               </div>
-              <div class="col-md-4">
-                <h3>Sessional Offers</h3>
-                <form id="categoryForm" action="/admin/coupon" method="post">
-                  <div class="mb-4">
-                    <label for="product_name" class="form-label"
-                      >Coupon Title</label
-                    >
-                    <input
-                      type="text"
-                      placeholder="Type here"
-                      class="form-control"
-                      id="product_name"
-                      name="couponName"
-                      minlength="3"
-                      maxlength="50"
-                    />
-                    <div id="nameError" class="text-danger"></div>
-                  </div>
-                  <div class="mb-4">
-                    <label for="couponCode" class="form-label">Coupon Code</label>
-                    <input
-                      type="text"
-                      placeholder="Type here"
-                      class="form-control"
-                      id="couponCode"
-                      name="couponCode"
-                      minlength="3"
-                      maxlength="50"
-                    />
-                  </div>
-                  <div id="couponCodeError" class="text-danger"></div>
-  
-                  <div class="mb-4">
-                    <label for="product_slug" class="form-label"
-                      >Discount Amount</label
-                    >
-                    <input
-                      type="number"
-                      placeholder="Type here"
-                      class="form-control"
-                      id="product_slug"
-                      name="discountAmount"
-                      minlength="3"
-                      maxlength="50"
-                    />
-                    <div id="slugError" class="text-danger"></div>
-                  </div>
-  
-                  <div class="mb-4">
-                    <label class="form-label">Description</label>
-                    <input
-                      placeholder="Type here"
-                      class="form-control"
-                      id="product_description"
-                      name="couponDescription"
-                    />
-                    <div id="descriptionError" class="text-danger"></div>
-                  </div>
-                  <div class="mb-4">
-                    <label for="product_slug" class="form-label"
-                      >Expiry Date</label
-                    >
-                    <input
-                      type="date"
-                      placeholder="Type here"
-                      class="form-control"
-                      id="product_slug"
-                      name="expiryDate"
-                      minlength="3"
-                      maxlength="50"
-                      required
-                    />
-                    <div id="product_slugs" class="text-danger"></div>
-                  </div>
-                  <div class="d-grid">
-                    <button
-                      type="button"
-                      class="btn btn-primary edit-coupon-button"
-                      id="edit-coupon-button"
-                      onclick="validateForm()"
-                    >
-                      Add Coupon
-                    </button>
-                  </div>
-               
-                </form>
+            </div>
               </div>
             
           </div>
@@ -323,6 +220,90 @@
     <%- include('footer.ejs') %>
   </main>
 </body>
+<script>
+  $(document).ready(function () {
+    $(".delete-link").on("click", function (e) {
+      e.preventDefault(); 
+      var offerId = $(this).data("offer-id");
+      if (confirm("Are you sure you want to delete this item?")) {
+        $.ajax({
+          type: "DELETE",
+          url: "/admin/offers/delete/" + offerId,
+          success: function (response) {
+            console.log("Item deleted successfully");
+            window.location.href='/admin/offers';
+          },
+          error: function (error) {
+            console.error("Error deleting item:", error);
+          },
+        });
+      }
+    });
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+  function toggleDropdowns() {
+      var associationType = document.querySelector('input[name="associationType"]:checked').value;
+      var categoryDropdown = document.getElementById('category');
+      var productDropdown = document.getElementById('product');
+
+      if (associationType === 'Product') {
+          categoryDropdown.disabled = true;
+          productDropdown.disabled = false;
+      } else {
+          categoryDropdown.disabled = false;
+          productDropdown.disabled = true;
+      }
+  }
+</script>
+<script>
+  $(document).ready(function () {
+    $(".delete-link").on("click", function (e) {
+      e.preventDefault(); // Prevent the default link behavior
+      var couponId = $(this).data("offer._id");
+
+      if (confirm("Are you sure you want to delete this item?")) {
+        $.ajax({
+          type: "DELETE",
+          url: "/admin/offers/delete/" + couponId,
+          success: function (response) {
+            console.log("Item deleted successfully");
+            window.location.reload();
+          },
+          error: function (error) {
+            console.error("Error deleting item:", error);
+          },
+        });
+      }
+    });
+  });
+</script> 
+
+<script>
+  function validateForm() {
+    // Add your form validation logic here
+    
+    const formData = {
+        offer_name: document.getElementById('offer').value,
+        product_or_category: document.getElementById('productOrCategory').value,
+        percentage: document.getElementById('percentage').value,
+        discountAmount: document.getElementById('discountAmount').value,
+        description: document.getElementById('offer_description').value,
+        startingDate: document.getElementById('startingDate').value,
+        expiryDate: document.getElementById('expiryDate').value,
+    };
+    axios.post('/admin/offers', formData)
+        .then(response => {
+            console.log(response.data);
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error(error);
+        });
+}
+
+</script>
 <!-- <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
   function validateForm() {
@@ -414,30 +395,4 @@ expiryDateInput.on("change", function () {
     }
   }
 </script>
-<script>
-  $(document).ready(function () {
-    // Event handler for the delete link
-    $(".delete-link").on("click", function (e) {
-      e.preventDefault(); // Prevent the default link behavior
-
-      // Get the coupon ID from the data attribute
-      var couponId = $(this).data("coupon-id");
-
-      // Confirm the delete action
-      if (confirm("Are you sure you want to delete this item?")) {
-        // Make an AJAX request to delete the item
-        $.ajax({
-          type: "DELETE",
-          url: "/admin/coupon/delete/" + couponId,
-          success: function (response) {
-            console.log("Item deleted successfully");
-            window.location.reload();
-          },
-          error: function (error) {
-            console.error("Error deleting item:", error);
-          },
-        });
-      }
-    });
-  });
-</script> -->
+-->

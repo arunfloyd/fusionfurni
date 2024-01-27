@@ -22,7 +22,7 @@ var userSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      // required:true,
+      
     },
     isBlocked: {
       type: Boolean,
@@ -30,18 +30,14 @@ var userSchema = new mongoose.Schema(
     },
     accessStatus: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     role: {
       type: String,
       default: "user",
     },
-    cart: {
-      type: Array,
-      default: [],
-    },
-    address: [{ type: mongoose.Schema.Types.ObjectId, ref: "Address" }],
-    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+    referrer: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    
     refreshToken: {
       type: String,
     },
