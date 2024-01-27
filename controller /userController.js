@@ -83,8 +83,7 @@ const userRegister = asyncHandler(async (req, res) => {
     console.error("error is", error);
     throw new Error(error);
   }
-});
-const createUser = asyncHandler(async (req, res) => {
+});const createUser = asyncHandler(async (req, res) => {
   try {
     const refer = req.params.profileId;
     let referId;
@@ -93,38 +92,46 @@ const createUser = asyncHandler(async (req, res) => {
     const mobile = req.body.mobile;
     const mob = await User.findOne({ mobile: mobile });
     const findUser = await User.findOne({ email: email });
+
     if (!findUser && !mob) {
       if (refer) {
         referId = refer;
+    
         let userWallet = await Wallet.findOne({ user: refer });
-    console.log("1",userWallet)
-
-    if (!userWallet) {
-      userWallet = new Wallet({
-        user: refer,
-        balance: 0,
-        transactions: [],
-      });
-    }
-    const parsedAmount = 100;
-
-    userWallet.balance += parsedAmount;
-    userWallet.transactions.push({
-      type: "credit",
-      amount: parsedAmount, 
-      description: "Added 100 for Referring a friend",
-      paymentID: "Refer & Earn",
-    });
-    console.log("2",userWallet)
-
-    await userWallet.save();
+        console.log("1", userWallet);
+    
+        if (!userWallet) {
+          // Create a new wallet if it doesn't exist
+          userWallet = new Wallet({
+            user: refer,
+            balance: 0,
+            transactions: [],
+          });
+        }
+    
+        const parsedAmount = 100;
+    
+        userWallet.balance += parsedAmount;
+        userWallet.transactions.push({
+          type: "credit",
+          amount: parsedAmount,
+          description: "Added 100 for Referring a friend",
+          paymentID: "Refer & Earn",
+        });
+    
+        console.log("2", userWallet);
+    
+        // Save or update the userWallet
+        await userWallet.save();
       } else {
-        referId = "No Refer Found";
+        referId = null; // or some default value
       }
+    
       const newUser = await User.create({
         ...req.body,
         referrer: referId,
       });
+
       const otp = otpGenerator.generate(6, {
         digits: true,
         lowerCaseAlphabets: false,
@@ -159,14 +166,20 @@ const createUser = asyncHandler(async (req, res) => {
         htm: resetURL,
       };
       await sendEmail(data);
-      res.redirect(`/verify-mail?email=${encodeURIComponent(email)}`);
+      res.render('user/verifyEmail',{email,message: req.flash("message")});
     } else {
       req.flash("message", "User Already Exists");
       res.redirect("/login");
     }
   } catch (error) {
-    console.error(error); 
-    res.render("user/errorLoginAndSignUp", { message: "An error occurred" });
+    console.error(error);
+    if (error.errors && error.errors.referrer) {
+      req.flash("message", "Invalid Referrer. Please try again.");
+    } else {
+      req.flash("message", "An error occurred during user creation.");
+    }
+
+    res.render("user/loginAndSignUp", { email: req.body.email });
   }
 });
 const loadVerifyEmail = asyncHandler(async (req, res) => {
@@ -180,37 +193,39 @@ const loadVerifyEmail = asyncHandler(async (req, res) => {
 const verifyMail = asyncHandler(async (req, res) => {
   try {
     const email = req.body.email;
+    console.log(email)
     const user = await User.findOne({
-      email: email,
-      passwordResetExpires: { $gt: Date.now() },
-    });
+      email: email  
+      });
+    console.log("user",user)
 
     if (user) {
       const enteredOTP = req.body.otp;
       const storedOtp = await Otp.findOne({ user: user._id });
+      console.log("otp",storedOtp)
 
       if (storedOtp) {
         const isMatch = await bcrypt.compare(enteredOTP, storedOtp.otp);
-
+      console.log("match",isMatch)
         if (isMatch) {
           req.flash("message", "User Successfully Verified");
           res.redirect("/login");
         } else {
           req.flash("message", "Entered OTP is Wrong");
-          res.render('user/verifyEmail',{email:email});
+          res.render('user/verifyEmail',{ email, message: req.flash("message") });
         }
       } else {
         req.flash("message", "Time Expired, Please try after sometimes");
-        res.render('user/verifyEmail',{email:email});
+        res.render('user/verifyEmail',{ email, message: req.flash("message") });
       }
     } else {
       req.flash("message", "User not found");
-      res.render('user/verifyEmail',{email:email});
+      res.render('user/verifyEmail',{ email, message: req.flash("message") });
     }
   } catch (error) {
-    console.error(error)
+    console.error("error",error)
     req.flash("message", "An error occurred during OTP verification");
-    res.render('user/verifyEmail',{email:email});
+    res.render('user/verifyEmail',{ email, message: req.flash("message") });
   }
 });
 const resendMail = asyncHandler(async (req, res) => {
