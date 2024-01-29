@@ -111,13 +111,35 @@ const loginAdminCtrl = asyncHandler(async (req, res) => {
 
 const salesReport = asyncHandler(async (req, res) => {
   try {
-    const userorders = await Order.aggregate([
-      {
+    console.log('Request Body:', req.query); // Log the entire request body
+
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+  
+    console.log('Start Date:', startDate, 'End Date:', endDate);
+    if (startDate && endDate) {
+      const parsedStartDate = new Date(startDate);
+      const parsedEndDate = new Date(endDate);
+      var matchStage = {
+        $match: {
+          orderStatus: "Delivered",
+          createdAt: {
+            $gte: parsedStartDate, // Greater than or equal to start date
+            $lte: parsedEndDate,   // Less than or equal to end date
+          },
+        },
+      };
+    } else {
+      // If no dates are provided, no date filtering is applied
+      var matchStage = {
         $match: {
           orderStatus: "Delivered",
         },
-      },
-      
+      };
+    }
+
+    const userorders = await Order.aggregate([
+      matchStage,
       {
         $lookup: {
           from: "products",
@@ -135,12 +157,9 @@ const salesReport = asyncHandler(async (req, res) => {
         },
       },
     ]);
+
     const grandTotal = await Order.aggregate([
-      {
-        $match: {
-          orderStatus: "Delivered",
-        },
-      },
+      matchStage,
       {
         $group: {
           _id: null,
@@ -148,16 +167,16 @@ const salesReport = asyncHandler(async (req, res) => {
         },
       },
     ]);
-    
+
     const totalAmount = grandTotal[0].totalAmount;
 
-
-    res.render('adminDash/salesReport', { userorders ,grandTotal});
+    res.render('adminDash/salesReport', { userorders, grandTotal });
   } catch (error) {
-    console.error('An error occurred:', error);
-    throw new Error(error);
+    console.error('An error occurred in the salesReport route:', error);
+    res.status(500).send('Internal Server Error');
   }
 });
+
 
 
 const dashboard = asyncHandler(async (req, res) => {
@@ -438,7 +457,7 @@ const getallUser = asyncHandler(async (req, res) => {
 });
 const userList = asyncHandler(async (req, res) => {
   try {
-    const ITEMS_PER_PAGE = 5;
+    const ITEMS_PER_PAGE = 8;
 
     const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
     const totalProducts = await Product.countDocuments();

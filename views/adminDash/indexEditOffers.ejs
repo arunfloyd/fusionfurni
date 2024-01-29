@@ -56,7 +56,7 @@
                     <select class="form-select" id="category" name="category">
                         <% if (category && category.length > 0) { %>
                             <% for (var i = 0; i < category.length; i++) { %>
-                                <option value="<%= category[i].title %>" <%= offer.associationId == category[i]._id ? 'selected' : '' %>><%= category[i].title %></option>
+                              <option value="<%= category[i].title %>" <%= offer.associationId == category[i]._id ? 'selected' : '' %>><%= category[i].title %></option>
                             <% } %>
                         <% } else { %>
                             <option value="product">No Product Available</option>
@@ -277,7 +277,9 @@ const startingDate = document.getElementById('product_slug_startingDate').value;
 const expiryDate = document.getElementById('product_slug_expiryDate').value;
 const status = document.querySelector('input[name="status"]:checked').value;
 const id = document.getElementById('Offers').value;
-
+const description= document.getElementById('offer_description').value;
+console.log(description)
+offer_description
         try {
             const formData = {
                 offer_name: offer_name,
@@ -288,6 +290,7 @@ const id = document.getElementById('Offers').value;
                 startingDate: startingDate,
                 expiryDate: expiryDate,
                 status: status,
+                description:description
             };
 
             console.log('Form Data:', formData);

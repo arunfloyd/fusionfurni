@@ -90,7 +90,6 @@
         <div class="address-details border border-dark p-3 mb-3">
           <p class="mb-1"><strong>Status:</strong> <%= userorder.orderStatus %></p>
 
-          <p class="mb-1"><strong>Payment Status:</strong> <%= userorder.paymentIntent.status %></p>
         </div>
       </div>
     </div>
@@ -100,7 +99,7 @@
 
       <a href="/request-return/<%=userorder._id%>"> <button type="button" class="btn btn-warning">Request Return</button></a>
     <% } else { %>
-      <a href="/request-return/<%=userorder._id%>"> <button type="button" class="btn btn-warning">Request Cancellation</button></a>
+      <a href="/request-cancel/<%=userorder._id%>"> <button type="button" class="btn btn-warning">Request Cancellation</button></a>
     <% } %>
     <br>
 <br>

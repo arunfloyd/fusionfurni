@@ -35,7 +35,7 @@ router.get("/product", authMiddleware, product);
 router.get("/dash", authMiddleware, dashboard);
 router.get("/sales-report", authMiddleware, salesReport);
 router.post("/sales-report", authMiddleware, salesReport);
-router.get('/generate-pdf',authMiddleware, printer);
+router.get("/generate-pdf", authMiddleware, printer);
 router.get("/orders", authMiddleware, getAllOrders);
 router.get("/update-status/:id", authMiddleware, loadUpdateOrderStatus);
 router.post("/update-status/:id", authMiddleware, updateOrderStatus);

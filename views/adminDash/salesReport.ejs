@@ -4,6 +4,9 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<!-- Include the datepicker library -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datepicker@1.8.0/dist/datepicker.min.css">
+<script src="https://cdn.jsdelivr.net/npm/datepicker@1.8.0/dist/datepicker.min.js"></script>
 
 <body>
 <a href="/admin/dash">    <button type="button" class="btn btn-primary" >
@@ -29,6 +32,19 @@
 
           <article class="itemlist">
             <div class="row align-items-center">
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="startDate" class="form-label">Start Date:</label>
+                  <input type="date" id="startDate" class="form-control" autocomplete="off">
+                </div>
+                <div class="col-md-6">
+                  <label for="endDate" class="form-label">End Date:</label>
+                  <input type="date" id="endDate" class="form-control" autocomplete="off">
+                </div>
+              </div>
+              <button onclick="filterOrders()">Filter Orders</button>
+
+              
                 <div class="card-body">
                     <div class="table-responsive">
                       <div class="table-responsive">
@@ -114,6 +130,9 @@
     <!-- content-main end// -->
     <%- include('footer.ejs') %>
   </main>
+  <!-- Include Axios library -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
@@ -121,9 +140,29 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 </body>
-<script>
+
+  
   function printScreen() {
     window.print();
+  }
+</script>
+
+<script>
+  async function filterOrders() {
+    // Retrieve values from date inputs
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+    console.log(startDate,endDate)
+
+    try {
+      console.log("Request URL:", `/sales-report?startDate=${startDate}&endDate=${endDate}`);
+const response = await axios.get(`/sales-report?startDate=${startDate}&endDate=${endDate}`);
+            console.log("Filtered Orders:", response.data);
+            window.location.reload();
+    } catch (error) {
+      console.error('Error fetching filtered orders:', error);
+    console.error('Response:', error.response); // Log the response details
+    console.error('Request Config:', error.config);    }
   }
 </script>
 <script>
@@ -141,12 +180,3 @@
       });
     }
   </script>
- <script>
-  $(document).ready(function () {
-      // Initialize Bootstrap Datepicker
-      $('#startDatePicker, #endDatePicker').datepicker({
-          format: 'yyyy-mm-dd',
-          autoclose: true
-      });
-  });
-</script>

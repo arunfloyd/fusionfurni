@@ -50,7 +50,8 @@ const {
   loadMoney,
   applyCoupon,
   userRegister,
-
+  loadRequestCancel,
+  requestCancel,
 } = require("../controller /userController");
 const {
   userMiddleware,
@@ -62,7 +63,7 @@ router.get("/login", noCacheHeaders, loadlogin);
 router.post("/login", loginUserCtrl);
 router.get("/register", userRegister);
 router.post("/register", createUser);
-router.get('/register/:profileId', userRegister);
+router.get("/register/:profileId", userRegister);
 router.post("/register/:profileId", createUser);
 router.get("/forget-password", loadForgetPassword);
 router.post("/forget-password", forgotPasswordToken);
@@ -114,7 +115,9 @@ router.get("/login", loadlogin);
 router.get("/refresh", handleRefreshToken);
 router.get("/error", errorPage);
 router.get("/request-return/:id", loadRequestReturn);
-router.post("/request-return", requestReturn);
-router.get("/wallet", userMiddleware,loadWallet);
-router.post("/create-money", userMiddleware,loadMoney);
+router.put("/request-return",userMiddleware, requestReturn);
+router.get("/request-cancel/:id", loadRequestCancel);
+router.put("/request-cancel",userMiddleware, requestCancel);
+router.get("/wallet", userMiddleware, loadWallet);
+router.post("/create-money", userMiddleware, loadMoney);
 module.exports = router;

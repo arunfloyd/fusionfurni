@@ -19,41 +19,41 @@
 
 <!-- Check if wishlist exists before rendering -->
 <div class="container">
-    <% if (wishList && wishList.products && wishList.products.length > 0) { %>
-      <div class="card text-center">
-        <% wishList.products.forEach(productItem => { %>
-          <div class="card-body">
-            <div class="row align-items-center">
-              <div class="col-md-2 offset-md-1">
-                <img src="/productImage/<%= productItem.product.images[0] %>" alt="Product Image" width="100px" height="100px" />
-              </div>
-              <div class="col-md-7">
-                <h5 class="card-title"><strong>Product Title:</strong> <%= productItem.product.title %></h5>
-                <h6 class="card-text"><strong>Product Price:</strong> <%= productItem.product. price %></h6>
-                <a href="/product/<%=productItem.product._id%>"> <button type="button" class="btn btn-warning">Get More Details </button>
-                 </a>
-              </div>
-              <div class="col-md-2">
-                <td class="product-remove">
-                    <form action="/remove-wish" method="post">
-                        <input type="hidden" name="wishlist" value="<%= productItem.product._id %>">
-                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-                    </form>
-                </td>
-                <br>
-                <br>
-                <br>
-              </div>
+  <% if (wishList && wishList.products && wishList.products.length > 0) { %>
+    <div class="card text-center">
+      <% wishList.products.forEach(productItem => { %>
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-2 offset-md-1">
+              <img src="/productImage/<%= productItem.product.images[0] %>" alt="Product Image" width="100px" height="100px" />
             </div>
-            <hr /> <!-- Add a horizontal line between products for better separation -->
+            <div class="col-md-7">
+              <h5 class="card-title"><strong>Product Title:</strong> <%= productItem.product.title %></h5>
+              <h6 class="card-text"><strong>Product Price:</strong> <%= productItem.product.price %></h6>
+              <a href="/product/<%= productItem.product._id %>">
+                <button type="button" class="btn btn-warning">Get More Details</button>
+              </a>
+            </div>
+            <div class="col-md-2">
+              <form action="/remove-wish" method="post">
+                <input type="hidden" name="wishlist" value="<%= productItem.product._id %>">
+                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+              </form>
+            </div>
           </div>
-        <% }); %>
-      </div>
-    <% } else { %>
-      <p>No items in the wishlist.</p>
-    <% } %>
-  </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <p>No products in the wishlist</p>
+  <% } %>
   
+  </div>
+  <br>
+  <br>
+
+  <br>
+
   
 
 <%- include('../layout/footer.ejs') %>

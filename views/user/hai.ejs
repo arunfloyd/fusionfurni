@@ -1,79 +1,30 @@
-const shop = asyncHandler(async (req, res) => {
-  try {
-    const ITEMS_PER_PAGE = 8;
-    let search = "";
-    let sortOrder = "";
-    let category = "";
-    let minPrice = 0;
-    let maxPrice = Infinity;
 
-    if (req.query.Search || req.query.Sort || req.query.category) {
-      search = req.query.Search;
-      sortOrder = req.query.Sort;
-      category = req.query.category;
-      minPrice = req.query.minPrice || 0;
-      maxPrice = req.query.maxPrice || Infinity;
-    }
+<link rel="stylesheet" href="/css/userStyle.css">
+<div class="container" id="container">
+    <form action="" method="post">
+        <h1>Update User Status</h1>
+        <div class="social-container">
+            <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+            <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+        </div>
 
-    console.log("Request Object:", req.query);
+        <input type="text" placeholder="Name" name="name" value="<%= user.name %>" readonly/>
+        <input type="email" placeholder="Email" name="email" value="<%= user.email%>" readonly/>
+        <!-- Radio buttons side by side with labels -->
+        <div class="radio-group">
+            <label>
+                <input type="radio" name="accessStatus" value="true" <%= user.accessStatus ? 'checked' : '' %> />
+                Enable Active Status
+            </label>
+            <label>
+                <input type="radio" name="accessStatus" value="false" <%= !user.accessStatus ? 'checked' : '' %> />
+                Disable Active Status
+            </label>
+        </div>
 
-    console.log("Search:", search);
-    console.log("Sort Order:", sortOrder);
-    console.log("Category:", category);
-    console.log("Min Price:", minPrice);
-    console.log("Max Price:", maxPrice);
+        <input type="hidden" name="id" value="<%= user._id %>">
+        <button type="submit">Update</button>
+    </form>
+</div>
 
-    const sortingOptions = {
-      default: {},
-      priceHigh: { price: -1 },
-      priceLow: { price: 1 },
-    };
-    const filterOptions = {
-      default: {
-        $and: [
-          search && {
-            title: { $regex: new RegExp(".*" + search + ".*", "i") },
-          },
-          category && {
-            category: { $regex: new RegExp(".*" + category + ".*", "i") },
-          },
-          { price: { $gte: parseFloat(minPrice), $lte: parseFloat(maxPrice) } },
-          { list: true }, // If this is required, include it; otherwise, you can omit it
-        ].filter(Boolean),
-      },
-    };
-
-    console.log("Filter Options:", filterOptions);
-    console.log("Database Query:", filterOptions.default.$and);
-
-    const cat = await Category.find({});
-    const page = parseInt(req.query.page) || 1;
-    const totalProducts = await Product.countDocuments({
-      $and: [filterOptions.default, { list: true }],
-    });
-    const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE);
-    const skip = (page - 1) * ITEMS_PER_PAGE;
-
-    const usersData = await Product.find({
-      $and: [filterOptions.default, { list: true }],
-    })
-      .sort(sortingOptions[sortOrder])
-      .skip(skip)
-      .limit(ITEMS_PER_PAGE);
-
-    res.render("UI/shop", {
-      getallProduct: usersData,
-      currentPage: page,
-      totalPages: totalPages,
-      search: search,
-      sortOrder: sortOrder,
-      category: category,
-      minPrice: minPrice,
-      maxPrice: maxPrice,
-      cat: cat,
-    });
-  } catch (error) {
-    console.error("Error in shop route:", error);
-    res.status(500).send("Internal Server Error");
-  }
-});

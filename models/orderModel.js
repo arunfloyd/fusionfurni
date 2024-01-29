@@ -16,16 +16,9 @@ var orderSchema = new mongoose.Schema(
       type: String,
     },
     paymentIntent: {},
-    request: {
-      type: String,
-      default: "No Request",
-      enum: [
-        "No Request",
-        "Request Cancellation",
-        "Request Return",
-        "Accept Cancellation",
-        "Accept Return",
-      ],
+    requestReson: {
+      type:String,
+      default:"Not Request"
     },
     orderStatus: {
       type: String,

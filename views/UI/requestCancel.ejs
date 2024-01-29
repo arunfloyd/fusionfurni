@@ -1,0 +1,99 @@
+<%- include('../layout/header.ejs') %>
+<!-- Bootstrap CSS -->
+
+<!-- Start Hero Section -->
+<div class="hero">
+  <div class="container">
+    <div class="row justify-content-between">
+      <div class="col-lg-5">
+        <div class="intro-excerpt">
+          <h1>Request Form</h1>
+          <p class="mb-4">
+            Here You Can Submit the Request For Cancel Your Order by the Feedback    
+          </p> 
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Hero Section -->
+<div class="container">
+    <div class="row justify-content-center">
+      
+      <form id="requestForm" action="/request-cancel" method="put">
+        <br>
+        <br>
+        <h3>Request Form</h3>
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="selectedRequest">What is the issue with the order?</label>
+            <select name="selectedRequest" class="form-control" id="selectedRequest" required>
+              <option value="" selected disabled hidden>Choose a response</option>
+              <option>Order Created By Mistake</option>
+              <option>Item Would Not Arrive On Time</option>
+              <option>Item Price Too High </option>
+              <option>Item Ordered To Different Address</option>
+            </select>
+            <div class="invalid-feedback">Please select an issue.</div>
+          </div>
+          <div class="form-group col-md-8">
+            <label for="inputAddress2">Write some more details</label>
+            <input type="text" class="form-control" id="inputAddress2" name="moreDetails" placeholder="Enter some more details" required>
+            <div class="invalid-feedback">Please enter at least 5 words.</div>
+          </div>
+        </div>
+        <input type="hidden" name="id" value="<%=id%>">
+        <br>
+        <button type="button" onclick="validateForm()" class="btn btn-primary">Submit Request</button>
+      </form>
+      </div>
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+      <script>
+        function validateForm() {
+          const selectedRequest = document.getElementById('selectedRequest');
+          const moreDetailsInput = document.getElementById('inputAddress2');
+      
+          if (!selectedRequest.value) {
+            selectedRequest.classList.add('is-invalid');
+          } else {
+            selectedRequest.classList.remove('is-invalid');
+          }
+      
+          if (moreDetailsInput.value.trim().split(/\s+/).length < 5) {
+            moreDetailsInput.classList.add('is-invalid');
+          } else {
+            moreDetailsInput.classList.remove('is-invalid');
+          }
+      
+          const invalidFields = document.querySelectorAll('.is-invalid');
+          if (invalidFields.length === 0) {
+            submitForm();
+          }
+        }
+      
+        async function submitForm() {
+          const formData = {
+            selectedRequest: document.querySelector('[name="selectedRequest"]').value,
+            moreDetails: document.getElementById('inputAddress2').value,
+            id: document.querySelector('[name="id"]').value
+          };
+      
+          try {
+            const response = await axios.put('/request-cancel', formData);
+            console.log('Response:', response.data);
+      
+            if (response.data.redirect) {
+              window.location.href = response.data.redirect;
+            } else {
+              // Handle other scenarios as needed
+            }
+          } catch (error) {
+            console.error('Error submitting form:', error);
+          }
+        }
+      </script>
+      
+
+<!-- End Testimonial Slider -->
+<%- include('../layout/footer.ejs') %>

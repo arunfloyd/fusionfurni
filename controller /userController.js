@@ -68,7 +68,6 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
 
       res.redirect("/home");
     } else {
-      // Pass an error message to the template
       req.flash("message", "Invalid Credentials");
       res.redirect("/login");
     }
@@ -1442,22 +1441,21 @@ const resetPassword = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
-const requestCancel = asyncHandler(async (req, res) => {
-  try {
-    const { _id } = req.user;
-    const cancel = await Order.findOneAndUpdate(
-      { orderby: _id },
-      { $set: { request: "Request Cancellation" } }
-    );
-  } catch (error) {
-    throw new Error(error);
-  }
-});
+
 const loadRequestReturn = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
     const returns = await Order.findById(id);
     res.render("UI/requestReturn", { id });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+const loadRequestCancel = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const returns = await Order.findById(id);
+    res.render("UI/requestCancel", { id });
   } catch (error) {
     throw new Error(error);
   }
@@ -1512,16 +1510,13 @@ const loadMoney = asyncHandler(async (req, res) => {
 
 const requestReturn = asyncHandler(async (req, res) => {
   try {
-    const { selectedRequest, id } = req.body;
-
-    let updateField;
-    if (selectedRequest === "Request Cancellation Product") {
-      updateField = { orderStatus: "Cancelled" };
-    } else if (selectedRequest === "Request Return Product") {
-      updateField = { orderStatus: "Returned" };
-    } else {
-      return res.status(400).json({ error: "Invalid request type" });
-    }
+    const { _id } = req.user;
+    
+    const { selectedRequest, moreDetails, id } = req.body;
+    const updateField = {
+      orderStatus: 'Returned',
+      requestReson: moreDetails,  
+    };
 
     const updatedOrder = await Order.findByIdAndUpdate(
       id,
@@ -1532,17 +1527,104 @@ const requestReturn = asyncHandler(async (req, res) => {
     if (!updatedOrder) {
       return res.status(404).json({ error: "Order not found" });
     }
-    res.redirect("/orders");
+
+    const amountToReturn = await Order.findById(id);
+    if (!amountToReturn) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    const paymentAmount = amountToReturn.paymentIntent.amount;
+    console.log(paymentAmount);
+const isCOD =  amountToReturn.paymentIntent.status
+
+    let userWallet = await Wallet.findOne({ user: _id });
+    if (!userWallet) {
+      userWallet = new Wallet({
+        user: _id,
+        balance: 0,
+        transactions: [],
+      });
+    }
+
+    userWallet.balance += paymentAmount;
+    userWallet.transactions.push({
+      type: "credit",
+      amount: paymentAmount,
+      description: "Return Amount has been added",
+      paymentID: "ReturnMoney",
+    });
+ await userWallet.save();
+    // Assuming you want to redirect after updating the order
+    res.json({ success: true, redirect: "/orders" });
   } catch (error) {
+    console.error('Error processing return request:', error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+const requestCancel = asyncHandler(async (req, res) => {
+  try {
+    const { _id } = req.user;
+    
+    const { selectedRequest, moreDetails, id } = req.body;
+    const updateField = {
+      orderStatus: 'Cancelled',
+      requestReson: moreDetails,  // Corrected typo: requestReson to requestReason
+    };
+    console.log(moreDetails)
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      id,
+      { $set: updateField },
+      { new: true }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    const amountToReturn = await Order.findById(id);
+    if (!amountToReturn) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    const paymentAmount = amountToReturn.paymentIntent.amount;
+    const isCOD = amountToReturn.paymentIntent.status;
+
+    console.log(isCOD);
+if(isCOD==="Completed"){
+  let userWallet = await Wallet.findOne({ user: _id });
+  if (!userWallet) {
+    userWallet = new Wallet({
+      user: _id,
+      balance: 0,
+      transactions: [],
+    });
+  }
+
+  userWallet.balance += paymentAmount;
+  userWallet.transactions.push({
+    type: "credit",
+    amount: paymentAmount,
+    description: "Product Cancelled Amount has been added",
+    paymentID: "cancelMoney",
+  });
+await userWallet.save();
+}   
+    res.json({ success: true, redirect: "/orders" });
+  } catch (error) {
+    console.error('Error processing return request:', error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 const loadWishlist = asyncHandler(async (req, res) => {
   try {
     const { _id } = req.user;
     const wishList = await WishList.findOne({ orderby: _id }).populate(
       "products.product"
     );
+    console.log(wishList)
     res.render("UI/wishlist", { wishList });
   } catch (error) {
     console.error(error);
@@ -1674,4 +1756,5 @@ module.exports = {
   loadMoney,
   applyCoupon,
   userRegister,
+  loadRequestCancel
 };

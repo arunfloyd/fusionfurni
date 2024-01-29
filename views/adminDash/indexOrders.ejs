@@ -16,10 +16,14 @@
             <div class="card mb-4">
               <div class="card-body">
                   <% if (userorders && Array.isArray(userorders) && userorders.length > 0) { %>
-                      <% userorders.forEach(order => { %>
+                      <% userorders.reverse().forEach(order => { %>
                           <% if (order && order.products && Array.isArray(order.products) && order.products.length > 0) { %>
                               <% order.products.forEach(productItem => { %>
                                   <div class="row align-items-center">
+                                    <div class="col-lg-2 col-sm-1 col-4">
+                                      <h6>Order ID:</h6>
+                                      <span><%= order.orderId %></span>
+                                  </div>
                                       <div class="col-lg-2 col-sm-2 col-4">
                                           <% if (productItem.product && productItem.product.images && Array.isArray(productItem.product.images) && productItem.product.images.length > 0) { %>
                                               <img src="/productImage/<%= productItem.product.images[0] %>" class="img-sm img-thumbnail" alt="Product Image" />
@@ -39,10 +43,7 @@
                                           <h6>Order Status:</h6>
                                           <span><%= order && order.orderStatus %></span>
                                       </div>
-                                      <div class="col-lg-2 col-sm-2 col-4">
-                                          <h6>Payment Status:</h6>
-                                          <span><%= order.paymentIntent && order.paymentIntent.status %></span>
-                                      </div>
+                                     
                                       <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
                                         <a href="/admin/update-status/<%= order._id %>" class="btn btn-sm font-sm rounded btn-brand">
                                             <i class="material-icons md-edit"></i> Edit

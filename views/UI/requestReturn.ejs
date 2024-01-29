@@ -9,7 +9,7 @@
         <div class="intro-excerpt">
           <h1>Request Form</h1>
           <p class="mb-4">
-            Here You Can Submit the Reqquest For Return & Cancel Your Order by the Feedback    
+            Here You Can Submit the Reqquest For Return Your Order by the Feedback    
           </p> 
         </div>
       </div>
@@ -20,49 +20,80 @@
 <div class="container">
     <div class="row justify-content-center">
       
-        <form action="/request-return" method="post" >
-          <br>
-      <br>
-            <h3>Requestion Form</h3>
-            <div class="form-row">
-              <div class="form-group col-md-6">
-                <label for="inputEmail4">Name</label>
-                <input type="text" class="form-control" id="inputEmail4" placeholder="Enter Your Name" required>
-              </div>
-             
-              <div class="form-group col-md-4">
-                <label for="inputState">Select the Request </label>
-                <select name="selectedRequest" class="form-control">
-                  <option selected>Choose...</option>
-                  <option>Request Cancellation Product</option>
-                  <option>Request Return Product</option>
-
-                </select>
-              </div>
-            <div class="form-group">
-              <label for="inputAddress2">Bank Details - A/C Number</label>
-              <input type="text" class="form-control" id="inputAddress2" placeholder="Enter your Account Number"required>
-            </div>
-            <div class="form-row">
-              <div class="form-group col-md-6">
-                <label for="inputCity">IFC Code</label>
-                <input type="text" class="form-control" placeholder="Will be there in Bank's Passbook or Google it by Your Branch and Bank Name" id="inputCity"required>
-              </div>
-              <div class="form-group col-md-6">
-                <label for="inputCity">Branch Name</label>
-                <input type="text" class="form-control" placeholder="Branch Name - Mostly the Bank Name with place name" id="inputCity"required>
-              </div>
-            </div>
-            <input type="hidden" class="form-control" name="id" value="<%=id%>">
-<br>
-            <button type="submit" class="btn btn-primary">Submit Request</button>
-          </form>
+      <form id="requestForm" action="/request-return" method="put">
+        <br>
+        <br>
+        <h3>Request Form</h3>
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="selectedRequest">What is the issue with the item?</label>
+            <select name="selectedRequest" class="form-control" id="selectedRequest" required>
+              <option value="" selected disabled hidden>Choose a response</option>
+              <option>Both product and shipping box damaged</option>
+              <option>Wrong item is sent</option>
+              <option>Item defective</option>
+              <option>Item or parts missing</option>
+            </select>
+            <div class="invalid-feedback">Please select an issue.</div>
+          </div>
+          <div class="form-group col-md-8">
+            <label for="inputAddress2">Write some more details</label>
+            <input type="text" class="form-control" id="inputAddress2" name="moreDetails" placeholder="Enter some more details" required>
+            <div class="invalid-feedback">Please enter at least 5 words.</div>
+          </div>
         </div>
-    </div>
-</div>
-<!-- Start Why Choose Us Section -->
-
-    
+        <input type="hidden" name="id" value="<%=id%>">
+        <br>
+        <button type="button" onclick="validateForm()" class="btn btn-primary">Submit Request</button>
+      </form>
+      </div>
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+      <script>
+        function validateForm() {
+          const selectedRequest = document.getElementById('selectedRequest');
+          const moreDetailsInput = document.getElementById('inputAddress2');
+      
+          if (!selectedRequest.value) {
+            selectedRequest.classList.add('is-invalid');
+          } else {
+            selectedRequest.classList.remove('is-invalid');
+          }
+      
+          if (moreDetailsInput.value.trim().split(/\s+/).length < 5) {
+            moreDetailsInput.classList.add('is-invalid');
+          } else {
+            moreDetailsInput.classList.remove('is-invalid');
+          }
+      
+          const invalidFields = document.querySelectorAll('.is-invalid');
+          if (invalidFields.length === 0) {
+            submitForm();
+          }
+        }
+      
+        async function submitForm() {
+          const formData = {
+            selectedRequest: document.querySelector('[name="selectedRequest"]').value,
+            moreDetails: document.getElementById('inputAddress2').value,
+            id: document.querySelector('[name="id"]').value
+          };
+      
+          try {
+            const response = await axios.put('/request-return', formData);
+            console.log('Response:', response.data);
+      
+            if (response.data.redirect) {
+              window.location.href = response.data.redirect;
+            } else {
+              // Handle other scenarios as needed
+            }
+          } catch (error) {
+            console.error('Error submitting form:', error);
+          }
+        }
+      </script>
+      
 
 <!-- End Testimonial Slider -->
 <%- include('../layout/footer.ejs') %>

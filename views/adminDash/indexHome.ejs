@@ -142,7 +142,7 @@
           <div class="col-lg-5">
             <div class="card mb-4">
                 <article class="card-body">
-                    <h5 class="card-title">New Members</h5>
+                    <h5 class="card-title">New Members Joined Just Now</h5>
                    
                     <div class="new-member-list">
                       <% if (newUsers.length > 0) { %> <% for (let i = 5 - 1; i >=
@@ -214,7 +214,7 @@
         <div class="card mb-4">
           <header class="card-header">
             <h4 class="card-title">Latest orders</h4>
-            <div class="row align-items-center"></div>
+            <div class="row align-items-center">Get a Quick View Of Recent Orders From Here</div>
           </header>
 
          
@@ -233,10 +233,9 @@
                               <th class="align-middle" scope="col">Order ID</th>
                               <th class="align-middle" scope="col">Product Name</th>
                               <th class="align-middle" scope="col">Total</th>
-                              <th class="align-middle" scope="col">Payment Status</th>
-                              <th class="align-middle" scope="col">Payment Method</th>
+                             
+                              <th class="align-middle" scope="col">Order Status</th>
                               <th class="align-middle" scope="col">Ordered Date & Time</th>
-                              <th class="align-middle" scope="col">Cancel / Return</th>
                           </tr>
                           </thead>
                           <tbody>
@@ -251,21 +250,17 @@
                                     </td>
                                     <td><%= productItem.product.title %></td>
                                     <td><%= order.paymentIntent.amount %></td>
-                                    <td><%= order.paymentIntent.status %></td>
-                                    <td><%= order.paymentIntent.method %></td>
+                                    <td><%= order.orderStatus %></td>
                                     <td>
                                       <% if (index === array.length - 1) { %>
                                         <strong>
                                           <p>
-                                            <%= new Date(order.createdAt).toLocaleString("en-US", {
-                                              year: 'numeric', month: '2-digit', day: '2-digit',
-                                              hour: '2-digit', minute: '2-digit', second: '2-digit'
-                                            }) %>
+                                            <%= order.createdAt.toLocaleDateString('en-GB') %> <%= order.createdAt.toLocaleTimeString('en-US', { hour12: true }) %>
                                           </p>
+                                          
                                         </strong>
                                       <% } %>
                                     </td>
-                                    <td><%= order.request %></td>
                                   </tr>
                                   <% counter++; %>
                                 <% } %>
