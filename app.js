@@ -44,12 +44,13 @@ app.use((req, res, next) => {
   next();
 });
 app.use(flash());
-app.use("", authRouter);
 app.use("/admin", adminRouter);
 app.use("/admin/product", productRouter);
 app.use("/admin/category", categoryRouter);
 app.use("/admin/coupon", couponRouter);
 app.use("/admin/offers", offerRouter);
+app.use("", authRouter);
+
 
 
 app.use(function (req, res, next) {

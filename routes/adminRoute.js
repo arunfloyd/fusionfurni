@@ -16,6 +16,7 @@ const {
   loadUpdateOrderStatus,
   salesReport,
   printer,
+  salesGetReport,
 } = require("../controller /adminController");
 const {
   authMiddleware,
@@ -23,21 +24,30 @@ const {
 } = require("../middlewares/authMiddleware");
 const router = express.Router();
 
-router.get("/login", noCacheHeaders, loginAdmin);
-router.post("/login", loginAdminCtrl);
-router.get("/edit-user/:id", authMiddleware, loadaUser);
-router.post("/edit-user/:id", authMiddleware, updateaUser);
-router.get("/delete-user", authMiddleware, deleteaUser);
-router.get("/users", authMiddleware, userList);
-router.get("/category", authMiddleware, addCategory);
-router.get("/addproduct", authMiddleware, addProduct);
-router.get("/product", authMiddleware, product);
-router.get("/dash", authMiddleware, dashboard);
-router.get("/sales-report", authMiddleware, salesReport);
-router.post("/sales-report", authMiddleware, salesReport);
-router.get("/generate-pdf", authMiddleware, printer);
-router.get("/orders", authMiddleware, getAllOrders);
-router.get("/update-status/:id", authMiddleware, loadUpdateOrderStatus);
-router.post("/update-status/:id", authMiddleware, updateOrderStatus);
-router.get("/logout", noCacheHeaders, logout);
+router
+  .route("/login")
+  .get(noCacheHeaders, loginAdmin)
+  .post(loginAdminCtrl);
+router
+  .route("/edit-user/:id")
+  .get(authMiddleware, loadaUser)
+  .post(authMiddleware, updateaUser);
+
+router
+  .route("/sales-report")
+  .get(authMiddleware, salesGetReport)
+  .post(authMiddleware, salesReport);
+router
+  .route("/update-status/:id")
+  .get(authMiddleware, loadUpdateOrderStatus)
+  .post(authMiddleware, updateOrderStatus);
+router.route("/delete-user").get(authMiddleware, deleteaUser);
+router.route("/users").get(authMiddleware, userList);
+router.route("/category").get(authMiddleware, addCategory);
+router.route("/addproduct").get(authMiddleware, addProduct);
+router.route("/product").get(authMiddleware, product);
+router.route("/dash").get(authMiddleware, dashboard);
+router.route("/generate-pdf").get(authMiddleware, printer);
+router.route("/orders").get(authMiddleware, getAllOrders);
+router.route("/logout").get(noCacheHeaders, logout);
 module.exports = router;

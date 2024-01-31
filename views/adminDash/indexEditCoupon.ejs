@@ -84,17 +84,14 @@
                   <div id="descriptionError" class="text-danger"></div>
                 </div>
                 <div class="mb-4">
-                  <label for="product_slug" class="form-label"
-                    >Expiry Date</label
-                  >
+                  <label for="product_slug" class="form-label">Expiry Date</label>
                   <input
                     type="date"
                     placeholder="Type here"
                     class="form-control"
                     id="product_slug"
                     name="expiryDate"
-                  
-                    value="<%=coupon.expiryDate%>"
+                    value="<%= new Date(coupon.expiryDate).toISOString().split('T')[0] %>"
                   />
                   <div id="slugError" class="text-danger"></div>
                 </div>

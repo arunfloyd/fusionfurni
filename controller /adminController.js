@@ -107,36 +107,76 @@ const loginAdminCtrl = asyncHandler(async (req, res) => {
     res.redirect("/admin/login");
   }
 });
+const salesGetReport = asyncHandler(async (req, res) => {
+  try {
+    const matchStage = {
+      $match: {
+        orderStatus: "Delivered",
+      },
+    };
+
+    const userorders = await Order.aggregate([
+      matchStage,
+      {
+        $lookup: {
+          from: "products",
+          localField: "products.product",
+          foreignField: "_id",
+          as: "populatedProducts",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "orderby",
+          foreignField: "_id",
+          as: "populatedOrderBy",
+        },
+      },
+    ]);
+
+    const grandTotal = await Order.aggregate([
+      matchStage,
+      {
+        $group: {
+          _id: null,
+          totalAmount: { $sum: "$paymentIntent.amount" },
+        },
+      },
+    ]);
+console.log(grandTotal)
+    const totalAmount = grandTotal.length > 0 ? grandTotal[0].totalAmount : 0;
+
+    res.render("adminDash/salesReport", { userorders, grandTotal, totalAmount });
+  } catch (error) {
+    console.error("An error occurred in the salesPostReport route:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 
 const salesReport = asyncHandler(async (req, res) => {
   try {
-    console.log('Request Body:', req.query); // Log the entire request body
+    console.log("Request Body:", req.query);
+    console.log("Request Body:", req.body);
 
-    const startDate = req.query.startDate;
-    const endDate = req.query.endDate;
-  
-    console.log('Start Date:', startDate, 'End Date:', endDate);
-    if (startDate && endDate) {
-      const parsedStartDate = new Date(startDate);
-      const parsedEndDate = new Date(endDate);
-      var matchStage = {
-        $match: {
-          orderStatus: "Delivered",
-          createdAt: {
-            $gte: parsedStartDate, // Greater than or equal to start date
-            $lte: parsedEndDate,   // Less than or equal to end date
-          },
+    const startDate = req.body.startDate;
+    const endDate = req.body.endDate;
+    const parsedStartDate = new Date(startDate);
+    const parsedEndDate = new Date(endDate);
+    console.log("Start Date:", parsedStartDate, "End Date:", parsedEndDate);
+
+    const matchStage = {
+      $match: {
+        orderStatus: "Delivered",
+        $expr: {
+          $and: [
+            { $gte: ["$createdAt", parsedStartDate] },
+            { $lte: ["$createdAt", parsedEndDate] },
+          ],
         },
-      };
-    } else {
-      // If no dates are provided, no date filtering is applied
-      var matchStage = {
-        $match: {
-          orderStatus: "Delivered",
-        },
-      };
-    }
+      },
+    };
 
     const userorders = await Order.aggregate([
       matchStage,
@@ -168,15 +208,19 @@ const salesReport = asyncHandler(async (req, res) => {
       },
     ]);
 
-    const totalAmount = grandTotal[0].totalAmount;
+    const totalAmount = grandTotal.length > 0 ? grandTotal[0].totalAmount : 0;
 
-    res.render('adminDash/salesReport', { userorders, grandTotal });
+    console.log("hello");
+    console.log("userorders:", userorders);
+    console.log("grandTotal:", grandTotal);
+    console.log("totalAmount:", totalAmount);
+
+    res.render("adminDash/salesReport", { userorders, grandTotal, totalAmount });
   } catch (error) {
-    console.error('An error occurred in the salesReport route:', error);
-    res.status(500).send('Internal Server Error');
+    console.error("An error occurred in the salesReport route:", error);
+    res.status(500).send("Internal Server Error");
   }
 });
-
 
 
 const dashboard = asyncHandler(async (req, res) => {
@@ -742,4 +786,5 @@ module.exports = {
   loadUpdateOrderStatus,
   salesReport,
   printer,
+  salesGetReport
 };

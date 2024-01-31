@@ -22,7 +22,6 @@ const createProduct = async (req, res) => {
 
     for (let i = 0; i < req.files.length; i++) {
       const originalPath = req.files[i].path;
-      // 1100 × 1210 px 840 is origina
       const resizedPath = path.join(__dirname, "../public/resize", req.files[i].filename);
       await sharp(originalPath).resize(1100, 1210, { fit: "fill" }).toFile(resizedPath);
       console.log('Resized path:', resizedPath);

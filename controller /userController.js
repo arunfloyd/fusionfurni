@@ -95,10 +95,7 @@ const userRegister = asyncHandler(async (req, res) => {
     if (!findUser && !mob) {
       if (refer) {
         referId = refer;
-    
-        let userWallet = await Wallet.findOne({ user: refer });
-        console.log("1", userWallet);
-    
+        let userWallet = await Wallet.findOne({ user: refer });    
         if (!userWallet) {
           // Create a new wallet if it doesn't exist
           userWallet = new Wallet({
@@ -116,10 +113,7 @@ const userRegister = asyncHandler(async (req, res) => {
           amount: parsedAmount,
           description: "Added 100 for Referring a friend",
           paymentID: "Refer & Earn",
-        });
-    
-        console.log("2", userWallet);
-    
+        });    
         // Save or update the userWallet
         await userWallet.save();
       } else {

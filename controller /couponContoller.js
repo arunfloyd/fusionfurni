@@ -44,25 +44,19 @@ const loadEditCoupon = asyncHandler(async (req, res) => {
 });
 const editCoupon = asyncHandler(async (req, res) => {
   try {
-    console.log("haii");
     const { id } = req.params;
+    console.log(req.body)    
+    const { couponCode } = req.body; 
     const alreadyExist = await Coupon.findOne({ couponCode: { $regex: new RegExp(couponCode, 'i') } });
-    if(!alreadyExist){
-      const updatedCoupon = await Coupon.findOneAndUpdate({ _id: id }, req.body, {
-        new: true,
-      });
-  
-      if (!updatedCoupon) {
-        return res.status(404).json({ message: "Coupon not found" });
-      }
+   
+
+      const updatedCoupon = await Coupon.findOneAndUpdate({ _id: id }, req.body, { new: true });
+      console.log("MongoDB Update Result:", updatedCoupon);
+    
       res
       .status(200)
-      .json({ message: "Coupon updated successfully", coupon: updatedCoupon });
-    }else{
-      res
-      .status(200)
-      .json({ message: "Coupon Code Already Exists"});
-    }
+      .json({ message: "SucessFully"});
+    
    
 
     

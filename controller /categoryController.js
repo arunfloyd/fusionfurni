@@ -73,8 +73,14 @@ const updateCategory = asyncHandler(async (req, res) => {
 const deleteCategory = asyncHandler(async (req, res) => {
   const { id } = req.params;
   try {
-    const deleteCategory = await Category.findOneAndDelete({ _id: id });
-    res.redirect("/admin/category/list");
+    if(id !==0){
+      const deleteCategory = await Category.findOneAndDelete({ _id: id });
+      res.redirect("/admin/category/list");
+    }else{
+      req.flash("message","Not a proper ID")
+      res.redirect('/admin/category')
+    }
+   
   } catch (error) {
     // throw new Error(error)
     res.send(error);
