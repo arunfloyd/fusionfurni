@@ -451,7 +451,6 @@ const cart = asyncHandler(async (req, res) => {
     res.render("UI/cart");
   } catch (error) {
     // throw new Error("Shop Can't Access")
-    res.send(error);
     res.render("error");
   }
 });

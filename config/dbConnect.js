@@ -10,8 +10,6 @@ const dbConnect = async () => {
     // You can do additional setup or logging here if needed.
   } catch (err) {
     console.error("Error connecting to MongoDB:", err.message);
-    // Handle the error appropriately, you might want to exit the process or throw an exception.
-    process.exit(1);
   }
 };
 

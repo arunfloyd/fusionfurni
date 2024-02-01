@@ -9,34 +9,7 @@ const Order = require("../models/orderModel");
 // const print = require("print-js")
 const puppeteer = require("puppeteer");
 
-const printer = asyncHandler(async (req, res) => {
-  try {
-    const someJSONdata = {
-      name: "John Doe",
-      email: "john@example.com",
-      phone: "123-456-7890",
-    };
 
-    const htmlData = `
-      <table>
-        <tr><th>Name</th><td>${someJSONdata.name}</td></tr>
-        <tr><th>Email</th><td>${someJSONdata.email}</td></tr>
-        <tr><th>Phone</th><td>${someJSONdata.phone}</td></tr>
-        <tr><th>Phone</th><td>${someJSONdata.phone}</td></tr>
-
-      </table>
-    `;
-
-    const pdfBuffer = await generatePDF(htmlData);
-
-    // Set content type and send the PDF as a response
-    res.contentType("application/pdf");
-    res.send(pdfBuffer);
-  } catch (error) {
-    console.error("Error generating PDF:", error.message);
-    res.status(500).send("Internal Server Error");
-  }
-});
 
 // login for Admin
 const loginAdmin = asyncHandler(async (req, res) => {
@@ -774,6 +747,5 @@ module.exports = {
   getAllOrders,
   loadUpdateOrderStatus,
   salesReport,
-  printer,
   salesGetReport
 };

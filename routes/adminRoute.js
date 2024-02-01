@@ -15,7 +15,6 @@ const {
   getAllOrders,
   loadUpdateOrderStatus,
   salesReport,
-  printer,
   salesGetReport,
 } = require("../controller /adminController");
 const {
@@ -47,7 +46,7 @@ router.route("/category").get(authMiddleware, addCategory);
 router.route("/addproduct").get(authMiddleware, addProduct);
 router.route("/product").get(authMiddleware, product);
 router.route("/dash").get(authMiddleware, dashboard);
-router.route("/generate-pdf").get(authMiddleware, printer);
+// router.route("/generate-pdf").get(authMiddleware, printer);
 router.route("/orders").get(authMiddleware, getAllOrders);
 router.route("/logout").get(noCacheHeaders, logout);
 module.exports = router;
