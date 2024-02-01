@@ -154,7 +154,6 @@ const loadUpdate = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const productData = await Product.findById(id);
   } catch (error) {
-    res.send(error);
     res.render("error");
   }
 });
@@ -165,7 +164,6 @@ const deleteProduct = asyncHandler(async (req, res) => {
     const deletedProduct = await Product.deleteOne({ _id: id });
     res.redirect("/admin/product/list");
   } catch (error) {
-    res.send(error);
     res.render("error");
   }
 });
@@ -177,7 +175,6 @@ const getaProduct = asyncHandler(async (req, res) => {
     res.json(findProduct);
   } catch (error) {
     // throw new Error(error)
-    res.send(error);
     res.render("error");
   }
 });
@@ -187,7 +184,6 @@ const getallProducts = asyncHandler(async (req, res) => {
     res.render("adminDash/indexProductList", { getallProduct: getallProduct });
   } catch (error) {
     // throw new Error
-    res.send(error);
     res.render("error");
   }
 });
@@ -247,7 +243,6 @@ const loadaUser = asyncHandler(async (req, res) => {
       res.redirect("/admin/dash");
     }
   } catch (error) {
-    res.send(error);
     res.render("error");
   }
 });

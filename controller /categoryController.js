@@ -33,7 +33,6 @@ const loadUpdate = asyncHandler(async (req, res) => {
     });
   } catch {
     // throw new Error(error)
-    res.send(error);
     res.render("error");
   }
 });
@@ -83,7 +82,6 @@ const deleteCategory = asyncHandler(async (req, res) => {
    
   } catch (error) {
     // throw new Error(error)
-    res.send(error);
     res.render("error");
   }
 });
@@ -95,7 +93,6 @@ const getCategory = asyncHandler(async (req, res) => {
     res.json(getCategory);
   } catch (error) {
     // throw new Error(error)
-    res.send(error);
     res.render("error");
   }
 });
@@ -109,7 +106,6 @@ const getallCategory = asyncHandler(async (req, res) => {
     res.json(getallCategory);
   } catch (error) {
     // throw new Error(error)
-    res.send(error);
     res.render("error");
   }
 });

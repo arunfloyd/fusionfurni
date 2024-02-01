@@ -56,7 +56,6 @@ const loginAdmin = asyncHandler(async (req, res) => {
       res.render("adminLogs", { message: req.flash("message") });
     }
   } catch (error) {
-    res.send(error);
     res.render("error");
   }
 });
@@ -473,7 +472,6 @@ const addProduct = asyncHandler(async (req, res) => {
   try {
     res.render("adminDash/indexAddProduct");
   } catch (error) {
-    res.send(error);
     res.render("error");
   }
 });
@@ -484,7 +482,6 @@ const addCategory = asyncHandler(async (req, res) => {
   try {
     res.render("adminDash/indexAddCategory");
   } catch (error) {
-    res.send(error);
     res.render("error");
   }
 });
@@ -495,7 +492,6 @@ const getallUser = asyncHandler(async (req, res) => {
   try {
     res.render("adminDash/indexUserList");
   } catch (error) {
-    res.send(error);
     res.render("error");
   }
 });
@@ -528,7 +524,6 @@ const loadaUser = asyncHandler(async (req, res) => {
       res.redirect("/admin/dash");
     }
   } catch (error) {
-    res.send(error);
     res.render("error");
   }
 });
@@ -542,7 +537,6 @@ const updateaUser = asyncHandler(async (req, res) => {
 
     res.redirect("/admin/users");
   } catch (error) {
-    res.send(error);
     res.render("error");
   }
 });
@@ -559,7 +553,6 @@ const loadDelete = asyncHandler(async (req, res) => {
       res.redirect("/admin/dash");
     }
   } catch (error) {
-    res.send(error);
     res.render("error");
   }
 });
@@ -570,7 +563,6 @@ const deleteaUser = async (req, res) => {
     req.flash("message", "Deleted the User Sucessfully");
     res.redirect("/admin/users");
   } catch (error) {
-    res.send(error);
     res.render("error");
   }
 };
@@ -580,7 +572,6 @@ const loadDeleteUser = async (req, res) => {
     await User.deleteOne({ _id: req.query.id });
     res.redirect("/admin/dashboard");
   } catch (error) {
-    res.send(error);
     res.render("error");
   }
 };
@@ -592,7 +583,6 @@ const getaUser = asyncHandler(async (req, res) => {
       getaUser,
     });
   } catch (error) {
-    res.send(error);
     res.render("error");
   }
 });
@@ -692,7 +682,6 @@ const logout = asyncHandler(async (req, res) => {
     res.redirect("/admin/login");
     res.sendStatus(204);
   } catch {
-    res.send(error);
     res.render("error");
   } // Forbidden
 });

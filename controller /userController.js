@@ -36,7 +36,6 @@ const loadlogin = asyncHandler(async (req, res) => {
       res.render("user/loginAndSignUp", { message: req.flash("message") });
     }
   } catch (error) {
-    res.send(error);
     res.render("error");
   }
 });
@@ -275,7 +274,6 @@ const loadVerify = asyncHandler(async (req, res) => {
     res.render("user/verifyEmail");
   } catch (error) {
     // throw new Error(error)
-    res.send(error);
     res.render("error");
   }
 });
@@ -298,7 +296,6 @@ const updateaUser = asyncHandler(async (req, res) => {
     res.json(updatedUser);
   } catch (error) {
     // throw new Error(error)
-    res.send(error);
     res.render("error");
   }
 });
@@ -313,7 +310,6 @@ const home = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     // throw new Error("Home Can't Access")
-    res.send(error);
     res.render("error");
   }
 });
@@ -445,7 +441,6 @@ const about = asyncHandler(async (req, res) => {
     res.render("UI/about");
   } catch (error) {
     // throw new Error("Shop Can't Access")
-    res.send(error);
     res.render("error");
   }
 });
@@ -465,7 +460,6 @@ const services = asyncHandler(async (req, res) => {
     res.render("UI/services");
   } catch (error) {
     // throw new Error("Shop Can't Access")
-    res.send(error);
     res.render("error");
   }
 });
@@ -474,7 +468,6 @@ const blog = asyncHandler(async (req, res) => {
     res.render("UI/blog");
   } catch (error) {
     // throw new Error("Shop Can't Access")
-    res.send(error);
     res.render("error");
   }
 });
@@ -483,7 +476,6 @@ const contact = asyncHandler(async (req, res) => {
     res.render("UI/contact");
   } catch (error) {
     // throw new Error("Shop Can't Access")
-    res.send(error);
     res.render("error");
   }
 });
@@ -491,8 +483,6 @@ const thankyou = asyncHandler(async (req, res) => {
   try {
     res.render("UI/thankyou");
   } catch (error) {
-    // throw new Error("Shop Can't Access")
-    res.send(error);
     res.render("error");
   }
 });
@@ -525,7 +515,6 @@ const product = asyncHandler(async (req, res) => {
       offers: offer,
     });
   } catch (error) {
-    res.send(error);
     res.render("error");
   }
 });
@@ -537,7 +526,6 @@ const getallUser = asyncHandler(async (req, res) => {
     res.json(getUsers);
   } catch (err) {
     // throw new Error(error)
-    res.send(error);
     res.render("error");
   }
 });
@@ -549,7 +537,6 @@ const getaUser = asyncHandler(async (req, res) => {
     res.json(getUsers);
   } catch (err) {
     // throw new Error(error)
-    res.send(error);
     res.render("error");
   }
 });
@@ -564,7 +551,6 @@ const deleteaUser = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     // throw new Error(error)
-    res.send(error);
     res.render("error");
   }
 });
@@ -614,7 +600,6 @@ const logout = asyncHandler(async (req, res) => {
     res.redirect("/login");
     res.sendStatus(204); //forbidden
   } catch (error) {
-    res.send(error);
     res.render("error");
   }
 });
@@ -763,7 +748,6 @@ const checkout = asyncHandler(async (req, res) => {
     res.render("UI/checkout", { addresses, cart, user, balance });
   } catch (error) {
     console.error(error);
-    res.send(error);
     res.render("error");
   }
 });
