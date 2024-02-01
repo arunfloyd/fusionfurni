@@ -1618,7 +1618,6 @@ const loadWishlist = asyncHandler(async (req, res) => {
     const wishList = await WishList.findOne({ orderby: _id }).populate(
       "products.product"
     );
-    console.log(wishList)
     res.render("UI/wishlist", { wishList });
   } catch (error) {
     console.error(error);
