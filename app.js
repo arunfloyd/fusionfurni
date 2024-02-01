@@ -18,7 +18,7 @@ const flash = require("express-flash");
 const { v4: uuidv4 } = require("uuid");
 const app = express();
 
-dbConnect();
+// dbConnect();
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
