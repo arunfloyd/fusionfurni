@@ -16,6 +16,8 @@ const {
   loadUpdateOrderStatus,
   salesReport,
   salesGetReport,
+  generatePdf,
+  salesAllReport,
 } = require("../controller /adminController");
 const {
   authMiddleware,
@@ -35,7 +37,9 @@ router
 router
   .route("/sales-report")
   .get(authMiddleware, salesGetReport)
-  .post(authMiddleware, salesReport);
+  router
+  .route("/sales-report-date")
+  .get(authMiddleware, salesGetReport)
 router
   .route("/update-status/:id")
   .get(authMiddleware, loadUpdateOrderStatus)
@@ -46,7 +50,8 @@ router.route("/category").get(authMiddleware, addCategory);
 router.route("/addproduct").get(authMiddleware, addProduct);
 router.route("/product").get(authMiddleware, product);
 router.route("/dash").get(authMiddleware, dashboard);
-// router.route("/generate-pdf").get(authMiddleware, printer);
 router.route("/orders").get(authMiddleware, getAllOrders);
 router.route("/logout").get(noCacheHeaders, logout);
+router.route("/download-pdf").get(generatePdf);
+
 module.exports = router;

@@ -12,6 +12,9 @@
   </div>
 </div>
 </div>
+<%if (userorder.orderStatus.toLowerCase() === "delivered") { %>
+  <a href="/download-pdf/<%=userorder._id%>" class="btn btn-success">Download Invoice</a>
+  <%}%>
 <div class="hero">
   <div class="container">
     <div class="row ">
@@ -31,9 +34,27 @@
                 <h5 class="card-title">
                   <strong>Product Title:</strong> <%= productItem.product.title %>
                 </h5>
-                <h6 class="card-text">
-                  <strong>Product Price:</strong> <%= productItem.product.price %>
-                </h6>
+                <% if (productItem.offer !== null && typeof productItem.offer !== 'undefined') { %>
+                  <h6 class="card-text">
+                    <strong>Original Product Price:</strong> <%= productItem.product.price %>
+                  </h6>
+                  <h6 class="card-text">
+                    <strong>Discounted Price:</strong> <%= productItem.price %>
+                  </h6>
+                 
+                  <% const savings = productItem.product.price - productItem.price; %>
+                  <% const discountPercentage = (savings / productItem.product.price) * 100; %>
+                  <h6 class="card-text">
+                    <strong>Savings:</strong> <%= savings %> (Discount: <%= discountPercentage.toFixed(2) %> %)
+                  </h6>
+                <% } else { %>
+                  <h6 class="card-text">
+                    <strong>Product Price:</strong> <%= productItem.product.price %>
+                  </h6>
+                  <!-- Add other information or formatting for the case without an offer -->
+                <% } %>
+                
+                
   
                 <% if (index === array.length - 1) { %>
                   <strong>

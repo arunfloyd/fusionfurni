@@ -60,7 +60,6 @@
                               </tr>
                             </thead>
                             <tbody>
-                              <% if (userorders.length > 0 && grandTotal.length > 0) { %>
                               <% userorders.reverse().forEach(order => { %>
                                 <% order.products.forEach((productItem, index, array) => { %>
                                   <tr>
@@ -100,10 +99,6 @@
                                   </tr>
                                 <% }); %>
                               <% }); %>
-                              <% } else { %>
-                                <!-- Display a message when no data is available -->
-                                <p>No records found for the specified date range.</p>
-                              <% } %>
                             </tbody>
                           </table>
                           <h4 class="fw-bold">Total Amount: <%= grandTotal.length > 0 ? grandTotal[0].totalAmount : 0 %></h4>
@@ -120,9 +115,10 @@
       </div>
      
       <div class="container text-center mt-4">
-        <button type="button" class="btn btn-primary" onclick="printScreen()">
-          Print Report
-        </button>
+         <button type="button" class="btn btn-primary" onclick="download()" >
+        Download Report
+      </button>
+       
       </div>
     </section>
 
@@ -134,13 +130,38 @@
 </body>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-<script>
-  
-  function printScreen() {
-    window.print();
-  }
-</script>
 
+<script>
+    async function download() {
+      const startDate = document.getElementById("startDate").value;
+      const endDate = document.getElementById("endDate").value;
+      try {
+          console.log('Start Date:', startDate);
+          console.log('End Date:', endDate);
+          const response = await axios.get('/admin/download-pdf', {
+            params: {
+              startDate: startDate,
+              endDate: endDate
+            },
+            responseType: 'blob', // Set the responseType to 'blob'
+          });
+
+          // Create a blob URL and trigger the download
+          const blob = new Blob([response.data], { type: 'application/pdf' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'invoice.pdf';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+      } catch (error) {
+          console.error('Error:', error.message);
+      }
+  }
+  
+  </script>
 <script>
   async function filterOrders() {
       const startDate = document.getElementById("startDate").value;
@@ -148,29 +169,15 @@
       try {
           console.log('Start Date:', startDate);
           console.log('End Date:', endDate);
-          const response = await axios.post('/admin/sales-report', {
-              startDate: startDate,
-              endDate: endDate
+          const response = await axios.get('/admin/sales-report', {
+            params: {
+    startDate: startDate,
+    endDate: endDate
+  }
           });
-          const someJSONdata = response.data;
-            printWithHeader(someJSONdata);
-  
+    
       } catch (error) {
           console.error('Error:', error.message);
       }
   }
-  
-  function printWithHeader(someJSONdata) {
-      printJS({
-          printable: someJSONdata,
-          type: 'json',
-          properties: ['_id', 'products', 'orderId', 'paymentIntent', 'request', 'orderStatus', 'orderby', 'address', 'expectedDelivery', 'createdAt', 'updatedAt'],
-          header: '<h3 class="custom-h3">My custom header</h3>',
-          style: '.custom-h3 { color: red; }'
-      });
-  }
-  </script>
-  
-<script>
-    
   </script>

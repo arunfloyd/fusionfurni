@@ -10,6 +10,10 @@ const mongoose = require("mongoose");
           },
           quantity: Number,
           price: Number,
+          offer: {
+            type: Number,
+            default: null,
+          },
         },
       ],
       cartTotal: Number,
@@ -22,6 +26,7 @@ const mongoose = require("mongoose");
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
+      
     },
     {
       timestamps: true,

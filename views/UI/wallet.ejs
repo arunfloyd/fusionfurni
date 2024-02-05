@@ -1,5 +1,23 @@
 <%- include('../layout/header.ejs') %>
 <style>/* General styles */
+
+#search-button {
+    background-color: #4caf50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+
+  #search-button:hover {
+    background-color: #45a049; /* Darker Green on hover */
+  }
   .wallet-container {
     padding: 30px;
     background-color: #f5f5f5;
@@ -120,6 +138,7 @@ button:hover {
   background-color: #45a049;
 }
   </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-KJLMBHA2jv6iMSjcCBJ42TCNteGfdgVWq8Nq2tk5tkl6O6Tc5EPb8V+3Rv9HJCz" crossorigin="anonymous">
 
 <main class="wallet-container">
   <section class="wallet-header">
@@ -138,6 +157,32 @@ button:hover {
 
   <section class="recent-transactions">
     <h2>Recent Transactions</h2>
+    <div class="row align-items-center">
+      <div class="col-md-4 col-12 d-flex justify-content-between">
+        <form action="" method="GET" class="flex-grow-1 me-3">
+          <div class="input-group">
+            <input
+              id="search-input"
+              type="search"
+              class="form-control"
+              placeholder="Search Products"
+              name="Search"
+            />
+            <select class="form-control" id="sort-dropdown" name="Sort">
+              <option value="default">Default</option>
+              <option value="priceHigh">Price High to Low</option>
+              <option value="priceLow">Price Low to High</option>
+            </select>
+            <button id="search-button" type="submit" class="btn btn-primary" value="Search">
+              <i class="fas fa-search"></i> Go
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    
+    
     <table>
       <thead>
         <tr>
@@ -151,12 +196,13 @@ button:hover {
       <% if (balance.transactions && balance.transactions.length > 0) { %>
       <tbody>
        
-        <% for (let i = 0; i < balance.transactions.length; i++) { %>
+        <% for (let i = balance.transactions.length-1; i >0 ; i--) { %>
           <tr>
             <td><%= new Date(balance.transactions[i].timestamp).toLocaleDateString('en-GB') + ' ' + new Date(balance.transactions[i].timestamp).toLocaleTimeString() %></td>
             <td><%= balance.transactions[i].paymentID %></td>
-            <td><%= balance.transactions[i].type %></td>
-            <td><%= balance.transactions[i].description %></td>
+            <td style="color: <%= balance.transactions[i].type === 'credit' ? 'green' : 'red' %>">
+              <%= balance.transactions[i].type %>
+            </td>            <td><%= balance.transactions[i].description %></td>
             <td><%= balance.transactions[i].amount %></td>
           </tr>
         <% } %>
@@ -177,6 +223,47 @@ button:hover {
     <input type="number" id="amountInput" placeholder="ENTER THE AMOUNT TO BE ADDED">
     <button id="confirmAddMoneyButton">Add Money</button>
   </div>
+</div>
+<div class="container text-center mt-4">
+  <nav aria-label="...">
+    <ul class="pagination justify-content-center">
+      <% if (currentPage > 1) { %>
+      <li class="page-item">
+        <a
+          class="page-link"
+          href="?page=<%= currentPage - 1 %><%= search ? '&Search=' + search : '' %><%= sortOrder ? '&Sort=' + sortOrder : '' %>"
+          tabindex="-1"
+        >Previous</a>
+      </li>
+      <% } else { %>
+      <li class="page-item disabled">
+        <span class="page-link" tabindex="-1">Previous</span>
+      </li>
+      <% } %> 
+      
+      <% for (let i = 1; i <= totalPages; i++) { %>
+      <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+        <a
+          class="page-link"
+          href="?page=<%= i %><%= search ? '&Search=' + search : '' %><%= sortOrder ? '&Sort=' + sortOrder : '' %>"
+        ><%= i %></a>
+      </li>
+      <% } %> 
+
+      <% if (currentPage < totalPages) { %>
+      <li class="page-item">
+        <a
+          class="page-link"
+          href="?page=<%= currentPage + 1 %><%= search ? '&Search=' + search : '' %><%= sortOrder ? '&Sort=' + sortOrder : '' %>"
+        >Next</a>
+      </li>
+      <% } else { %>
+      <li class="page-item disabled">
+        <span class="page-link">Next</span>
+      </li>
+      <% } %>
+    </ul>
+  </nav>
 </div>
 <%- include('../layout/footer.ejs') %>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>

@@ -69,7 +69,7 @@
                                               <p>No address available</p>
                                             <% } %>
                                     </div>
-                                
+                                    
                                     <div class="mb-4">
                                         <label class="form-label">Order Status</label>
                                         <select class="form-select" name="orderStatus">
@@ -77,8 +77,8 @@
                                             <option value="Returned " <%= userorders.orderStatus === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
                                             <option value="Shipped" <%= userorders.orderStatus === 'Shipped' ? 'selected' : '' %>>Shipped</option>
                                             <option value="Delivered" <%= userorders.orderStatus === 'Delivered' ? 'selected' : '' %>>Delivered</option>
-                                            <option value="Returning" <%= userorders.orderStatus === 'Returning' ? 'selected' : '' %>>Returning</option>
-                                            <option value="Returned " <%= userorders.orderStatus === 'Returned' ? 'selected' : '' %>>Returned</option>
+                                            <option value="Return Request" <%= userorders.orderStatus === 'Return Request' ? 'selected' : '' %>>Return Request</option>
+                                            <option value="Returned" <%= userorders.orderStatus === 'Returned' ? 'selected' : '' %>>Returned</option>
                                         </select>
                                     </div>
                                 
@@ -90,13 +90,8 @@
                                 
                             </div>
                            
-                            <!-- .col// -->
                         </div>
-                        <!-- .row // -->
                     </div>
-                    <!-- card body .// -->
                 </div>
-                <!-- card .// -->
             </section>
-            <!-- content-main end// -->
-            <%- include('footer.ejs') %>
+                      <%- include('footer.ejs') %>

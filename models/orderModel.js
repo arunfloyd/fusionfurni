@@ -10,6 +10,10 @@ var orderSchema = new mongoose.Schema(
         },
         quantity: Number,
         price: Number,
+        offer :{
+          type:String,
+          default:false,
+        }
       },
     ],
     orderId: {
@@ -39,6 +43,7 @@ var orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    
   
     expectedDelivery: {
       type: String,

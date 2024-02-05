@@ -24,10 +24,203 @@ const { elements } = require("chart.js");
 const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
 const Wallet = require("../models/walletModel");
 const { OfferAssociation, Offer } = require("../models/offerModel");
+const fs = require('fs')
+const pdf = require("pdf-creator-node");
+const path = require('path')
 const razorpayInstance = new Razorpay({
   key_id: RAZORPAY_ID_KEY,
   key_secret: RAZORPAY_SECRET_KEY,
 });
+const puppeteer = require('puppeteer');
+const generatePdf = async (req, res) => {
+  try {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+const id =req.params.id ;
+const userorder = await Order.findById({ _id: id })
+.populate("products.product")
+.populate("orderby")
+.populate("address")
+.exec();
+console.log(userorder)
+const data = {
+  prodlist: userorder.products.map((productItem, index, array) => {
+    let productInfo = {
+      'Product Title': productItem.product.title,
+    };
+
+    if (productItem.offer !== null && typeof productItem.offer !== 'undefined') {
+      productInfo['Original Product Price'] = productItem.product.price;
+      productInfo['Discounted Price'] = productItem.price;
+
+      const savings = productItem.product.price - productItem.price;
+      const discountPercentage = (savings / productItem.product.price) * 100;
+      productInfo['Savings'] = `Discount: ${discountPercentage.toFixed(2)}`;
+    } else {
+      productInfo['Product Price'] = productItem.product.price;
+    }
+
+    return productInfo;
+  }),
+  Address: {
+    name: userorder.address[0].name,
+    mobile: userorder.address[0].mobile,
+    street: userorder.address[0].street,
+    area: userorder.address[0].area,
+    landmark: userorder.address[0].landmark,
+    pincode: userorder.address[0].pincode,
+  },
+  subtotal: userorder.paymentIntent.amount, // Example data, replace with actual subtotal calculation
+};
+
+
+const html = `
+  <html>
+    <head>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 20px;
+        }
+
+        .company-heading {
+          font-size: 24px;
+          font-weight: bold;
+          color: #333;
+          margin-bottom: 10px;
+        }
+
+        h1 {
+          text-align: center;
+          color: #333;
+        }
+
+        ul {
+          list-style-type: none;
+          padding: 0;
+        }
+
+        li {
+          margin-bottom: 10px;
+        }
+
+        p {
+          margin-top: 20px;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 20px;
+        }
+
+        th, td {
+          border: 1px solid #ddd;
+          padding: 8px;
+          text-align: left;
+        }
+
+        th {
+          background-color: #f2f2f2;
+        }
+
+        .invoice-details {
+          border-top: 2px solid #333;
+          padding-top: 10px;
+          margin-top: 20px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="company-heading">FUSIONFURNI</div>
+      <ul>
+          <li>Kinfra Kakkancheri</li>
+          <li>Near Calicut University</li>
+          <li>Kozhikode</li>
+          <li>67122</li>
+        </ul>
+      <hr>
+
+      <h1>Invoice</h1>
+      <hr>
+      <b><p>Address:</b>
+        <ul>
+          <li>Name: ${data.Address.name}</li>
+          <li>Mobile: ${data.Address.mobile}</li>
+          <li>Street: ${data.Address.street}</li>
+          <li>Area: ${data.Address.area}</li>
+          <li>Landmark: ${data.Address.landmark}</li>
+          <li>Pincode: ${data.Address.pincode}</li>
+        </ul>
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Product Title</th>
+            <th>Original Product Price</th>
+            <th>Discounted Price</th>
+            <th>Savings %</th>
+            
+          </tr>
+        </thead>
+        <tbody>
+          ${data.prodlist.map(product => `
+            <tr>
+              <td>${product['Product Title']}</td>
+              <td>${product['Original Product Price'] ? `₹${product['Original Product Price']}` : ''}</td>
+              <td>${product['Discounted Price'] ? `₹${product['Discounted Price']}` : ''}</td>
+              <td>${product['Savings'] ? `${product['Savings']}` : ''}</td>
+              <td>${product['Product Price'] ? `₹${product['Product Price']}` : ''}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+
+     <b><p>Subtotal: ₹${data.subtotal}</p></b> 
+
+      <div class="invoice-details">
+        <p>Invoice ID: ${generateInvoiceID()}</p>
+        <p>Invoice Date: ${new Date().toLocaleDateString("en-GB")}</p>
+      </div>
+    </body>
+  </html>
+`;
+
+function generateInvoiceID() {
+  return Math.floor(1000 + Math.random() * 9000);
+}
+
+
+    await page.setContent(html);
+
+    const filename = Math.random() + '_doc' + '.pdf';
+    const filepath = path.join(__dirname, 'docs', filename);
+
+    await page.pdf({
+      path: filepath,
+      format: 'A4',
+      displayHeaderFooter: true,
+      headerTemplate: '<h4 style="color: red; font-size: 20; font-weight: 800; text-align: center;">CUSTOMER INVOICE</h4>',
+      footerTemplate: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>',
+    });
+
+    await browser.close();
+
+    // Sending the file for download
+    res.download(filepath, filename, (err) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error initiating download');
+      }
+
+    fs.unlinkSync(filepath);
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Error generating PDF');
+  }
+};
+
 const loadlogin = asyncHandler(async (req, res) => {
   try {
     if (req.cookies.refreshToken) {
@@ -670,9 +863,18 @@ const userCart = asyncHandler(async (req, res) => {
 
     if (offerForProduct.length > 0) {
       offers = offerForProduct;
-    } else {
+    } else  {
       offers = offerForCategory;
     }
+   
+      if (offers?.offer) {
+        offers = offers[i].offer.percentage || 0;
+      }
+      else{
+        offers=0
+      }
+    
+    
 
     const originalPrice = getallProduct.price;
     let totalDiscountPercentage = 0;
@@ -695,6 +897,7 @@ const userCart = asyncHandler(async (req, res) => {
           product: productId,
           quantity: quantity,
           price: roundedDiscountedPrice,
+          offer: offers,
         });
         alreadyExistCart.cartTotal += roundedDiscountedPrice * quantity;
         await alreadyExistCart.save();
@@ -708,6 +911,8 @@ const userCart = asyncHandler(async (req, res) => {
             product: productId,
             quantity: quantity,
             price: roundedDiscountedPrice,
+            offer: offers,
+
           },
         ],
         cartTotal: roundedDiscountedPrice * quantity,
@@ -971,6 +1176,7 @@ const createOrder = asyncHandler(async (req, res) => {
       } else {
         finalAmount = Number(userCart.cartTotal);
       }
+      console.log(userCart.products)
       let newOrder = await new Order({
         products: userCart.products,
         paymentIntent: {
@@ -1023,84 +1229,60 @@ const createOrder = asyncHandler(async (req, res) => {
   }
 });
 
-// const createOrder = asyncHandler(async (req, res) => {
-//   const { COD, couponApplied, addressId, paymentMethod, orderTotal } = req.body;
-//   const { _id } = req.user;
-
-//   try {
-
-//     const { _id } = req.user;
-//     const user = await User.findOne(_id);
-//     const cart = await Cart.findOne({ orderby: _id }).populate(
-//       "products.product"
-//     );
-//     const isValidCart = cart.products.every(productItem => {
-//       return productItem.quantity > 0 && productItem.quantity <= productItem.product.quantity;
-//     });
-//     if (!isValidCart) {
-//       req.flash('message',"Something Went Wrong.Please Try Again !!")
-//       return res.redirect("/view-cart"); // Assuming you have a specific template for an empty cart
-//     }
-//     const addresses = await Address.find({ user: _id }).exec();
-//     let userCart = await Cart.findOne({ orderby: user._id });
-//     let finalAmount = 0;
-
-//     if (couponApplied && userCart.totalAfterDiscount) {
-//       finalAmount = Number(userCart.totalAfterDiscount);
-//     } else {
-//       finalAmount = Number(userCart.cartTotal);
-//     }
-
-//     let newOrder = await new Order({
-//       products: userCart.products,
-//       paymentIntent: {
-//         id: uniqid(),
-//         method: paymentMethod,
-//         amount: finalAmount,
-//         status: "Pending",
-//         created: Date.now(),
-//       },
-//       orderId: orderid.generate(),
-//       address: addressId,
-//       orderby: user._id,
-//       orderStatus: "Processing",
-//       expectedDelivery: Date.now() + 7 * 24 * 60 * 60 * 1000,
-//     }).save();
-
-//     // Update product quantities
-//     for (const item of userCart.products) {
-//       const count = typeof item.quantity === "number" ? item.quantity : 0;
-//       const updatedQuantity = isNaN(count) ? 0 : +count;
-
-//       await Product.updateOne(
-//         { _id: item.product._id },
-//         { $inc: { quantity: -updatedQuantity, sold: updatedQuantity } }
-//       );
-//     }
-
-//     await Cart.deleteOne({ orderby: user._id });
-
-//     await Cart.deleteOne({ orderby: user._id });
-
-//     res.redirect("/thankyou");
-//   } catch (error) {
-//     res.status(500).json({ message: "Internal Server Error" });
-//   }
-// });
-
 const getOrders = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   try {
+    const ITEMS_PER_PAGE = 8;
+    let search = "";
+    let sortOrder = "";
+    if (req.query.Search || req.query.Sort) {
+      search = req.query.Search;
+      sortOrder = req.query.Sort;
+    }
+    console.log("Search:", search);
+console.log("Sort Order:", sortOrder);
+
+    const sortingOptions = {
+      default: {}, 
+      priceHigh: { createdAt: -1 },
+      priceLow: { createdAt: 1 },
+    };
+    const page = parseInt(req.query.page) || 1;
+    const totalProducts = await Order.countDocuments({
+      $and: [
+        {
+          $or: [
+            { orderId: { $regex: search ? ".*" + search + ".*" : "", $options: "i" } },
+          ],
+        },
+      ],
+    });
+    
+    const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE);
+    const skip = (page - 1) * ITEMS_PER_PAGE;
+
     const userorders = await Order.find({ orderby: _id })
       .populate("products.product")
       .populate("orderby")
+      .sort(sortingOptions[sortOrder])  // Move .sort() here
+      .skip(skip)
+      .limit(ITEMS_PER_PAGE)
       .exec();
-    res.render("UI/orders", { userorders: userorders });
+      console.log("User Orders:", userorders);
+
+    res.render("UI/orders", {
+      userorders: userorders,
+      currentPage: page,
+      totalPages: totalPages,
+      search: search,
+      sortOrder: sortOrder
+    });
   } catch (error) {
     console.error(`erroria : `, error);
     res.status(500).json({ error: "Internal server error", error });
   }
 });
+
 
 const getOrdersDetails = asyncHandler(async (req, res) => {
   const { _id } = req.user;
@@ -1440,19 +1622,56 @@ const loadRequestCancel = asyncHandler(async (req, res) => {
 const loadWallet = asyncHandler(async (req, res) => {
   try {
     const { _id } = req.user;
-    let balance = await Wallet.findOne({ user: _id });
+    const ITEMS_PER_PAGE = 10;
+    let search = "";
+    let sortOrder = "";
+    if (req.query.Search || req.query.Sort) {
+      search = req.query.Search;
+      sortOrder = req.query.Sort;
+    }
+    const sortingOptions = {
+      default: {},
+      priceHigh: { createdAt: -1 },
+      priceLow: { createdAt: 1 },
+    };
 
+    const page = parseInt(req.query.page) || 1;
+    const totalProducts = await Wallet.countDocuments({
+      $and: [
+        {
+          $or: [
+            { orderId: { $regex: search ? ".*" + search + ".*" : "", $options: "i" } },
+          ],
+        },
+      ],
+    });
+    const totalPages = Math.ceil(1 / ITEMS_PER_PAGE);
+    const skip = (page - 1) * ITEMS_PER_PAGE;
+
+    let balance = await Wallet.findOne({ user: _id })
+      .sort(sortingOptions[sortOrder]) // Move .sort() here
+      .skip(skip)
+      .limit(ITEMS_PER_PAGE)
+      .exec();
     if (!balance) {
       balance = { balance: 0 }; // Assuming 'amount' is the property representing the balance
     }
-    console.log(balance);
 
-    res.render("UI/wallet", { balance }); // Pass 'balance' as an object property
+    console.log(balance); // Now log balance after initialization
+
+    res.render("UI/wallet", {
+      balance,
+      currentPage: page,
+      totalPages: totalPages,
+      search: search,
+      sortOrder: sortOrder,
+    });
   } catch (error) {
     console.error("Error loading wallet:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 const loadMoney = asyncHandler(async (req, res) => {
   try {
@@ -1491,7 +1710,7 @@ const requestReturn = asyncHandler(async (req, res) => {
     
     const { selectedRequest, moreDetails, id } = req.body;
     const updateField = {
-      orderStatus: 'Returned',
+      orderStatus: 'Return Request',
       requestReson: moreDetails,  
     };
 
@@ -1505,33 +1724,6 @@ const requestReturn = asyncHandler(async (req, res) => {
       return res.status(404).json({ error: "Order not found" });
     }
 
-    const amountToReturn = await Order.findById(id);
-    if (!amountToReturn) {
-      return res.status(404).json({ error: "Order not found" });
-    }
-
-    const paymentAmount = amountToReturn.paymentIntent.amount;
-    console.log(paymentAmount);
-const isCOD =  amountToReturn.paymentIntent.status
-
-    let userWallet = await Wallet.findOne({ user: _id });
-    if (!userWallet) {
-      userWallet = new Wallet({
-        user: _id,
-        balance: 0,
-        transactions: [],
-      });
-    }
-
-    userWallet.balance += paymentAmount;
-    userWallet.transactions.push({
-      type: "credit",
-      amount: paymentAmount,
-      description: "Return Amount has been added",
-      paymentID: "ReturnMoney",
-    });
- await userWallet.save();
-    // Assuming you want to redirect after updating the order
     res.json({ success: true, redirect: "/orders" });
   } catch (error) {
     console.error('Error processing return request:', error);
@@ -1732,5 +1924,6 @@ module.exports = {
   loadMoney,
   applyCoupon,
   userRegister,
-  loadRequestCancel
+  loadRequestCancel,
+  generatePdf
 };

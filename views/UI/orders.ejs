@@ -9,9 +9,49 @@
         </div>
       </div>
     </div>
+    
+  </div>
+
+ 
+  
+  
+  
+  
+</div>
+
+</div>
+<div class="row align-items-center">
+  <div class="col-md-4 col-12 d-flex justify-content-between">
+    <form action="" method="GET" class="flex-grow-1 me-3">
+      <div class="input-group">
+        <input
+          id="search-input"
+          type="search"
+          class="form-control"
+          placeholder="Search Products"
+          name="Search"
+        />
+        <button id="search-button" type="submit" class="btn btn-primary" value="Search">
+          Search
+        </button>
+      </div>
+    </form>
+
+    <div class="form-group  me-3">
+      <select class="form-control" id="sort-dropdown" name="Sort">
+        <option value="default">Default</option>
+        <option value="priceHigh">Price High to Low</option>
+        <option value="priceLow">Price Low to High</option>
+      </select>
+    </div>
+
+    <button id="filter-button" type="submit" class="btn btn-primary" value="Filter">
+      Filter
+    </button>
   </div>
 </div>
 
+</div>
 <div class="card text-center">
   <% if (userorders && userorders.length > 0) { %>
     <% userorders.reverse().forEach(order => { %>
@@ -54,6 +94,48 @@
   <% } else { %>
     <p>No orders found.</p>
   <% } %>
+</div>
+
+<div class="container text-center mt-4">
+  <nav aria-label="...">
+    <ul class="pagination justify-content-center">
+      <% if (currentPage > 1) { %>
+      <li class="page-item">
+        <a
+          class="page-link"
+          href="?page=<%= currentPage - 1 %><%= search ? '&Search=' + search : '' %><%= sortOrder ? '&Sort=' + sortOrder : '' %>"
+          tabindex="-1"
+        >Previous</a>
+      </li>
+      <% } else { %>
+      <li class="page-item disabled">
+        <span class="page-link" tabindex="-1">Previous</span>
+      </li>
+      <% } %> 
+      
+      <% for (let i = 1; i <= totalPages; i++) { %>
+      <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+        <a
+          class="page-link"
+          href="?page=<%= i %><%= search ? '&Search=' + search : '' %><%= sortOrder ? '&Sort=' + sortOrder : '' %>"
+        ><%= i %></a>
+      </li>
+      <% } %> 
+
+      <% if (currentPage < totalPages) { %>
+      <li class="page-item">
+        <a
+          class="page-link"
+          href="?page=<%= currentPage + 1 %><%= search ? '&Search=' + search : '' %><%= sortOrder ? '&Sort=' + sortOrder : '' %>"
+        >Next</a>
+      </li>
+      <% } else { %>
+      <li class="page-item disabled">
+        <span class="page-link">Next</span>
+      </li>
+      <% } %>
+    </ul>
+  </nav>
 </div>
 
 

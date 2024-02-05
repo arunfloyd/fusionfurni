@@ -52,6 +52,7 @@ const {
   userRegister,
   loadRequestCancel,
   requestCancel,
+  generatePdf,
 } = require("../controller /userController");
 const {
   userMiddleware,
@@ -120,4 +121,6 @@ router.get("/request-cancel/:id", loadRequestCancel);
 router.put("/request-cancel",userMiddleware, requestCancel);
 router.get("/wallet", userMiddleware, loadWallet);
 router.post("/create-money", userMiddleware, loadMoney);
+router.get('/download-pdf/:id',generatePdf);
+
 module.exports = router;

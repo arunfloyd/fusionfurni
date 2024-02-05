@@ -1,5 +1,33 @@
 <%- include('../layout/header.ejs') %>
+<style>
+   .quantity-control-container {
+        display: flex;
+        align-items: center;
+    }
 
+    .quantity-control-btn {
+        background-color: #043d05;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        padding: 10px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold; /* Added to make the symbols bold */
+        transition: background-color 0.3s ease;
+    }
+
+    .quantity-control-btn:hover {
+        background-color: #45a049;
+    }
+
+    .quantity.custom-input {
+        width: 40px;
+        text-align: center;
+        font-size: 16px;
+        margin: 0 10px;
+    }
+</style>
 <!-- Start Hero Section -->
 <div class="hero">
     <div class="container">
@@ -76,17 +104,13 @@
                                         <%= productItem.price %>
                                     </td>
                                     <td class="product-price">
-                                        <div class="quantity-dropdown-container">
-                                            <select class="quantity custom-select" name="quantity" id="quantity" data-product-id="<%= productItem.product._id %>" data-current-quantity="<%= productItem.quantity %>">
-                                                <% for (let i = 1; i <= productItem.product.quantity; i++) { %>
-                                                    <option value="<%= i %>" <%= i === productItem.quantity ? 'selected' : '' %>><%= i %></option>
-                                                <% } %>
-                                                <% if(productItem.product.quantity ===0) { %>
-                                                    <option value="0">Sorry !! Out of Stock</option>
-                                                    <% } %>
-                                            </select>
+                                        <div class="quantity-control-container">
+                                            <button class="quantity-control-btn" data-action="decrease" data-product-id="<%= productItem.product._id %>">-</button>
+                                            <input class="quantity custom-input" type="text" name="quantity" id="quantity" value="<%= productItem.quantity %>" data-product-id="<%= productItem.product._id %>" data-max-quantity="<%= productItem.product.quantity %>">
+                                            <button class="quantity-control-btn" data-action="increase" data-product-id="<%= productItem.product._id %>">+</button>
                                         </div>
                                     </td>
+                                    
                                     <!-- Add other columns for product details -->
                                     <td class="product-remove">
                                         <form action="/remove-item" method="post">
@@ -250,6 +274,70 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>   
+   <!-- Add this script to your HTML file -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const quantityInputs = document.querySelectorAll('.quantity');
+        const quantityControlBtns = document.querySelectorAll('.quantity-control-btn');
+
+        quantityInputs.forEach(input => {
+            const productId = input.dataset.productId;
+            const maxQuantity = input.dataset.maxQuantity;
+
+            input.addEventListener('input', async (event) => {
+                const newQuantity = event.target.value;
+
+                // Validate input to not exceed the maximum quantity
+                if (parseInt(newQuantity) > maxQuantity) {
+                    input.value = maxQuantity;
+                }
+
+                try {
+                    const response = await axios.post(`/update-quantity/${productId}`, { newQuantity });
+
+                    // Handle the response if needed
+                    console.log(response.data);
+
+                    // Refresh the window after a successful update
+                    window.location.reload();
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+
+        quantityControlBtns.forEach(btn => {
+            btn.addEventListener('click', async (event) => {
+                const productId = btn.dataset.productId;
+                const input = document.querySelector(`.quantity[data-product-id="${productId}"]`);
+                const maxQuantity = input.dataset.maxQuantity;
+                let currentQuantity = parseInt(input.value);
+
+                if (btn.dataset.action === 'increase' && currentQuantity < maxQuantity) {
+                    currentQuantity++;
+                } else if (btn.dataset.action === 'decrease' && currentQuantity > 1) {
+                    currentQuantity--;
+                }
+
+                input.value = currentQuantity;
+
+                try {
+                    const response = await axios.post(`/update-quantity/${productId}`, { newQuantity: currentQuantity });
+
+                    // Handle the response if needed
+                    console.log(response.data);
+
+                    // Refresh the window after a successful update
+                    window.location.reload();
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+</script>
+
+    
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         var applyCouponBtn = document.getElementById("applyCouponBtn");

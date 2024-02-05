@@ -58,10 +58,7 @@ const updateCategory = asyncHandler(async (req, res) => {
       res.redirect("/admin/category/list");
     }
   } catch (error) {
-    // Log the error for debugging purposes
     console.error(error);
-
-    // Pass the error message to the error template
     req.flash("message", "An error occurred. Please try again.");
     res.render("error", { error });
   }

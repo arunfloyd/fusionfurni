@@ -132,12 +132,17 @@
   <!-- Actual -->
   <div class="row">
     <div class="col-xl-8 col-lg-12">
-        <div class="card mb-4">
-            <article class="card-body">
-                <h5 class="card-title">Sale statistics</h5>
-                <canvas id="myChart" height="120px"></canvas>
-            </article>
-        </div>
+      <button onclick="changeChart()" style="background-color: white; color: black; font-weight: bold; border-radius: 10px;">Year Sales</button>
+
+      <div class="card mb-4">
+        <article class="card-body">
+          <h5 class="card-title">Sale statistics</h5>
+          <!-- Use a container to hold the canvas for easy replacement -->
+          <div id="chartContainer">
+            <canvas id="myChart" height="120px"></canvas>
+          </div>
+        </article>
+      </div>
         <div class="row">
           <div class="col-lg-5">
             <div class="card mb-4">
@@ -450,6 +455,42 @@ new Chart(daily, {
       });
 
 
+// Function to change the chart
+function changeChart() {
+  // Assume you have another chart data named 'anotherChartData'
+  const anotherChartData = {
+    labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+    datasets: [
+      {
+        label: 'Sales',
+        tension: 1,
+        fill: true,
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        data: [null,null,null,null,null,null,null,null,null,9],
+      },
+    ],
+  };
+
+  // Get the canvas and remove the previous chart
+  const canvasContainer = document.getElementById('chartContainer');
+  canvasContainer.innerHTML = '<canvas id="myChart" height="120px"></canvas>';
+
+  // Create a new chart on the fresh canvas
+  const newChart = new Chart('myChart', {
+    type: 'line',
+    data: anotherChartData,
+    options: {
+      plugins: {
+        legend: {
+          labels: {
+            usePointStyle: true,
+          },
+        },
+      },
+    },
+  });
+}
 
     </script>
   

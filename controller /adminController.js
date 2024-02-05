@@ -6,9 +6,11 @@ const jwt = require("jsonwebtoken");
 const Product = require("../models/productModel");
 const Category = require("../models/categoryModel");
 const Order = require("../models/orderModel");
-// const print = require("print-js")
-const puppeteer = require("puppeteer");
-
+const Wallet = require("../models/walletModel");
+const puppeteer = require('puppeteer');
+const fs = require('fs')
+const pdf = require("pdf-creator-node");
+const path = require('path')
 
 
 // login for Admin
@@ -36,7 +38,6 @@ const loginAdminCtrl = asyncHandler(async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check if the user exists
     const adminUser = await User.findOne({ email });
 
     if (
@@ -46,7 +47,6 @@ const loginAdminCtrl = asyncHandler(async (req, res) => {
     ) {
       const refreshToken = await generateRefreshToken(adminUser?._id);
 
-      // Update the user with the new refresh token
       const updateuser = await User.findByIdAndUpdate(
         adminUser.id,
         {
@@ -63,32 +63,37 @@ const loginAdminCtrl = asyncHandler(async (req, res) => {
         maxAge: 72 * 60 * 60 * 1000,
       });
 
-      // Redirect to the admin index page
       res.redirect("/admin/dash");
       res.status(200).send({ token: refreshToken });
     } else {
-      // If login fails, flash an error message and redirect to the admin login page
       req.flash("message", "Invalid credentials");
-      // res.render('adminLogs')
       res.redirect("/admin/login");
     }
   } catch (error) {
-    // If an unexpected error occurs, flash an error message and redirect to the admin login page
     req.flash("message", "Unexpected error");
-    // res.render('adminLogs')
     res.redirect("/admin/login");
   }
 });
+
 const salesGetReport = asyncHandler(async (req, res) => {
   try {
-    const matchStage = {
-      $match: {
-        orderStatus: "Delivered",
-      },
+    let matchStage = {
+      orderStatus: "Delivered",
     };
 
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+    console.log(startDate,endDate)
+
+    if (startDate && endDate) {
+      matchStage.createdAt = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
+    }
+
     const userorders = await Order.aggregate([
-      matchStage,
+      { $match: matchStage },
       {
         $lookup: {
           from: "products",
@@ -106,9 +111,9 @@ const salesGetReport = asyncHandler(async (req, res) => {
         },
       },
     ]);
-
+console.log("List",userorders);
     const grandTotal = await Order.aggregate([
-      matchStage,
+      { $match: matchStage },
       {
         $group: {
           _id: null,
@@ -116,16 +121,29 @@ const salesGetReport = asyncHandler(async (req, res) => {
         },
       },
     ]);
-console.log(grandTotal)
-    const totalAmount = grandTotal.length > 0 ? grandTotal[0].totalAmount : 0;
+    console.log("List",grandTotal);
 
-    res.render("adminDash/salesReport", { userorders, grandTotal, totalAmount });
+    const totalAmount = grandTotal.length > 0 ? grandTotal[0].totalAmount : 0;
+    if (startDate) {
+      res.send({
+        userorders,
+        grandTotal,
+        totalAmount
+      });
+    } else {
+      res.render("adminDash/salesReport", {
+        userorders,
+        grandTotal,
+        totalAmount,
+      });
+    }
+    
+    
   } catch (error) {
     console.error("An error occurred in the salesPostReport route:", error);
     res.status(500).send("Internal Server Error");
   }
 });
-
 
 const salesReport = asyncHandler(async (req, res) => {
   try {
@@ -187,13 +205,16 @@ const salesReport = asyncHandler(async (req, res) => {
     console.log("grandTotal:", grandTotal);
     console.log("totalAmount:", totalAmount);
 
-    res.render("adminDash/salesReport", { userorders, grandTotal, totalAmount });
+    res.render("adminDash/salesReport", {
+      userorders,
+      grandTotal,
+      totalAmount,
+    });
   } catch (error) {
     console.error("An error occurred in the salesReport route:", error);
     res.status(500).send("Internal Server Error");
   }
 });
-
 
 const dashboard = asyncHandler(async (req, res) => {
   try {
@@ -695,6 +716,9 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
   const { payment, orderStatus, paymentId, amount, method, created, request } =
     req.body;
   const { id } = req.params;
+  console.log("or", orderStatus);
+  console.log("o2r", amount);
+
   validateMongoDbId(id);
   try {
     const userorders = await Order.findByIdAndUpdate(
@@ -704,9 +728,33 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
       },
       { new: true }
     );
+    if (orderStatus === "Returned") {
+      const _id = userorders.orderby;
+      const paymentAmount = Number(userorders.paymentIntent.amount);
+      console.log(paymentAmount)
+      console.log(_id)
+
+      let userWallet = await Wallet.findOne({ user: _id });
+      if (!userWallet) {
+        userWallet = new Wallet({
+          user: _id,
+          balance: 0,
+          transactions: [],
+        });
+      }
+      userWallet.balance += paymentAmount;
+      userWallet.transactions.push({
+        type: "credit",
+        amount: paymentAmount,
+        description: "Return Amount has been added",
+        paymentID: "ReturnMoney",
+      });
+      await userWallet.save();
+    }
 
     res.redirect("/admin/orders");
   } catch (error) {
+    console.error(error)
     throw new Error(error);
   }
 });
@@ -723,7 +771,208 @@ const loadUpdateOrderStatus = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+const generatePdf = async (req, res) => {
+  try {
+    const startDate = req.query.startDate || '1970-01-01';
+const endDate = req.query.endDate || new Date().toISOString(); 
 
+const browser = await puppeteer.launch();
+const page = await browser.newPage();
+const userorder = await Order.find({
+  createdAt: {
+    $gte: new Date(startDate),
+    $lt: new Date(endDate)
+  },
+  orderStatus: 'Delivered'
+})
+.populate("products.product")
+.populate("orderby")
+.populate("address")
+.exec();
+const aggregationResult = await Order.aggregate([
+  {
+    $match: {
+      createdAt: {
+        $gte: new Date(startDate),
+        $lt: new Date(endDate)
+      },
+      orderStatus: 'Delivered'
+    }
+  },
+  {
+    $group: {
+      _id: null,
+      totalAmount: { $sum: "$paymentIntent.amount" },
+    }
+  }
+]);
+const totalAmount = aggregationResult.length > 0 ? aggregationResult[0].totalAmount : 0;
+const data = {
+  prodlist: userorder.flatMap(order => 
+    order.products.map((productItem, index, array) => {
+      let productInfo = {
+        'Product Title': productItem.product.title,
+      };
+
+      if (productItem.offer !== null && typeof productItem.offer !== 'undefined') {
+        productInfo['Original Product Price'] = productItem.product.price;
+        productInfo['Discounted Price'] = productItem.price;
+
+        const savings = productItem.product.price - productItem.price;
+        const discountPercentage = (savings / productItem.product.price) * 100;
+        productInfo['Savings'] = `Discount: ${discountPercentage.toFixed(2)}`;
+      } else {
+        productInfo['Product Price'] = productItem.product.price;
+      }
+
+      return productInfo;
+    })
+  ),
+};
+
+
+const html = `
+  <html>
+    <head>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 20px;
+        }
+
+        .company-heading {
+          font-size: 24px;
+          font-weight: bold;
+          color: #333;
+          margin-bottom: 10px;
+        }
+
+        h1 {
+          text-align: center;
+          color: #333;
+        }
+
+        ul {
+          list-style-type: none;
+          padding: 0;
+        }
+
+        li {
+          margin-bottom: 10px;
+        }
+
+        p {
+          margin-top: 20px;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 20px;
+        }
+
+        th, td {
+          border: 1px solid #ddd;
+          padding: 8px;
+          text-align: left;
+        }
+
+        th {
+          background-color: #f2f2f2;
+        }
+
+        .invoice-details {
+          border-top: 2px solid #333;
+          padding-top: 10px;
+          margin-top: 20px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="company-heading">FUSIONFURNI</div>
+      <ul>
+          <li>Kinfra Kakkancheri</li>
+          <li>Near Calicut University</li>
+          <li>Kozhikode</li>
+          <li>67122</li>
+        </ul>
+      <hr>
+
+      <h1>Invoice</h1>
+      <hr>
+     
+      <table>
+        <thead>
+          <tr>
+          
+            <th>Product Title</th>
+            <th>Original Product Price</th>
+            <th>Discounted Price</th>
+            <th>Savings %</th>
+            
+          </tr>
+        </thead>
+        <tbody>
+         
+            <tr>
+            ${data.prodlist.map(product => `
+              <td>${product['Product Title']}</td>
+              <td>${product['Original Product Price'] ? `₹${product['Original Product Price']}` : ''}</td>
+              <td>${product['Discounted Price'] ? `₹${product['Discounted Price']}` : ''}</td>
+              <td>${product['Savings'] ? `${product['Savings']}` : ''}</td>
+              <td>${product['Product Price'] ? `₹${product['Product Price']}` : ''}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+
+
+      <div class="invoice-details">
+      <p>Total Amount : ${totalAmount}</p>
+        <p>Invoice ID: ${generateInvoiceID()}</p>
+        <p>Invoice Date: ${new Date().toLocaleDateString("en-GB")}</p>
+      </div>
+    </body>
+  </html>
+`;
+
+function generateInvoiceID() {
+  return Math.floor(1000 + Math.random() * 9000);
+}
+
+
+    await page.setContent(html);
+
+    const filename = Math.random() + '_doc' + '.pdf';
+    const filepath = path.join(__dirname, 'docs', filename);
+
+    await page.pdf({
+      path: filepath,
+      format: 'A4',
+      displayHeaderFooter: true,
+      headerTemplate: '<h4 style="color: red; font-size: 20; font-weight: 800; text-align: center;">CUSTOMER INVOICE</h4>',
+      footerTemplate: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>',
+    });
+
+    await browser.close();
+
+    if (fs.existsSync(filepath)) {
+      res.download(filepath, filename, (err) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send('Error initiating download');
+        }
+    
+        fs.unlinkSync(filepath);
+      });
+    } else {
+      res.status(404).send('PDF file not found');
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Error generating PDF');
+  }
+};
 module.exports = {
   loginAdminCtrl,
   getallUser,
@@ -747,5 +996,7 @@ module.exports = {
   getAllOrders,
   loadUpdateOrderStatus,
   salesReport,
-  salesGetReport
+  salesGetReport,
+  generatePdf,
+  
 };
