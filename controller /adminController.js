@@ -415,7 +415,7 @@ const dashboard = asyncHandler(async (req, res) => {
     // Assuming userorder
     const categoryCount = catCount[0].totalCount;
     const totalCount = orderCount[0].totalCount;
-    console.log("heelo", cancel);
+  
     const revenue = revenue1[0]?.totalRevenue || 0;
     const productsCount = productCount[0].totalCount;
     const returnCount = returns[0].totalCount;
@@ -449,9 +449,11 @@ const dashboard = asyncHandler(async (req, res) => {
       totalEarning,
     });
   } catch (error) {
-    console.error("An error occurred:", error);
-    throw new Error(error);
+    console.error('Error in your code:', error); 
+    console.log(error);
+    throw new Error(error)
   }
+  
 });
 
 const product = asyncHandler(async (req, res) => {

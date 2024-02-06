@@ -245,9 +245,9 @@
                           </thead>
                           <tbody>
                             <% let counter = 0; %>
-                            <% userorders.reverse().forEach(order => { %>
+                            <% userorders.slice(0, 5).reverse().forEach(order => { %>
                               <% order.products.forEach((productItem, index, array) => { %>
-                                <% if (counter < 6) { %>
+                                <% if (counter < 5) { %>
                                   <tr>
                                     <td class="text-center"></td>
                                     <td>
@@ -262,7 +262,6 @@
                                           <p>
                                             <%= order.createdAt.toLocaleDateString('en-GB') %> <%= order.createdAt.toLocaleTimeString('en-US', { hour12: true }) %>
                                           </p>
-                                          
                                         </strong>
                                       <% } %>
                                     </td>
@@ -272,6 +271,7 @@
                               <% }); %>
                             <% }); %>
                           </tbody>
+                          
                           
                       </table>
                   </div>
