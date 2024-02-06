@@ -224,7 +224,7 @@ function generateInvoiceID() {
 const loadlogin = asyncHandler(async (req, res) => {
   try {
     if (req.cookies.refreshToken) {
-      res.redirect("/home");
+      res.redirect("/");
     } else {
       res.render("user/loginAndSignUp", { message: req.flash("message") });
     }
