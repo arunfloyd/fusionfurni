@@ -258,7 +258,7 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
         maxAge: 72 * 60 * 60 * 1000,
       });
 
-      res.redirect("/home");
+      res.redirect("/");
     } else {
       req.flash("message", "Invalid Credentials");
       res.redirect("/login");
@@ -289,7 +289,6 @@ const userRegister = asyncHandler(async (req, res) => {
         referId = refer;
         let userWallet = await Wallet.findOne({ user: refer });    
         if (!userWallet) {
-          // Create a new wallet if it doesn't exist
           userWallet = new Wallet({
             user: refer,
             balance: 0,
@@ -306,7 +305,6 @@ const userRegister = asyncHandler(async (req, res) => {
           description: "Added 100 for Referring a friend",
           paymentID: "Refer & Earn",
         });    
-        // Save or update the userWallet
         await userWallet.save();
       } else {
         referId = null; // or some default value
@@ -382,17 +380,15 @@ const verifyMail = asyncHandler(async (req, res) => {
     const user = await User.findOne({
       email: email  
       });
-    console.log("user",user)
 
     if (user) {
       const enteredOTP = req.body.otp;
       const storedOtp = await Otp.findOne({ user: user._id });
-      console.log("otp",storedOtp)
-
       if (storedOtp) {
         const isMatch = await bcrypt.compare(enteredOTP, storedOtp.otp);
       console.log("match",isMatch)
         if (isMatch) {
+          const matchedUser = await User.findByIdAndUpdate(user._id,{$set:{isBlocked:false}})
           req.flash("message", "User Successfully Verified");
           res.redirect("/login");
         } else {

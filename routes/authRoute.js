@@ -74,7 +74,7 @@ router.get("/verify-mail", loadVerifyEmail);
 router.post("/verify-mail", verifyMail);
 router.post("/resend-mail", resendMail);
 router.get("/shop", shop);
-router.get("/home", home);
+router.get("/", home);
 router.get("/contact", contact);
 router.get("/product/:id", product);
 router.get("/blog", blog);

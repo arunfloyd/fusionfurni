@@ -40,7 +40,7 @@ const isBlocked = asyncHandler(async (req, res, next) => {
       "message",
       "Access have been Resticted..!! Please Contact Us"
     );
-    res.redirect("/home");
+    res.redirect("/");
   } else {
     next();
   }
@@ -55,13 +55,13 @@ const userMiddleware = asyncHandler(async (req, res, next) => {
       req.user = user;
       next();
     } else {
-      req.flash('message','Authorized token expired, Please Login again')
+      req.flash('message','Please Login or SignUp')
       res.redirect("/login");
 
       throw new Error("There is no token attached to header");
     }
   } catch (error) {
-    throw new Error("No Authorized token expired, Please Login again");
+    throw new Error("Please Login or SignUp");
   }
 });
 
