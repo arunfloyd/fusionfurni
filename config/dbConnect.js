@@ -17,4 +17,8 @@ const dbConnect = async () => {
   }
 };
 
+<<<<<<< HEAD
 module.exports = dbConnect;
+=======
+module.exports = dbConnect;
+>>>>>>> origin/main
