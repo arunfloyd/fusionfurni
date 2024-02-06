@@ -193,13 +193,13 @@ a {
         font-size: 54px; } }
   .hero p {
     color: rgba(255, 255, 255, 0.5);
-    margin-botom: 30px; }
+    margin-bottom: 30px; }
     .hero .hero-img-wrap {
-      position: relative;
+      position: absolute;
     }
     
     .hero .hero-img-wrap img {
-      position: relative;
+      position: absolute;
       top: 0px;
       right: 0px;
       z-index: 2;
