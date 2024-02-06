@@ -415,6 +415,9 @@ const dashboard = asyncHandler(async (req, res) => {
     // Assuming userorder
     const categoryCount = catCount[0].totalCount;
     const totalCount = orderCount[0].totalCount;
+    console.log(totalCount)
+    console.log(orderCount)
+
   
     const revenue = revenue1[0]?.totalRevenue || 0;
     const productsCount = productCount[0].totalCount;
